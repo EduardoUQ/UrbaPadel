@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/login.css">
+</head>
+
+<body>
+    <div class="container">
+
+        <!-- LEFT PANEL -->
+        <div class="left-panel">
+            <div class="logo">
+                <div class="logo-icon"></div>
+                <span>UrbaPadel</span>
+            </div>
+
+            <h2>Iniciar sesión</h2>
+            <p class="subtitle">
+                Bienvenido de nuevo. Accede para gestionar tus reservas.
+            </p>
+
+            <form id="formLogin">
+                <label>Nombre de usuario</label>
+                <input type="text" placeholder="vecino@portal3.com" id="nombreUsuario">
+                <p class="errorMessage" id="mensajeUsuario"></p>
+
+                <div class="password-header">
+                    <label>Contraseña</label>
+                    <a href="#">¿Olvidaste tu contraseña?</a>
+                </div>
+
+                <input type="password" placeholder="********" id="password">
+                <p class="errorMessage" id="mensajePassword"></p>
+
+                <div class="remember">
+                    <input type="checkbox" id="remember">
+                    <label for="remember">Mantener sesión iniciada</label>
+                </div>
+
+                <button type="submit">Ingresar</button>
+                <p id="mensaje"></p>
+            </form>
+
+            <div class="divider">SOPORTE</div>
+
+            <button class="secondary-btn">Contactar con el administrador</button>
+
+            <p class="footer-text">
+                ¿Eres nuevo en la comunidad?
+                <a href="#">Solicitar acceso</a>
+            </p>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel">
+            <div class="overlay">
+                <h1>Tu comunidad, más conectada.</h1>
+                <p>
+                    Reserva las pistas de pádel de forma justa, rápida y respetando
+                    los turnos de todos los portales de la urbanización.
+                </p>
+            </div>
+        </div>
+
+    </div>
+    <script src="../js/login.js"></script>
+</body>
+
+</html>
