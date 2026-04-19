@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdmiFormularioEspacios.css">
+    <title>Formulario de Espacios</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="#" class="brand" aria-label="UrbaPadel Admin">
+                <span class="brand-mark" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Navegación principal">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Panel General</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="#" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Espacios y Pistas</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Vecinos y Portales</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-bell"></i>
+                    <span>Notificaciones</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <a href="#">Espacios</a>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <span>Nuevo Espacio</span>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menú de usuario">
+                    <span class="avatar" aria-hidden="true">A</span>
+                    <span>Administrador</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <div>
+                        <h1>Añadir Nuevo Espacio</h1>
+                        <p>Crea una nueva pista o espacio común disponible para reservar en la comunidad.</p>
+                    </div>
+
+                    <!-- <div class="header-actions">
+                        <button class="btn btn-secondary" type="button">Descartar</button>
+                        <button class="btn btn-primary" type="button">
+                            <i class="fa-regular fa-floppy-disk"></i>
+                            <span>Guardar Espacio</span>
+                        </button>
+                    </div> -->
+                </div>
+
+                <form class="space-form">
+                    <section class="form-card">
+                        <div class="card-heading">
+                            <h2>Información General</h2>
+                            <p>Detalles principales del espacio a reservar.</p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="spaceName">Nombre del espacio</label>
+                                <input id="spaceName" name="spaceName" type="text" value="Pista de Pádel 1 - Cristal">
+                            </div>
+
+                            <div class="field select-field">
+                                <label for="spaceType">Tipo de instalación</label>
+                                <select id="spaceType" name="spaceType">
+                                    <option selected>Pista de Pádel</option>
+                                    <option>Piscina</option>
+                                    <option>Gimnasio</option>
+                                    <option>Sala común</option>
+                                </select>
+                            </div>
+
+                            <div class="field field-wide">
+                                <label for="description">Descripción</label>
+                                <textarea id="description"
+                                    name="description">Pista principal de cristal situada junto a la piscina. Cuenta con iluminación artificial disponible hasta las 22:00h y acceso mediante código PIN de la comunidad.</textarea>
+                                <small>Breve descripción que verán los vecinos al realizar la reserva.</small>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <div class="card-heading">
+                            <h2>Horarios y Límites</h2>
+                            <p>Configura cuándo se puede utilizar y las restricciones de tiempo.</p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field icon-field">
+                                <label for="openingTime">Hora de apertura</label>
+                                <input id="openingTime" name="openingTime" type="time" value="08:00">
+                            </div>
+
+                            <div class="field icon-field">
+                                <label for="closingTime">Hora de cierre</label>
+                                <input id="closingTime" name="closingTime" type="time" value="22:00">
+                            </div>
+
+                            <div class="field select-field">
+                                <label for="maxDuration">Duración máxima por reserva</label>
+                                <select id="maxDuration" name="maxDuration">
+                                    <option selected>90 minutos</option>
+                                    <option>60 minutos</option>
+                                    <option>120 minutos</option>
+                                </select>
+                                <small>Tiempo límite que un vecino puede reservar de una sola vez.</small>
+                            </div>
+
+                            <div class="field select-field">
+                                <label for="maxAdvance">Antelación máxima permitida</label>
+                                <select id="maxAdvance" name="maxAdvance">
+                                    <option selected>7 días</option>
+                                    <option>14 días</option>
+                                    <option>30 días</option>
+                                </select>
+                                <small>Con cuántos días de margen se puede reservar.</small>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <div class="card-heading">
+                            <h2>Normas de Uso</h2>
+                            <p>Reglas que los vecinos deben aceptar antes de confirmar su reserva.</p>
+                        </div>
+
+                        <div class="field">
+                            <label class="sr-only" for="rules">Normas de uso</label>
+                            <textarea id="rules" name="rules"
+                                class="rules-area">1. Es obligatorio el uso de calzado deportivo adecuado para pistas de pádel. 2. Se ruega puntualidad. Si a los 15 minutos de la reserva la pista está vacía, otro vecino podrá ocuparla. 3. Prohibido consumir alimentos dentro de la pista. 4. La luz artificial se apagará automáticamente a las 22:15h. 5. El sistema rotativo de preferencia por portales se aplicará en horarios de alta demanda (18:00h - 21:00h).</textarea>
+                            <small>Estas normas aparecerán como "Términos y condiciones" al finalizar una
+                                reserva.</small>
+                        </div>
+                    </section>
+
+                    <div class="bottom-actions">
+                        <button class="btn btn-secondary" type="button">Cancelar</button>
+                        <button class="btn btn-primary" type="submit">Crear Espacio</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>

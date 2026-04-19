@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdmiEspacios.css">
+    <title>Espacios y Pistas</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="#" class="brand" aria-label="UrbaPadel Admin">
+                <span class="brand-mark" aria-hidden="true">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Navegación principal">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Panel General</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="#" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Espacios y Pistas</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Vecinos y Portales</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-bell"></i>
+                    <span>Notificaciones</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <span>Espacios</span>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menú de usuario">
+                    <span class="avatar" aria-hidden="true">A</span>
+                    <span>Administrador</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <div>
+                        <h1>Espacios y Pistas</h1>
+                        <p>Gestiona las instalaciones disponibles para reservas en la comunidad.</p>
+                    </div>
+
+                    <a class="btn btn-primary" href="panelAdmiFormularioEspacios.html">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nuevo Espacio</span>
+                    </a>
+                </div>
+
+                <section class="list-card" aria-label="Listado de espacios">
+                    <div class="list-toolbar">
+                        <label class="search-box" for="spaceSearch">
+                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            <input id="spaceSearch" type="search" placeholder="Buscar espacio...">
+                        </label>
+
+                        <!-- <button class="btn btn-secondary filter-btn" type="button">
+                            <i class="fa-solid fa-filter"></i>
+                            <span>Filtros</span>
+                        </button> -->
+                    </div>
+
+                    <div class="table-wrap">
+                        <table class="spaces-table">
+                            <thead>
+                                <tr>
+                                    <th>Espacio</th>
+                                    <th>Tipo</th>
+                                    <th>Horario</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="space-cell">
+                                            <!-- <span class="space-thumb" aria-hidden="true"></span> -->
+                                            <div>
+                                                <strong>Pista de Pádel 1 - Cristal</strong>
+                                                <!-- <span>Aforo máx: 4 personas</span>ç -->
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>Pista de Pádel</td>
+                                    <td>
+                                        <div class="schedule-cell">
+                                            <strong>08:00 - 22:00</strong>
+                                            <span>Lunes a Domingo</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="status-badge">Activa</span>
+                                    </td>
+                                    <td>
+                                        <div class="row-actions" aria-label="Acciones de espacio">
+                                            <button class="icon-btn" type="button" aria-label="Editar espacio">
+                                                <i class="fa-solid fa-pen"></i>
+                                            </button>
+                                            <button class="icon-btn delete" type="button" aria-label="Eliminar espacio">
+                                                <i class="fa-regular fa-trash-can"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="list-footer">
+                        <p>Mostrando 1 de 1 espacios</p>
+                        <div class="pagination">
+                            <button class="btn btn-secondary" type="button" disabled>Anterior</button>
+                            <button class="btn btn-secondary" type="button" disabled>Siguiente</button>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+</body>
+
+</html>
