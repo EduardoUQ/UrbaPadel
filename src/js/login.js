@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .then(response => response.json())
             .then(data => {
                 if (data.status === "success" && data.rol === 'admin') {
-                    window.location.href = "../html/panelAdmiEspacios.html";
+                    window.location.href = "../html/panelAdminUrbanizaciones.html";
                 } else if (data.status === "success" && data.rol === 'usuario') {
                     // window.location.href = "../html/panel_usuario_candidatura.html";
                 } else {

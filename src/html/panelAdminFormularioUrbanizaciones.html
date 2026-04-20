@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdminFormularioUrbanizaciones.css">
+    <title>Crear Urbanización</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="panelAdminUrbanizaciones.html" class="brand" aria-label="UrbaPadel">
+                <span class="brand-mark" aria-hidden="true">
+                    <i class="fa-regular fa-building"></i>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Gestión global">
+                <p class="nav-title">Gestión Global</p>
+
+                <a href="panelAdminUrbanizaciones.html" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    <span>Mis Urbanizaciones</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>Administradores</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes Globales</span>
+                </a>
+                <a href="#" class="nav-item logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <span>Gestión Global</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <span>Urbanizaciones</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <strong>Crear Urbanización</strong>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menú de usuario">
+                    <span class="avatar" aria-hidden="true">S</span>
+                    <span>Super Administrador</span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="form-heading">
+                    <a href="panelAdminUrbanizaciones.html" class="back-btn" aria-label="Volver a urbanizaciones">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </a>
+                    <div>
+                        <h1>Crear Nueva Urbanización</h1>
+                        <p>Añade los datos básicos de la nueva comunidad para comenzar a configurarla.</p>
+                    </div>
+                </div>
+
+                <form class="urbanization-form">
+                    <div class="field icon-field">
+                        <label for="urbanName">Nombre de la Urbanización</label>
+                        <i class="fa-regular fa-building" aria-hidden="true"></i>
+                        <input id="urbanName" name="urbanName" type="text" placeholder="Ej. Residencial Los Pinos">
+                    </div>
+
+                    <div class="field icon-field">
+                        <label for="address">Dirección</label>
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                        <input id="address" name="address" type="text" placeholder="Ej. Avenida de la Ilustración 45">
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="field">
+                            <label for="postalCode">Código Postal</label>
+                            <input id="postalCode" name="postalCode" type="text" placeholder="Ej. 28001">
+                        </div>
+
+                        <div class="field">
+                            <label for="city">Municipio</label>
+                            <input id="city" name="city" type="text" placeholder="Ej. Madrid">
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label for="province">Provincia</label>
+                        <input id="province" name="province" type="text" placeholder="Ej. Madrid">
+                    </div>
+
+                    <div class="form-actions">
+                        <a class="btn btn-secondary" href="panelAdminUrbanizaciones.html">Cancelar</a>
+                        <button class="btn btn-primary" type="submit">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Crear Urbanización</span>
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+</body>
+
+</html>
