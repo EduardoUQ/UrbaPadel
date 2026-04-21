@@ -72,39 +72,59 @@
                     </div>
                 </div>
 
-                <form class="urbanization-form">
+                <form class="urbanization-form" id="urbanization-form">
                     <div class="field icon-field">
                         <label for="urbanName">Nombre de la Urbanización</label>
                         <i class="fa-regular fa-building" aria-hidden="true"></i>
                         <input id="urbanName" name="urbanName" type="text" placeholder="Ej. Residencial Los Pinos">
+                        <p id="error-urbaName"></p>
                     </div>
+
 
                     <div class="field icon-field">
                         <label for="address">Dirección</label>
                         <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
                         <input id="address" name="address" type="text" placeholder="Ej. Avenida de la Ilustración 45">
+                        <p id="error-address"></p>
                     </div>
 
                     <div class="form-grid">
                         <div class="field">
                             <label for="postalCode">Código Postal</label>
                             <input id="postalCode" name="postalCode" type="text" placeholder="Ej. 28001">
+                            <p id="error-postalCode"></p>
                         </div>
 
                         <div class="field">
                             <label for="city">Municipio</label>
                             <input id="city" name="city" type="text" placeholder="Ej. Madrid">
+                            <p id="error-city"></p>
                         </div>
                     </div>
 
                     <div class="field">
                         <label for="province">Provincia</label>
                         <input id="province" name="province" type="text" placeholder="Ej. Madrid">
+                        <p id="error-province"></p>
                     </div>
+
+                    <fieldset class="field status-field" id="status-field" hidden>
+                        <legend>Estado</legend>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="activeStatus" value="1" checked>
+                                <span>Activa</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="activeStatus" value="0">
+                                <span>Inactiva</span>
+                            </label>
+                        </div>
+                    </fieldset>
 
                     <div class="form-actions">
                         <a class="btn btn-secondary" href="panelAdminUrbanizaciones.html">Cancelar</a>
-                        <button class="btn btn-primary" type="submit">
+                        <button class="btn btn-primary" type="submit" id="submit-urbanization">
                             <i class="fa-solid fa-check"></i>
                             <span>Crear Urbanización</span>
                         </button>
@@ -113,6 +133,7 @@
             </section>
         </main>
     </div>
+    <script src="../js/panelAdminFormularioUrbanizaciones.js"></script>
 </body>
 
 </html>

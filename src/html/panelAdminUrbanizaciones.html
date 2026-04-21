@@ -67,19 +67,22 @@
                         </p>
                     </div>
 
-                    <a class="btn btn-primary" href="panelAdminFormularioUrbanizaciones.html">
+                    <a class="btn btn-primary" href="panelAdminFormularioUrbanizaciones.html" id="create-urbanization">
                         <i class="fa-solid fa-plus"></i>
                         <span>Crear Urbanización</span>
                     </a>
                 </div>
 
-                <section class="urbanization-grid" aria-label="Listado de urbanizaciones">
+                <section class="urbanization-grid" aria-label="Listado de urbanizaciones" id="urbanization-grid">
                     <article class="urbanization-card">
                         <div class="card-top">
-                            <span class="urban-icon featured" aria-hidden="true">
+                            <span class="urban-icon" aria-hidden="true">
                                 <i class="fa-regular fa-building"></i>
                             </span>
-                            <span class="status-badge">Activa</span>
+                            <span><span class="status-badge">Activa</span>
+                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
                         </div>
 
                         <div class="urban-heading">
@@ -92,20 +95,12 @@
 
                         <dl class="urban-stats">
                             <div>
-                                <dt><i class="fa-regular fa-building"></i> Portales</dt>
-                                <dd>4</dd>
+                                <dt><i class="fa-regular fa-map"></i> Espacios</dt>
+                                <dd>2</dd>
                             </div>
                             <div>
                                 <dt><i class="fa-solid fa-user-group"></i> Vecinos</dt>
                                 <dd>120</dd>
-                            </div>
-                            <div>
-                                <dt><i class="fa-regular fa-map"></i> Pistas</dt>
-                                <dd>2</dd>
-                            </div>
-                            <div>
-                                <dt><i class="fa-regular fa-calendar-check"></i> Hoy</dt>
-                                <dd>18</dd>
                             </div>
                         </dl>
 
@@ -120,7 +115,10 @@
                             <span class="urban-icon" aria-hidden="true">
                                 <i class="fa-regular fa-building"></i>
                             </span>
-                            <span class="status-badge">Activa</span>
+                            <span><span class="status-badge">Activa</span>
+                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
                         </div>
 
                         <div class="urban-heading">
@@ -133,20 +131,12 @@
 
                         <dl class="urban-stats">
                             <div>
-                                <dt><i class="fa-regular fa-building"></i> Portales</dt>
-                                <dd>8</dd>
+                                <dt><i class="fa-regular fa-map"></i> Espacios</dt>
+                                <dd>2</dd>
                             </div>
                             <div>
                                 <dt><i class="fa-solid fa-user-group"></i> Vecinos</dt>
-                                <dd>340</dd>
-                            </div>
-                            <div>
-                                <dt><i class="fa-regular fa-map"></i> Pistas</dt>
-                                <dd>4</dd>
-                            </div>
-                            <div>
-                                <dt><i class="fa-regular fa-calendar-check"></i> Hoy</dt>
-                                <dd>42</dd>
+                                <dd>120</dd>
                             </div>
                         </dl>
 
@@ -159,9 +149,12 @@
                     <article class="urbanization-card">
                         <div class="card-top">
                             <span class="urban-icon" aria-hidden="true">
-                                <i class="fa-solid fa-house"></i>
+                                <i class="fa-regular fa-building"></i>
                             </span>
-                            <span class="status-badge">Activa</span>
+                            <span><span class="status-badge">Activa</span>
+                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
                         </div>
 
                         <div class="urban-heading">
@@ -174,20 +167,12 @@
 
                         <dl class="urban-stats">
                             <div>
-                                <dt><i class="fa-regular fa-building"></i> Portales</dt>
+                                <dt><i class="fa-regular fa-map"></i> Espacios</dt>
                                 <dd>2</dd>
                             </div>
                             <div>
                                 <dt><i class="fa-solid fa-user-group"></i> Vecinos</dt>
-                                <dd>45</dd>
-                            </div>
-                            <div>
-                                <dt><i class="fa-regular fa-map"></i> Pistas</dt>
-                                <dd>1</dd>
-                            </div>
-                            <div>
-                                <dt><i class="fa-regular fa-calendar-check"></i> Hoy</dt>
-                                <dd>6</dd>
+                                <dd>120</dd>
                             </div>
                         </dl>
 
@@ -201,6 +186,7 @@
         </main>
     </div>
 
+    <script src="../js/panelAdminUrbanizaciones.js"></script>
 </body>
 
 </html>

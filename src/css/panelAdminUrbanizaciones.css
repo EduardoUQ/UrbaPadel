@@ -239,6 +239,16 @@ a {
     border-color: var(--teal-dark);
 }
 
+.btn-secondary {
+    border: 1px solid var(--line);
+    background: #ffffff;
+    color: #334044;
+}
+
+.btn-secondary:hover {
+    background: #f7fbfb;
+}
+
 .urbanization-grid {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -272,11 +282,6 @@ a {
     font-size: 18px;
 }
 
-.urban-icon.featured {
-    background: var(--teal);
-    color: #ffffff;
-}
-
 .status-badge {
     display: inline-flex;
     min-height: 22px;
@@ -287,6 +292,48 @@ a {
     font-size: 12px;
     font-weight: 800;
     padding: 0 11px;
+}
+
+.status-badge-inactive {
+    background: #94a3b8;
+}
+
+.card-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.icon-action {
+    display: inline-grid;
+    width: 28px;
+    height: 28px;
+    place-items: center;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #5d6c6c;
+    cursor: pointer;
+}
+
+.icon-action:hover {
+    background: var(--field);
+    color: var(--teal-dark);
+}
+
+.icon-action-danger:hover {
+    color: var(--danger);
+}
+
+.urbanization-message {
+    grid-column: 1 / -1;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 20px;
 }
 
 .urban-heading h2 {
@@ -336,12 +383,12 @@ a {
     display: flex;
     align-items: center;
     gap: 7px;
-    order: 2;
+
 }
 
 .urban-stats dd {
     color: #344142;
-    order: 1;
+
 }
 
 .enter-link {
@@ -362,6 +409,66 @@ a {
 .enter-link:hover {
     background: #f7fbfb;
     border-color: #cddcdd;
+}
+
+.modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    display: grid;
+    place-items: center;
+    background: rgba(15, 23, 42, 0.38);
+    padding: 18px;
+}
+
+.modal-backdrop[hidden] {
+    display: none;
+}
+
+.modal-box {
+    display: grid;
+    width: min(360px, 100%);
+    gap: 18px;
+    justify-items: center;
+    border-radius: 8px;
+    background: #ffffff;
+    box-shadow: 0 20px 50px rgba(15, 23, 42, 0.2);
+    padding: 28px;
+    text-align: center;
+}
+
+.modal-icon {
+    display: grid;
+    width: 42px;
+    height: 42px;
+    place-items: center;
+    border-radius: 50%;
+    color: #ffffff;
+    font-size: 18px;
+}
+
+.modal-icon-success {
+    background: var(--teal);
+}
+
+.modal-icon-warning {
+    background: #f59e0b;
+}
+
+.modal-icon-error {
+    background: var(--danger);
+}
+
+.modal-text {
+    color: var(--text);
+    font-size: 16px;
+    font-weight: 800;
+}
+
+.modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
 }
 
 @media (max-width: 1050px) {
