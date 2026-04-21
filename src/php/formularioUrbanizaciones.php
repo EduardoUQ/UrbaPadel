@@ -135,50 +135,22 @@ function eliminarUrbanizacion($conexion)
         responder($conexion, 'error', 'Urbanizacion no valida');
     }
 
-    $conexion->begin_transaction();
-
-    try {
-        ejecutarDelete($conexion, "DELETE ce FROM comentario_espacio ce INNER JOIN espacio e ON ce.id_espacio = e.id WHERE e.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE ce FROM comentario_espacio ce INNER JOIN vivienda v ON ce.id_vivienda = v.id WHERE v.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE be FROM bloqueo_espacio be INNER JOIN espacio e ON be.id_espacio = e.id WHERE e.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE ru FROM restriccion_uso ru INNER JOIN espacio e ON ru.id_espacio = e.id WHERE e.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE ru FROM restriccion_uso ru INNER JOIN vivienda v ON ru.id_vivienda = v.id WHERE v.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE le FROM lista_espera le INNER JOIN espacio e ON le.id_espacio = e.id WHERE e.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE le FROM lista_espera le INNER JOIN vivienda v ON le.id_vivienda = v.id WHERE v.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE r FROM reserva r INNER JOIN espacio e ON r.id_espacio = e.id WHERE e.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE r FROM reserva r INNER JOIN vivienda v ON r.id_vivienda = v.id WHERE v.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE vep FROM vivienda_espacio_permiso vep INNER JOIN espacio e ON vep.id_espacio = e.id WHERE e.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE vep FROM vivienda_espacio_permiso vep INNER JOIN vivienda v ON vep.id_vivienda = v.id WHERE v.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE ec FROM espacio_configuracion ec INNER JOIN espacio e ON ec.id_espacio = e.id WHERE e.id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE FROM espacio WHERE id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE FROM vivienda WHERE id_urbanizacion = ?", $idUrbanizacion);
-        ejecutarDelete($conexion, "DELETE FROM urbanizacion WHERE id = ?", $idUrbanizacion);
-
-        $conexion->commit();
-    } catch (Exception $error) {
-        $conexion->rollback();
-        responder($conexion, 'error', 'No se pudo borrar la urbanizacion');
-    }
-
-    responder($conexion, 'success', 'Urbanizacion borrada');
-}
-
-function ejecutarDelete($conexion, $sql, $idUrbanizacion)
-{
+    $sql = "DELETE FROM urbanizacion WHERE id = ? LIMIT 1";
     $stmt = $conexion->prepare($sql);
 
     if (!$stmt) {
-        throw new Exception('Error al preparar borrado');
+        responder($conexion, 'error', 'Error interno al borrar la urbanizacion');
     }
 
     $stmt->bind_param('i', $idUrbanizacion);
 
     if (!$stmt->execute()) {
         $stmt->close();
-        throw new Exception('Error al ejecutar borrado');
+        responder($conexion, 'error', 'No se pudo borrar la urbanizacion');
     }
 
     $stmt->close();
+    responder($conexion, 'success', 'Urbanizacion borrada');
 }
 
 function obtenerTexto($campo)
