@@ -71,7 +71,7 @@ CREATE TABLE vivienda (
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_urbanizacion) REFERENCES urbanizacion(id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE espacio (
@@ -84,7 +84,7 @@ CREATE TABLE espacio (
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_urbanizacion) REFERENCES urbanizacion(id)
         ON UPDATE CASCADE
-        ON DELETE RESTRICT
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE espacio_configuracion (
@@ -130,8 +130,12 @@ CREATE TABLE reserva (
     estado ENUM('ACTIVA','CANCELADA','FINALIZADA') NOT NULL DEFAULT 'ACTIVA',
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     fecha_cancelacion DATETIME NULL,
-    FOREIGN KEY (id_espacio) REFERENCES espacio(id),
+    FOREIGN KEY (id_espacio) REFERENCES espacio(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (id_vivienda) REFERENCES vivienda(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE lista_espera (
@@ -143,8 +147,12 @@ CREATE TABLE lista_espera (
     posicion INT NOT NULL,
     estado ENUM('EN_ESPERA','ATENDIDA','CANCELADA') NOT NULL DEFAULT 'EN_ESPERA',
     fecha_solicitud DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_espacio) REFERENCES espacio(id),
+    FOREIGN KEY (id_espacio) REFERENCES espacio(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (id_vivienda) REFERENCES vivienda(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE restriccion_uso (
@@ -158,8 +166,12 @@ CREATE TABLE restriccion_uso (
     creada_por_tipo ENUM('ADMIN','SUPERUSUARIO') NOT NULL,
     creada_por_id INT NOT NULL,
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_vivienda) REFERENCES vivienda(id),
+    FOREIGN KEY (id_vivienda) REFERENCES vivienda(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (id_espacio) REFERENCES espacio(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE bloqueo_espacio (
@@ -173,6 +185,8 @@ CREATE TABLE bloqueo_espacio (
     creado_por_id INT NOT NULL,
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (id_espacio) REFERENCES espacio(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 CREATE TABLE comentario_espacio (
@@ -183,8 +197,12 @@ CREATE TABLE comentario_espacio (
     fecha_creacion DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     visible BOOLEAN NOT NULL DEFAULT TRUE,
     resuelto BOOLEAN NOT NULL DEFAULT FALSE,
-    FOREIGN KEY (id_espacio) REFERENCES espacio(id),
+    FOREIGN KEY (id_espacio) REFERENCES espacio(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE,
     FOREIGN KEY (id_vivienda) REFERENCES vivienda(id)
+        ON UPDATE CASCADE
+        ON DELETE CASCADE
 ) ENGINE=InnoDB;
 
 INSERT INTO administrador (email, passwd_hash, nombre)
