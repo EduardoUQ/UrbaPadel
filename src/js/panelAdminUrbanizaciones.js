@@ -1,14 +1,61 @@
 document.addEventListener("DOMContentLoaded", function () {
     const urbanizationGrid = document.getElementById("urbanization-grid");
+    const adminName = document.getElementById("admin-name");
+    const logoutButton = document.getElementById("logout");
     const PANEL_URBANIZACION_URL = "panelAdminEspacios.html";
     const FORMULARIO_URBANIZACION_URL = "panelAdminFormularioUrbanizaciones.html";
+    const LOGIN_URL = "login.html";
 
     if (!urbanizationGrid) {
         return;
     }
 
     urbanizationGrid.innerHTML = "";
-    cargarUrbanizaciones();
+    prepararLogout();
+    validarSesionAdmin();
+
+    function validarSesionAdmin() {
+        mostrarMensaje("Comprobando sesion...");
+
+        fetch("../php/sessionAdmin.php")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== "success" || data.rol !== "admin") {
+                    window.location.href = LOGIN_URL;
+                    return;
+                }
+
+                if (adminName) {
+                    adminName.textContent = data.nombre || "Administrador";
+                }
+
+                cargarUrbanizaciones();
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                window.location.href = LOGIN_URL;
+            });
+    }
+
+    function prepararLogout() {
+        if (!logoutButton) {
+            return;
+        }
+
+        logoutButton.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            fetch("../php/logout.php")
+                .then(response => response.json())
+                .then(() => {
+                    window.location.href = LOGIN_URL;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    window.location.href = LOGIN_URL;
+                });
+        });
+    }
 
     function cargarUrbanizaciones() {
         mostrarMensaje("Cargando urbanizaciones...");

@@ -36,7 +36,7 @@ function manejarLogin()
         }
 
         // 1) ADMIN
-        $sqlAdmin = "SELECT id, email, passwd_hash, nombre, super_admin
+        $sqlAdmin = "SELECT id, email, passwd_hash, nombre, super_admin, activo
                      FROM administrador
                      WHERE email = ?
                      LIMIT 1";
@@ -54,6 +54,12 @@ function manejarLogin()
         if ($res && $res->num_rows === 1) {
             $admin = $res->fetch_assoc();
             if (password_verify($pass, $admin['passwd_hash'])) {
+                if (!(bool)$admin['activo']) {
+                    $stmt->close();
+                    $conexion->close();
+
+                    return ['status' => 'error', 'message' => 'Cuenta de administrador inactiva'];
+                }
 
                 $_SESSION['rol'] = 'admin';
                 $_SESSION['id']  = (int)$admin['id'];
