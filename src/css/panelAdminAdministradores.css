@@ -512,6 +512,14 @@ td span {
     justify-content: center;
 }
 
+.modal-actions .btn {
+    min-width: 116px;
+}
+
+.modal-actions .btn-primary {
+    margin-top: 0;
+}
+
 @media (max-width: 1050px) {
     .admin-management {
         grid-template-columns: 1fr;

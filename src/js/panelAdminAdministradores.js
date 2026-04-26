@@ -175,8 +175,8 @@ document.addEventListener("DOMContentLoaded", function () {
         } else {
             actionButton.addEventListener("click", function () {
                 const mensaje = activo
-                    ? "Seguro que quieres desactivar este administrador?"
-                    : "Seguro que quieres activar este administrador?";
+                    ? "¿Seguro que quieres desactivar este administrador?"
+                    : "¿Seguro que quieres activar este administrador?";
 
                 mostrarModalConfirmacion(mensaje, function () {
                     cambiarEstadoAdministrador(administrador.id, nuevoEstado);
