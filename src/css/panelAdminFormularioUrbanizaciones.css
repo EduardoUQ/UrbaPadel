@@ -174,22 +174,6 @@ a {
     font-weight: 700;
 }
 
-.avatar {
-    display: grid;
-    width: 30px;
-    height: 30px;
-    place-items: center;
-    border: 2px solid #e0ecec;
-    border-radius: 50%;
-    background:
-        linear-gradient(180deg, transparent 57%, #204653 58% 66%, #f7fbfb 67% 74%, #204653 75%),
-        radial-gradient(circle at 50% 25%, #f3c0a4 0 22%, transparent 23%),
-        radial-gradient(circle at 50% 15%, #4b3124 0 31%, transparent 32%),
-        #bfd7d8;
-    color: transparent;
-    overflow: hidden;
-}
-
 .content {
     width: min(954px, calc(100% - 56px));
     margin: 30px auto 40px;
@@ -307,17 +291,17 @@ input:focus {
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.12);
 }
 
-.icon-field i {
+/* .icon-field i {
     position: absolute;
     bottom: 26px;
     left: 12px;
-    color: #8a9999;
+    color: red;
     font-size: 13px;
 }
 
 .icon-field input {
     padding-left: 31px;
-}
+} */
 
 .status-field[hidden] {
     display: none;

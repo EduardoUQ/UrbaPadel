@@ -220,6 +220,9 @@ VALUES ('Urbanización Los Pinos', 'Avenida de los Pinos, 45', '28002', 'Madrid'
 INSERT INTO espacio (id_urbanizacion, nombre, tipo, descripcion)
 VALUES (1, 'Pista de Pádel 1', 'Pádel', 'Pista de pádel con césped artificial y sistema de iluminación nocturna. Ideal para partidos y entrenamientos.');
 
+INSERT INTO espacio_configuracion (id_espacio, hora_apertura, hora_cierre, unidad_reserva, duracion_maxima_minutos, max_reservas_dia, max_reservas_semana, max_dias_anticipacion, minutos_entre_reservas, permite_lista_espera, permite_cancelacion, minutos_limite_cancelacion)
+VALUES (1, '08:00', '22:00', '60_MIN', 120, 1, 7, 30, 0, TRUE, TRUE, 60);
+
 INSERT INTO vivienda (id_urbanizacion, codigo_vivienda, nombre_usuario, passwd_hash, email_notificaciones, telefono_contacto)
 VALUES (1, 'A-101', 'usuario101', '$hashUsuario101', 'usuario101@urbanpadel.com', '123456789');
 ";
