@@ -17,16 +17,15 @@ if (!isset($conexion) || !($conexion instanceof mysqli)) {
     exit;
 }
 
-/*
-    MODO NORMAL CON LOGIN:
-    Descomenta esta linea cuando tengas mergeado el login.
-*/
-// validarSesionAdmin($conexion);
+
+validarSesionAdmin($conexion);
 
 $funcion = isset($_POST['funcion']) ? $_POST['funcion'] : '';
 
 if ($funcion === 'datosIniciales') {
     datosIniciales($conexion);
+} elseif ($funcion === 'listarViviendas') {
+    listarViviendas($conexion);
 } elseif ($funcion === 'guardarViviendas') {
     guardarViviendas($conexion);
 } else {
@@ -82,6 +81,83 @@ function datosIniciales($conexion)
     exit;
 }
 
+function listarViviendas($conexion)
+{
+    $idUrbanizacion = obtenerIdUrbanizacion($conexion);
+    obtenerUrbanizacion($conexion, $idUrbanizacion, true);
+
+    $idsEspaciosValidos = obtenerIdsEspaciosUrbanizacion($conexion, $idUrbanizacion);
+
+    $sql = "SELECT
+                id,
+                id_urbanizacion,
+                codigo_vivienda,
+                nombre_usuario,
+                email_notificaciones,
+                telefono_contacto,
+                bloque,
+                portal,
+                escalera,
+                planta,
+                puerta,
+                descripcion_extra,
+                superusuario,
+                activa
+            FROM vivienda
+            WHERE id_urbanizacion = ?
+            ORDER BY codigo_vivienda ASC";
+
+    $stmt = $conexion->prepare($sql);
+
+    if (!$stmt) {
+        responder($conexion, 'error', 'Error interno al obtener viviendas');
+    }
+
+    $stmt->bind_param('i', $idUrbanizacion);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if (!$resultado) {
+        $stmt->close();
+        responder($conexion, 'error', 'No se pudieron obtener las viviendas');
+    }
+
+    $viviendas = [];
+
+    while ($fila = $resultado->fetch_assoc()) {
+        $idVivienda = (int)$fila['id'];
+        $espaciosPermitidos = obtenerPermisosVivienda($conexion, $idVivienda);
+
+        $viviendas[] = [
+            'id' => $idVivienda,
+            'id_urbanizacion' => (int)$fila['id_urbanizacion'],
+            'codigo_vivienda' => $fila['codigo_vivienda'],
+            'nombre_usuario' => $fila['nombre_usuario'],
+            'password' => '',
+            'email_notificaciones' => $fila['email_notificaciones'],
+            'telefono_contacto' => $fila['telefono_contacto'],
+            'bloque' => $fila['bloque'],
+            'portal' => $fila['portal'],
+            'escalera' => $fila['escalera'],
+            'planta' => $fila['planta'],
+            'puerta' => $fila['puerta'],
+            'descripcion_extra' => $fila['descripcion_extra'],
+            'superusuario' => (bool)$fila['superusuario'],
+            'activa' => (bool)$fila['activa'],
+            'permisos' => normalizarPermisosRespuesta($idsEspaciosValidos, $espaciosPermitidos)
+        ];
+    }
+
+    $stmt->close();
+    $conexion->close();
+
+    echo json_encode([
+        'status' => 'success',
+        'viviendas' => $viviendas
+    ]);
+    exit;
+}
+
 function guardarViviendas($conexion)
 {
     $idUrbanizacion = obtenerIdUrbanizacion($conexion);
@@ -112,7 +188,7 @@ function guardarViviendas($conexion)
     $emailsEnviados = 0;
     $emailsFallidos = 0;
 
-    foreach ($viviendas as $indice => $vivienda) {
+    foreach ($viviendas as $vivienda) {
         $idVivienda = isset($vivienda['id']) ? (int)$vivienda['id'] : 0;
 
         if ($idVivienda > 0) {
@@ -131,6 +207,10 @@ function guardarViviendas($conexion)
                 $idsEspaciosValidos
             );
 
+            /*
+                En local con XAMPP puede tardar mucho si no hay servidor SMTP.
+                Si quieres desactivarlo en desarrollo, comenta este bloque.
+            */
             if (
                 enviarEmailCredenciales(
                     $viviendaGuardada['email_notificaciones'],
@@ -331,19 +411,21 @@ function validarViviendasServidor($conexion, $viviendas, $idUrbanizacion, $idsEs
             responder($conexion, 'error', 'El telefono de la fila ' . $fila . ' debe tener 9 cifras o estar vacio');
         }
 
-        if ($datos['password'] === '') {
-            responder($conexion, 'error', 'La fila ' . $fila . ' no tiene password');
-        }
+        if ($idVivienda === 0) {
+            if ($datos['password'] === '') {
+                responder($conexion, 'error', 'La fila ' . $fila . ' no tiene password');
+            }
 
-        if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/', $datos['password'])) {
-            responder($conexion, 'error', 'La password de la fila ' . $fila . ' debe tener minimo 8 caracteres, mayuscula, minuscula, numero y simbolo');
-        }
+            if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/', $datos['password'])) {
+                responder($conexion, 'error', 'La password de la fila ' . $fila . ' debe tener minimo 8 caracteres, mayuscula, minuscula, numero y simbolo');
+            }
 
-        if (isset($passwords[$datos['password']])) {
-            responder($conexion, 'error', 'La password de la fila ' . $fila . ' esta repetida');
-        }
+            if (isset($passwords[$datos['password']])) {
+                responder($conexion, 'error', 'La password de la fila ' . $fila . ' esta repetida');
+            }
 
-        $passwords[$datos['password']] = true;
+            $passwords[$datos['password']] = true;
+        }
 
         if (strlen($datos['bloque']) > 20) {
             responder($conexion, 'error', 'El bloque de la fila ' . $fila . ' supera los 20 caracteres');
@@ -487,6 +569,34 @@ function reemplazarPermisos($conexion, $idVivienda, $idsEspacios)
     }
 
     $stmtInsert->close();
+}
+
+function obtenerPermisosVivienda($conexion, $idVivienda)
+{
+    $sql = "SELECT id_espacio
+            FROM vivienda_espacio_permiso
+            WHERE id_vivienda = ?
+            AND puede_reservar = 1";
+
+    $stmt = $conexion->prepare($sql);
+
+    if (!$stmt) {
+        responder($conexion, 'error', 'Error interno al obtener permisos de vivienda');
+    }
+
+    $stmt->bind_param('i', $idVivienda);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    $idsEspacios = [];
+
+    while ($fila = $resultado->fetch_assoc()) {
+        $idsEspacios[] = (int)$fila['id_espacio'];
+    }
+
+    $stmt->close();
+
+    return $idsEspacios;
 }
 
 function obtenerEspaciosPermitidos($permisos, $idsEspaciosValidos)
@@ -723,7 +833,7 @@ function enviarEmailCredenciales($email, $usuario, $password)
     $headers .= "Reply-To: no-reply@urbapadel.local\r\n";
     $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
 
-    return mail($email, $asunto, $mensaje, $headers);
+    return @mail($email, $asunto, $mensaje, $headers);
 }
 
 function responderRollback($conexion, $status, $message)

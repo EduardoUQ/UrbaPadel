@@ -10,7 +10,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const csvFileInput = document.getElementById("csv-file");
   const saveHomesButton = document.getElementById("save-homes");
   const editHomesButton = document.getElementById("edit-homes");
-  let modoEdicion = true;
 
   const LOGIN_URL = "login.html";
   const URBANIZACIONES_URL = "panelAdminUrbanizaciones.html";
@@ -18,30 +17,11 @@ document.addEventListener("DOMContentLoaded", function () {
   let idUrbanizacion = obtenerIdUrbanizacionSeleccionada();
   let espacios = [];
   let viviendasPreview = [];
+  let modoEdicion = true;
 
   prepararLogout();
   pintarUrbanizacionGuardada();
-
-  /*
-        MODO NORMAL CON LOGIN:
-        Cuando tengas mergeado el login, descomenta esta línea:
-    */
-  // validarSesionAdmin();
-
-  /*
-        MODO PRUEBA SIN LOGIN:
-        Cuando tengas mergeado el login, borra o comenta este bloque completo.
-    */
-  if (adminName) {
-    adminName.textContent = "Administrador prueba";
-  }
-
-  if (!idUrbanizacion) {
-    idUrbanizacion = 1;
-    sessionStorage.setItem("idUrbanizacionSeleccionada", idUrbanizacion);
-  }
-
-  cargarDatosIniciales();
+  validarSesionAdmin();
 
   function validarSesionAdmin() {
     mostrarMensaje("Comprobando sesion...");
@@ -102,8 +82,49 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         espacios = data.espacios || [];
-        mostrarMensaje("Sube un archivo CSV para previsualizar las viviendas.");
-        actualizarContador(0);
+        cargarViviendasExistentes();
+      })
+      .catch((error) => {
+        console.error("Error:", error);
+        mostrarMensaje("Error al conectar con el servidor.");
+      });
+  }
+
+  function cargarViviendasExistentes() {
+    const formData = new FormData();
+    formData.append("funcion", "listarViviendas");
+    formData.append("idUrbanizacion", idUrbanizacion);
+
+    fetch("../php/viviendas.php", {
+      method: "POST",
+      body: formData,
+    })
+      .then((response) => response.text())
+      .then(parsearJSON)
+      .then((data) => {
+        if (data.status !== "success") {
+          mostrarMensaje(
+            data.message || "No se pudieron cargar las viviendas.",
+          );
+          actualizarContador(0);
+          return;
+        }
+
+        viviendasPreview = data.viviendas || [];
+
+        if (viviendasPreview.length === 0) {
+          modoEdicion = true;
+          mostrarMensaje(
+            "Todavia no hay viviendas registradas. Sube un archivo CSV para previsualizarlas.",
+          );
+          actualizarContador(0);
+          if (saveHomesButton) saveHomesButton.hidden = true;
+          if (editHomesButton) editHomesButton.hidden = true;
+          return;
+        }
+
+        modoEdicion = false;
+        pintarTablaEditable(true);
       })
       .catch((error) => {
         console.error("Error:", error);
@@ -116,6 +137,12 @@ document.addEventListener("DOMContentLoaded", function () {
       const archivo = csvFileInput.files[0];
 
       if (!archivo) {
+        return;
+      }
+
+      if (!archivo.name.toLowerCase().endsWith(".csv")) {
+        mostrarModalMensaje("El archivo debe tener formato CSV.", false);
+        csvFileInput.value = "";
         return;
       }
 
@@ -174,6 +201,7 @@ document.addEventListener("DOMContentLoaded", function () {
       permisos: crearPermisosPorDefecto(),
     }));
 
+    modoEdicion = true;
     pintarTablaEditable(false);
   }
 
@@ -196,7 +224,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "ID Urb.",
       "Código",
       "Usuario",
-      "Password",
+      ...(guardadas ? [] : ["Password"]),
       "Email",
       "Teléfono",
       "Bloque",
@@ -234,21 +262,28 @@ document.addEventListener("DOMContentLoaded", function () {
       modoEdicion = false;
     }
 
-    saveHomesButton.hidden = !modoEdicion || viviendasPreview.length === 0;
-    editHomesButton.hidden = modoEdicion || viviendasPreview.length === 0;
+    if (saveHomesButton) {
+      saveHomesButton.hidden = !modoEdicion || viviendasPreview.length === 0;
+    }
+
+    if (editHomesButton) {
+      editHomesButton.hidden = modoEdicion || viviendasPreview.length === 0;
+    }
   }
 
   function crearFilaVivienda(vivienda, index, guardada) {
     const tr = document.createElement("tr");
 
     tr.appendChild(crearCeldaTexto(vivienda.id || "-"));
-    tr.appendChild(crearCeldaTexto(vivienda.id_urbanizacion));
+    tr.appendChild(crearCeldaTexto(vivienda.id_urbanizacion || idUrbanizacion));
     tr.appendChild(crearCeldaTexto(vivienda.codigo_vivienda || "-"));
     tr.appendChild(crearCeldaTexto(vivienda.nombre_usuario || "-"));
 
-    tr.appendChild(
-      crearCeldaInput(index, "password", vivienda.password, guardada),
-    );
+    if (!guardada) {
+      tr.appendChild(
+        crearCeldaInput(index, "password", vivienda.password, guardada),
+      );
+    }
     tr.appendChild(
       crearCeldaInput(
         index,
@@ -280,7 +315,6 @@ document.addEventListener("DOMContentLoaded", function () {
         guardada,
       ),
     );
-
     tr.appendChild(
       crearCeldaCheckbox(
         index,
@@ -291,13 +325,9 @@ document.addEventListener("DOMContentLoaded", function () {
     );
 
     espacios.forEach((espacio) => {
+      const permisos = vivienda.permisos || {};
       tr.appendChild(
-        crearCeldaPermiso(
-          index,
-          espacio.id,
-          vivienda.permisos[espacio.id],
-          guardada,
-        ),
+        crearCeldaPermiso(index, espacio.id, permisos[espacio.id], guardada),
       );
     });
 
@@ -354,6 +384,10 @@ document.addEventListener("DOMContentLoaded", function () {
     input.className = "table-check";
 
     input.addEventListener("change", function () {
+      if (!viviendasPreview[index].permisos) {
+        viviendasPreview[index].permisos = {};
+      }
+
       viviendasPreview[index].permisos[idEspacio] = input.checked;
     });
 
@@ -404,9 +438,12 @@ document.addEventListener("DOMContentLoaded", function () {
         mostrarModalMensaje("Viviendas guardadas correctamente.", true);
       })
       .catch((error) => {
-        console.error("Error:", error);
+        console.error("Error completo al guardar:", error);
         saveHomesButton.disabled = false;
-        mostrarModalMensaje("Error al conectar con el servidor.", false);
+        mostrarModalMensaje(
+          "Error al conectar con el servidor. Revisa la consola.",
+          false,
+        );
       });
   }
 
@@ -417,15 +454,21 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < viviendasPreview.length; i++) {
       const vivienda = viviendasPreview[i];
 
-      vivienda.email_notificaciones = vivienda.email_notificaciones.trim();
-      vivienda.telefono_contacto = vivienda.telefono_contacto.trim();
-      vivienda.bloque = vivienda.bloque.trim();
-      vivienda.portal = vivienda.portal.trim();
-      vivienda.escalera = vivienda.escalera.trim();
-      vivienda.planta = vivienda.planta.trim();
-      vivienda.puerta = vivienda.puerta.trim();
-      vivienda.descripcion_extra = vivienda.descripcion_extra.trim();
-      vivienda.password = vivienda.password.trim();
+      vivienda.email_notificaciones = String(
+        vivienda.email_notificaciones || "",
+      ).trim();
+      vivienda.telefono_contacto = String(
+        vivienda.telefono_contacto || "",
+      ).trim();
+      vivienda.bloque = String(vivienda.bloque || "").trim();
+      vivienda.portal = String(vivienda.portal || "").trim();
+      vivienda.escalera = String(vivienda.escalera || "").trim();
+      vivienda.planta = String(vivienda.planta || "").trim();
+      vivienda.puerta = String(vivienda.puerta || "").trim();
+      vivienda.descripcion_extra = String(
+        vivienda.descripcion_extra || "",
+      ).trim();
+      vivienda.password = String(vivienda.password || "").trim();
 
       if (!vivienda.email_notificaciones) {
         return `La vivienda de la fila ${i + 1} no tiene email.`;
@@ -438,7 +481,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const emailNormalizado = vivienda.email_notificaciones.toLowerCase();
 
       if (emails.has(emailNormalizado)) {
-        return `El email ${vivienda.email_notificaciones} esta repetido en el CSV.`;
+        return `El email ${vivienda.email_notificaciones} esta repetido.`;
       }
 
       emails.add(emailNormalizado);
@@ -447,45 +490,38 @@ document.addEventListener("DOMContentLoaded", function () {
         return `El telefono de la fila ${i + 1} debe tener 9 cifras o estar vacio.`;
       }
 
-      if (!vivienda.password) {
-        return `La vivienda de la fila ${i + 1} no tiene password.`;
+      if (!vivienda.id) {
+        if (!vivienda.password) {
+          return `La vivienda de la fila ${i + 1} no tiene password.`;
+        }
+
+        if (!esPasswordValida(vivienda.password)) {
+          return `La password de la fila ${i + 1} debe tener minimo 8 caracteres, mayuscula, minuscula, numero y simbolo.`;
+        }
+
+        if (passwords.has(vivienda.password)) {
+          return `La password de la fila ${i + 1} esta repetida.`;
+        }
+
+        passwords.add(vivienda.password);
       }
 
-      if (!esPasswordValida(vivienda.password)) {
-        return `La password de la fila ${i + 1} debe tener minimo 8 caracteres, mayuscula, minuscula, numero y simbolo.`;
-      }
-
-      if (passwords.has(vivienda.password)) {
-        return `La password de la fila ${i + 1} esta repetida.`;
-      }
-
-      passwords.add(vivienda.password);
-
-      if (vivienda.bloque.length > 20) {
+      if (vivienda.bloque.length > 20)
         return `El bloque de la fila ${i + 1} supera los 20 caracteres.`;
-      }
-
-      if (vivienda.portal.length > 20) {
+      if (vivienda.portal.length > 20)
         return `El portal de la fila ${i + 1} supera los 20 caracteres.`;
-      }
-
-      if (vivienda.escalera.length > 20) {
+      if (vivienda.escalera.length > 20)
         return `La escalera de la fila ${i + 1} supera los 20 caracteres.`;
-      }
-
-      if (vivienda.planta.length > 20) {
+      if (vivienda.planta.length > 20)
         return `La planta de la fila ${i + 1} supera los 20 caracteres.`;
-      }
-
-      if (vivienda.puerta.length > 20) {
+      if (vivienda.puerta.length > 20)
         return `La puerta de la fila ${i + 1} supera los 20 caracteres.`;
-      }
-
-      if (vivienda.descripcion_extra.length > 255) {
+      if (vivienda.descripcion_extra.length > 255)
         return `La descripcion de la fila ${i + 1} supera los 255 caracteres.`;
-      }
 
-      const permisosMarcados = Object.values(vivienda.permisos).some(Boolean);
+      const permisosMarcados = Object.values(vivienda.permisos || {}).some(
+        Boolean,
+      );
 
       if (!permisosMarcados) {
         return `La vivienda de la fila ${i + 1} no tiene ningun espacio permitido.`;
@@ -522,19 +558,53 @@ document.addEventListener("DOMContentLoaded", function () {
     const separador = lineas[0].includes(";") ? ";" : ",";
     const cabeceras = lineas[0].split(separador).map(normalizarCabecera);
 
-    console.log("Separador detectado:", separador);
-    console.log("Cabeceras detectadas:", cabeceras);
-    console.log("Primera linea del CSV:", lineas[0]);
+    validarCabecerasCSV(cabeceras);
 
-    return lineas.slice(1).map((linea) => {
+    return lineas.slice(1).map((linea, index) => {
       const valores = dividirLineaCSV(linea, separador);
+
+      if (valores.length !== cabeceras.length) {
+        throw new Error(
+          `La fila ${index + 2} no tiene el mismo numero de columnas que la cabecera.`,
+        );
+      }
+
       const fila = {};
 
-      cabeceras.forEach((cabecera, index) => {
-        fila[cabecera] = limpiarValorCSV(valores[index] || "");
+      cabeceras.forEach((cabecera, indice) => {
+        fila[cabecera] = limpiarValorCSV(valores[indice] || "");
       });
 
       return fila;
+    });
+  }
+
+  function validarCabecerasCSV(cabeceras) {
+    const obligatorias = [
+      "email_notificaciones",
+      "telefono_contacto",
+      "bloque",
+      "portal",
+      "escalera",
+      "planta",
+      "puerta",
+      "descripcion_extra",
+    ];
+
+    const vistas = new Set();
+
+    cabeceras.forEach((cabecera) => {
+      if (vistas.has(cabecera)) {
+        throw new Error(`La columna ${cabecera} esta duplicada.`);
+      }
+
+      vistas.add(cabecera);
+    });
+
+    obligatorias.forEach((columna) => {
+      if (!cabeceras.includes(columna)) {
+        throw new Error(`Falta la columna obligatoria ${columna}.`);
+      }
     });
   }
 
@@ -571,18 +641,46 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function generarPassword() {
-    const caracteres =
-      "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789@$%";
-    const array = new Uint32Array(12);
-    window.crypto.getRandomValues(array);
+    const mayusculas = "ABCDEFGHJKLMNPQRSTUVWXYZ";
+    const minusculas = "abcdefghijkmnopqrstuvwxyz";
+    const numeros = "23456789";
+    const simbolos = "@$%&!*?";
+    const todos = mayusculas + minusculas + numeros + simbolos;
 
     let password = "";
 
-    array.forEach((numero) => {
-      password += caracteres[numero % caracteres.length];
-    });
+    password += obtenerCaracterAleatorio(mayusculas);
+    password += obtenerCaracterAleatorio(minusculas);
+    password += obtenerCaracterAleatorio(numeros);
+    password += obtenerCaracterAleatorio(simbolos);
 
-    return password;
+    while (password.length < 12) {
+      password += obtenerCaracterAleatorio(todos);
+    }
+
+    return mezclarTexto(password);
+  }
+
+  function obtenerCaracterAleatorio(caracteres) {
+    const array = new Uint32Array(1);
+    window.crypto.getRandomValues(array);
+    return caracteres[array[0] % caracteres.length];
+  }
+
+  function mezclarTexto(texto) {
+    const caracteres = texto.split("");
+
+    for (let i = caracteres.length - 1; i > 0; i--) {
+      const array = new Uint32Array(1);
+      window.crypto.getRandomValues(array);
+
+      const j = array[0] % (i + 1);
+      const temporal = caracteres[i];
+      caracteres[i] = caracteres[j];
+      caracteres[j] = temporal;
+    }
+
+    return caracteres.join("");
   }
 
   function prepararLogout() {
@@ -593,32 +691,24 @@ document.addEventListener("DOMContentLoaded", function () {
     logoutButton.addEventListener("click", function (event) {
       event.preventDefault();
 
-      /*
-                MODO PRUEBA SIN LOGIN:
-                Como no existe logout.php/login en esta rama, simplemente limpia sessionStorage.
-                Cuando tengas login, puedes dejar el fetch original de abajo.
-            */
-
-      sessionStorage.clear();
-      window.location.href = URBANIZACIONES_URL;
-
-      /*
-            fetch("../php/logout.php")
-                .then(response => response.json())
-                .then(() => {
-                    window.location.href = LOGIN_URL;
-                })
-                .catch(error => {
-                    console.error("Error:", error);
-                    window.location.href = LOGIN_URL;
-                });
-            */
+      fetch("../php/logout.php")
+        .then((response) => response.json())
+        .then(() => {
+          sessionStorage.clear();
+          window.location.href = LOGIN_URL;
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          sessionStorage.clear();
+          window.location.href = LOGIN_URL;
+        });
     });
   }
 
   function obtenerIdUrbanizacionSeleccionada() {
     const params = new URLSearchParams(window.location.search);
-    const idUrl = Number(params.get("idUrbanizacion")) || 0;
+    const idUrl =
+      Number(params.get("idUrbanizacion") || params.get("idurbanizacion")) || 0;
 
     if (idUrl > 0) {
       sessionStorage.setItem("idUrbanizacionSeleccionada", idUrl);
@@ -669,10 +759,10 @@ document.addEventListener("DOMContentLoaded", function () {
   function mostrarMensaje(texto) {
     tableHead.innerHTML = "";
     tableBody.innerHTML = `
-            <tr>
-                <td class="viviendas-message">${escaparHTML(texto)}</td>
-            </tr>
-        `;
+      <tr>
+        <td class="viviendas-message">${escaparHTML(texto)}</td>
+      </tr>
+    `;
   }
 
   function parsearJSON(texto) {
@@ -729,15 +819,15 @@ document.addEventListener("DOMContentLoaded", function () {
     modal.className = "modal-backdrop";
     modal.hidden = true;
     modal.innerHTML = `
-            <div class="modal-box" role="dialog" aria-modal="true">
-                <span class="modal-icon" aria-hidden="true"></span>
-                <p class="modal-text"></p>
-                <div class="modal-actions">
-                    <button class="btn btn-secondary modal-cancel" type="button">Cancelar</button>
-                    <button class="btn btn-primary modal-accept" type="button">Aceptar</button>
-                </div>
-            </div>
-        `;
+      <div class="modal-box" role="dialog" aria-modal="true">
+        <span class="modal-icon" aria-hidden="true"></span>
+        <p class="modal-text"></p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary modal-cancel" type="button">Cancelar</button>
+          <button class="btn btn-primary modal-accept" type="button">Aceptar</button>
+        </div>
+      </div>
+    `;
 
     document.body.appendChild(modal);
     return modal;
