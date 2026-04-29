@@ -1,0 +1,21 @@
+email_notificaciones;telefono_contacto;bloque;portal;escalera;planta;puerta;descripcion_extra
+vivienda1@test.com;600000001;A;1;;1;A;
+vivienda2@test.com;600000002;A;1;;1;B;
+vivienda3@test.com;600000003;A;1;;2;A;
+vivienda4@test.com;600000004;A;1;;2;B;
+vivienda5@test.com;600000005;A;2;;1;A;
+vivienda6@test.com;600000006;A;2;;1;B;
+vivienda7@test.com;600000007;A;2;;2;A;
+vivienda8@test.com;600000008;A;2;;2;B;
+vivienda9@test.com;600000009;B;1;;1;A;
+vivienda10@test.com;600000010;B;1;;1;B;
+vivienda11@test.com;600000011;B;1;;2;A;
+vivienda12@test.com;600000012;B;1;;2;B;
+vivienda13@test.com;600000013;B;2;Izq;1;A;
+vivienda14@test.com;600000014;B;2;Der;1;B;
+vivienda15@test.com;600000015;B;2;Izq;2;A;
+vivienda16@test.com;600000016;B;2;Der;2;B;
+vivienda17@test.com;600000017;C;1;;1;A;Ático con terraza
+vivienda18@test.com;600000018;C;1;;1;B;
+vivienda19@test.com;600000019;C;1;;2;A;
+vivienda20@test.com;600000020;C;1;;2;B;Plaza garaje incluida 
