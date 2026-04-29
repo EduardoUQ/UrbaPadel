@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdminUrbanizaciones.css">
+    <title>Urbanizaciones</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="#" class="brand" aria-label="UrbaPadel">
+                <span class="brand-mark" aria-hidden="true">
+                    <i class="fa-regular fa-building"></i>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Gestión global">
+                <p class="nav-title">Gestión Global</p>
+
+                <a href="../html/panelAdminFormularioUrbanizaciones.html" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    <span>Mis Urbanizaciones</span>
+                </a>
+                <a href="../html/panelAdminAdministradores.html" class="nav-item">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>Administradores</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes Globales</span>
+                </a>
+                <a href="#" class="nav-item logout" id="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <span>Gestión Global</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <strong>Urbanizaciones</strong>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menú de usuario">
+                    <i class="fa-solid fa-user" class="avatar"></i>
+                    <span id="admin-name">Super Administrador</span>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <div>
+                        <h1>Mis Urbanizaciones</h1>
+                        <p>Selecciona una urbanización para entrar a su panel de administración y gestionar espacios.
+                        </p>
+                    </div>
+
+                    <a class="btn btn-primary" href="panelAdminFormularioUrbanizaciones.html" id="create-urbanization">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Crear Urbanización</span>
+                    </a>
+                </div>
+
+                <section class="urbanization-grid" aria-label="Listado de urbanizaciones" id="urbanization-grid">
+                    <article class="urbanization-card">
+                        <div class="card-top">
+                            <span class="urban-icon" aria-hidden="true">
+                                <i class="fa-regular fa-building"></i>
+                            </span>
+                            <span><span class="status-badge">Activa</span>
+                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
+                        </div>
+
+                        <div class="urban-heading">
+                            <h2>Residencial Los Pinos</h2>
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>Av. de la Ilustración 45, Madrid</span>
+                            </p>
+                        </div>
+
+                        <dl class="urban-stats">
+                            <div>
+                                <dt><i class="fa-regular fa-map"></i> Espacios</dt>
+                                <dd>2</dd>
+                            </div>
+                            <div>
+                                <dt><i class="fa-solid fa-user-group"></i> Vecinos</dt>
+                                <dd>120</dd>
+                            </div>
+                        </dl>
+
+                        <a class="enter-link" href="panelAdminEspacios.html">
+                            <span>Entrar al panel</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </article>
+
+                    <article class="urbanization-card">
+                        <div class="card-top">
+                            <span class="urban-icon" aria-hidden="true">
+                                <i class="fa-regular fa-building"></i>
+                            </span>
+                            <span><span class="status-badge">Activa</span>
+                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
+                        </div>
+
+                        <div class="urban-heading">
+                            <h2>Altos de la Sierra</h2>
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>Calle del Mirador 12, Las Rozas</span>
+                            </p>
+                        </div>
+
+                        <dl class="urban-stats">
+                            <div>
+                                <dt><i class="fa-regular fa-map"></i> Espacios</dt>
+                                <dd>2</dd>
+                            </div>
+                            <div>
+                                <dt><i class="fa-solid fa-user-group"></i> Vecinos</dt>
+                                <dd>120</dd>
+                            </div>
+                        </dl>
+
+                        <a class="enter-link" href="panelAdminEspacios.html">
+                            <span>Entrar al panel</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </article>
+
+                    <article class="urbanization-card">
+                        <div class="card-top">
+                            <span class="urban-icon" aria-hidden="true">
+                                <i class="fa-regular fa-building"></i>
+                            </span>
+                            <span><span class="status-badge">Activa</span>
+                                <i class="fa-solid fa-pen"></i>
+                                <i class="fa-solid fa-trash"></i>
+                            </span>
+                        </div>
+
+                        <div class="urban-heading">
+                            <h2>Jardines del Valle</h2>
+                            <p>
+                                <i class="fa-solid fa-location-dot"></i>
+                                <span>Paseo de la Florida 88, Majadahonda</span>
+                            </p>
+                        </div>
+
+                        <dl class="urban-stats">
+                            <div>
+                                <dt><i class="fa-regular fa-map"></i> Espacios</dt>
+                                <dd>2</dd>
+                            </div>
+                            <div>
+                                <dt><i class="fa-solid fa-user-group"></i> Vecinos</dt>
+                                <dd>120</dd>
+                            </div>
+                        </dl>
+
+                        <a class="enter-link" href="panelAdminEspacios.html">
+                            <span>Entrar al panel</span>
+                            <i class="fa-solid fa-arrow-right"></i>
+                        </a>
+                    </article>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/panelAdminUrbanizaciones.js"></script>
+</body>
+
+</html>

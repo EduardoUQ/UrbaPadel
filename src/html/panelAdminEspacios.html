@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdminEspacios.css">
+    <title>Espacios y Pistas</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="panelAdminUrbanizaciones.html" class="brand" aria-label="UrbaPadel">
+                <span class="brand-mark" aria-hidden="true">
+                    <i class="fa-regular fa-building"></i>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Navegación principal">
+                <a href="panelAdminUrbanizaciones.html" class="nav-item">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Panel General</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="#" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Espacios</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Vecinos y Portales</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-bell"></i>
+                    <span>Notificaciones</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes</span>
+                </a>
+                <a href="#" class="nav-item logout" id="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <span>Espacios</span>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menú de usuario">
+                    <i class="fa-solid fa-user avatar"></i>
+                    <span id="admin-name">Administrador</span>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <div>
+                        <h1>Espacios y Pistas</h1>
+                        <p>Gestiona las instalaciones disponibles para reservas en <span id="urbanization-name">la comunidad</span>.</p>
+                    </div>
+
+                    <a class="btn btn-primary" href="panelAdminFormularioEspacios.html" id="create-space">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Nuevo Espacio</span>
+                    </a>
+                </div>
+
+                <section class="list-card" aria-label="Listado de espacios">
+                    <!-- <div class="list-toolbar">
+                        <label class="search-box" for="spaceSearch">
+                            <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                            <input id="spaceSearch" type="search" placeholder="Buscar espacio...">
+                        </label>
+                    </div> -->
+
+                    <div class="table-wrap">
+                        <table class="spaces-table">
+                            <thead>
+                                <tr>
+                                    <th>Espacio</th>
+                                    <th>Tipo</th>
+                                    <th>Horario</th>
+                                    <th>Estado</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="spaces-table-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="list-footer">
+                        <p id="spaces-count">Mostrando 0 espacios</p>
+                        <div class="pagination">
+                            <button class="btn btn-secondary" type="button" disabled>Anterior</button>
+                            <button class="btn btn-secondary" type="button" disabled>Siguiente</button>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/panelAdminEspacios.js"></script>
+</body>
+
+</html>

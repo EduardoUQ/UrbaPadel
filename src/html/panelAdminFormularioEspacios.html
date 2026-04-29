@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdminFormularioEspacios.css">
+    <title>Formulario de Espacios</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="panelAdminUrbanizaciones.html" class="brand" aria-label="UrbaPadel">
+                <span class="brand-mark" aria-hidden="true">
+                    <i class="fa-regular fa-building"></i>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Navegacion principal">
+                <a href="panelAdminUrbanizaciones.html" class="nav-item">
+                    <i class="fa-solid fa-chart-column"></i>
+                    <span>Panel General</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Reservas</span>
+                </a>
+                <a href="panelAdminEspacios.html" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Espacios</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-users"></i>
+                    <span>Vecinos y Portales</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fa-regular fa-bell"></i>
+                    <span>Notificaciones</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes</span>
+                </a>
+                <a href="#" class="nav-item logout" id="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesion</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <a href="panelAdminEspacios.html" id="back-to-spaces">Espacios</a>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <span id="breadcrumb-action">Nuevo Espacio</span>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menu de usuario">
+                    <i class="fa-solid fa-user avatar"></i>
+                    <span id="admin-name">Administrador</span>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <div>
+                        <h1 id="form-title">Anadir Nuevo Espacio</h1>
+                        <p id="form-subtitle">Crea una nueva pista o espacio comun disponible para reservar en la comunidad.</p>
+                    </div>
+                </div>
+
+                <form class="space-form" id="space-form">
+                    <section class="form-card">
+                        <div class="card-heading">
+                            <h2>Informacion General</h2>
+                            <p>Detalles principales del espacio a reservar.</p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="spaceName">Nombre del espacio</label>
+                                <input id="spaceName" name="spaceName" type="text" placeholder="Ej: Pista de Padel 1">
+                                <p id="error-spaceName"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="spaceType">Tipo de instalacion</label>
+                                <input id="spaceType" name="spaceType" type="text" placeholder="Ej: Pista de Padel">
+                                <p id="error-spaceType"></p>
+                            </div>
+
+                            <div class="field field-wide">
+                                <label for="description">Descripcion</label>
+                                <textarea id="description" name="description" placeholder="Breve descripcion del espacio..."></textarea>
+                                <p id="error-description"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <div class="card-heading">
+                            <h2>Horarios y Limites</h2>
+                            <p>Configura cuando se puede utilizar y las restricciones de tiempo.</p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="openingTime">Hora de apertura</label>
+                                <input id="openingTime" name="openingTime" type="time">
+                                <p id="error-openingTime"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="closingTime">Hora de cierre</label>
+                                <input id="closingTime" name="closingTime" type="time">
+                                <p id="error-closingTime"></p>
+                            </div>
+
+                            <div class="field select-field">
+                                <label for="unitReservation">Unidad de reserva</label>
+                                <select id="unitReservation" name="unitReservation">
+                                    <option value="30_MIN" selected>30 minutos</option>
+                                    <option value="60_MIN">60 minutos</option>
+                                    <option value="1_DIA">1 dia</option>
+                                </select>
+                                <p id="error-unitReservation"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="maxTime">Duracion maxima por reserva (minutos)</label>
+                                <input id="maxTime" name="maxTime" type="number" min="1" placeholder="120">
+                                <p id="error-maxTime"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="maxDayReservation">Maximas reservas por dia</label>
+                                <input id="maxDayReservation" name="maxDayReservation" type="number" min="1" placeholder="1">
+                                <p id="error-maxDayReservation"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="maxWeekReservation">Maximas reservas por semana</label>
+                                <input id="maxWeekReservation" name="maxWeekReservation" type="number" min="1" placeholder="7">
+                                <p id="error-maxWeekReservation"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="maxAdvance">Maximos dias de anticipacion</label>
+                                <input id="maxAdvance" name="maxAdvance" type="number" min="1" placeholder="30">
+                                <p id="error-maxAdvance"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="minutesBetweenReservations">Minutos entre reservas</label>
+                                <input id="minutesBetweenReservations" name="minutesBetweenReservations" type="number" min="0" placeholder="0">
+                                <p id="error-minutesBetweenReservations"></p>
+                            </div>
+
+                            <div class="field select-field">
+                                <label for="allowWaitlist">Permite lista de espera</label>
+                                <select id="allowWaitlist" name="allowWaitlist">
+                                    <option value="1" selected>Si</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <p id="error-allowWaitlist"></p>
+                            </div>
+
+                            <div class="field select-field">
+                                <label for="allowCancel">Permite cancelacion</label>
+                                <select id="allowCancel" name="allowCancel">
+                                    <option value="1" selected>Si</option>
+                                    <option value="0">No</option>
+                                </select>
+                                <p id="error-allowCancel"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="minutesLimitCancel">Minutos limite para cancelar</label>
+                                <input id="minutesLimitCancel" name="minutesLimitCancel" type="number" min="0" placeholder="60">
+                                <p id="error-minutesLimitCancel"></p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="form-card">
+                        <div class="card-heading">
+                            <h2>Normas de Uso</h2>
+                            <p>Reglas que los vecinos deben aceptar antes de confirmar su reserva.</p>
+                        </div>
+
+                        <div class="field">
+                            <label class="sr-only" for="rules">Normas de uso</label>
+                            <textarea id="rules" name="rules" class="rules-area"></textarea>
+                            <small>Estas normas apareceran como terminos y condiciones al finalizar una reserva.</small>
+                            <p id="error-rules"></p>
+                        </div>
+                    </section>
+
+                    <div class="bottom-actions">
+                        <button class="btn btn-secondary" type="button" id="cancel-space">Cancelar</button>
+                        <button class="btn btn-primary" type="submit" id="submit-space">Crear Espacio</button>
+                    </div>
+                </form>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/panelAdminFormularioEspacios.js"></script>
+</body>
+
+</html>
