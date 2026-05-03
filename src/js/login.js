@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (data.status === "success" && data.rol === 'admin') {
                     window.location.href = "../html/panelAdminUrbanizaciones.html";
                 } else if (data.status === "success" && data.rol === 'usuario') {
-                    // window.location.href = "../html/panel_usuario_candidatura.html";
+                    window.location.href = "../html/panelUsuario.html";
                 } else {
                     mensaje.textContent = data.message;
                 }

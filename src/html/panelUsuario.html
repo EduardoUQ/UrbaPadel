@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdminUrbanizaciones.css">
+    <title>Panel Usuario</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="#" class="brand" aria-label="UrbaPadel">
+                <span class="brand-mark" aria-hidden="true">
+                    <i class="fa-regular fa-building"></i>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Panel usuario">
+                <p class="nav-title">Panel Usuario</p>
+
+                <a href="../html/panelUsuario.html" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    <span>Mis Espacios</span>
+                </a>
+
+                <a href="../html/misReservas.html" class="nav-item">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Mis Reservas</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Incidencias</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes</span>
+                </a>
+                <a href="#" class="nav-item logout" id="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <span>Panel Usuario</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <strong>Espacios disponibles</strong>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menú de usuario">
+                    <i class="fa-solid fa-user"></i>
+                    <span id="usuario-name">Usuario</span>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <div>
+                        <h1>Espacios disponibles</h1>
+                        <p id="urbanizacion-texto">
+                            Consulta los espacios que puedes reservar en tu urbanización.
+                        </p>
+                    </div>
+                </div>
+
+                <section class="urbanization-grid" aria-label="Listado de espacios" id="espacios-grid">
+                    <p class="urbanization-message">Cargando espacios...</p>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/panelUsuario.js"></script>
+</body>
+
+</html>

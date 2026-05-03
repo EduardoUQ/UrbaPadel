@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdminEspacios.css">
+    <link rel="stylesheet" href="../css/disponibilidadEspacio.css">
+    <title>Disponibilidad del Espacio</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="panelUsuario.html" class="brand" aria-label="UrbaPadel">
+                <span class="brand-mark" aria-hidden="true">
+                    <i class="fa-regular fa-building"></i>
+                </span>
+                <span>UrbaPadel</span>
+            </a>
+
+            <nav class="sidebar-nav" aria-label="Panel usuario">
+                <a href="panelUsuario.html" class="nav-item">
+                    <i class="fa-solid fa-table-cells-large"></i>
+                    <span>Mis Espacios</span>
+                </a>
+
+                <a href="#" class="nav-item active" aria-current="page">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Disponibilidad</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-calendar-days"></i>
+                    <span>Mis Reservas</span>
+                </a>
+
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Incidencias</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="#" class="nav-item">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes</span>
+                </a>
+                <a href="#" class="nav-item logout" id="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <a href="panelUsuario.html">Mis Espacios</a>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <span>Disponibilidad</span>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menú de usuario">
+                    <i class="fa-solid fa-user avatar"></i>
+                    <span id="usuario-name">Usuario</span>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <div>
+                        <h1 id="space-title">Disponibilidad</h1>
+                        <p id="space-subtitle">Consulta las franjas disponibles para reservar este espacio.</p>
+                    </div>
+
+                    <a class="btn btn-secondary" href="panelUsuario.html">
+                        <i class="fa-solid fa-arrow-left"></i>
+                        <span>Volver</span>
+                    </a>
+                </div>
+
+                <section class="availability-layout">
+                    <article class="availability-card">
+                        <div class="availability-header">
+                            <div>
+                                <h2 id="selected-space-name">Espacio seleccionado</h2>
+                                <p id="selected-space-description">Cargando información del espacio...</p>
+                            </div>
+
+                            <span class="status-badge" id="selected-space-status">Activo</span>
+                        </div>
+
+                        <dl class="availability-info">
+                            <div>
+                                <dt><i class="fa-solid fa-location-dot"></i> Tipo</dt>
+                                <dd id="selected-space-type">-</dd>
+                            </div>
+                            <div>
+                                <dt><i class="fa-regular fa-clock"></i> Horario</dt>
+                                <dd id="selected-space-schedule">-</dd>
+                            </div>
+                            <div>
+                                <dt><i class="fa-solid fa-hourglass-half"></i> Unidad</dt>
+                                <dd id="selected-space-unit">-</dd>
+                            </div>
+                            <div>
+                                <dt><i class="fa-solid fa-list"></i> Lista de espera</dt>
+                                <dd id="selected-space-waitlist">-</dd>
+                            </div>
+                        </dl>
+                    </article>
+
+                    <article class="availability-card">
+                        <div class="date-selector">
+                            <div>
+                                <h2>Selecciona una fecha</h2>
+                                <p>Elige el día para consultar las franjas disponibles.</p>
+                            </div>
+
+                            <input type="date" id="fecha-reserva">
+                        </div>
+                    </article>
+
+                    <article class="availability-card">
+                        <div class="slots-header">
+                            <div>
+                                <h2>Franjas horarias</h2>
+                                <p id="slots-date-text">Selecciona una fecha para ver la disponibilidad.</p>
+                            </div>
+                        </div>
+
+                        <div class="slots-list" id="slots-list">
+                            <p class="spaces-message">Cargando disponibilidad...</p>
+                        </div>
+                    </article>
+                </section>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/disponibilidadEspacio.js"></script>
+</body>
+
+</html>

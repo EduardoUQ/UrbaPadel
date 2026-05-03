@@ -1,0 +1,56 @@
+.reservas-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--line);
+    padding: 15px 23px;
+}
+
+.tab-btn {
+    min-height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #ffffff;
+    color: #263443;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 0 16px;
+}
+
+.tab-btn.active {
+    border-color: var(--teal);
+    background: var(--teal);
+    color: #ffffff;
+}
+
+.reserva-cell strong {
+    display: block;
+    color: #1d2530;
+    font-weight: 800;
+}
+
+.reserva-cell span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.status-badge.cancelada {
+    background: #ef4444;
+}
+
+.status-badge.finalizada {
+    background: #64748b;
+}
+
+.status-badge.activa {
+    background: var(--green);
+}
+
+@media (max-width: 720px) {
+    .reservas-tabs {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}

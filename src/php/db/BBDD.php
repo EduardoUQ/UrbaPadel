@@ -225,6 +225,9 @@ VALUES (1, '08:00', '22:00', '60_MIN', 120, 1, 7, 30, 0, TRUE, TRUE, 60);
 
 INSERT INTO vivienda (id_urbanizacion, codigo_vivienda, nombre_usuario, passwd_hash, email_notificaciones, telefono_contacto)
 VALUES (1, 'A-101', 'usuario101', '$hashUsuario101', 'usuario101@urbanpadel.com', '123456789');
+
+INSERT INTO vivienda_espacio_permiso (id_vivienda, id_espacio, puede_reservar)
+VALUES (1, 1, TRUE);
 ";
 
 if ($conexion->multi_query($sql)) {

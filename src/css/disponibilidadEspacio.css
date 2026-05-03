@@ -1,0 +1,200 @@
+.availability-layout {
+    display: grid;
+    gap: 20px;
+}
+
+.availability-card {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+    padding: 24px;
+}
+
+.availability-header,
+.date-selector,
+.slots-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.availability-header h2,
+.date-selector h2,
+.slots-header h2 {
+    color: #1d2530;
+    font-size: 20px;
+    line-height: 1.2;
+    margin-bottom: 7px;
+}
+
+.availability-header p,
+.date-selector p,
+.slots-header p {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.availability-info {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 16px;
+    border-top: 1px solid var(--line);
+    margin-top: 22px;
+    padding-top: 18px;
+}
+
+.availability-info div {
+    display: grid;
+    gap: 7px;
+}
+
+.availability-info dt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.availability-info dd {
+    color: #1d2530;
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.date-selector input {
+    width: min(220px, 100%);
+    height: 43px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--field);
+    color: var(--text);
+    outline: none;
+    padding: 0 15px;
+}
+
+.date-selector input:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(10, 160, 154, 0.12);
+}
+
+.slots-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.slot-row {
+    display: grid;
+    grid-template-columns: 170px 1fr auto;
+    align-items: center;
+    gap: 18px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #ffffff;
+    padding: 16px 18px;
+}
+
+.slot-time {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #1d2530;
+    font-size: 15px;
+    font-weight: 900;
+}
+
+.slot-time i {
+    color: var(--teal);
+}
+
+.slot-detail {
+    display: grid;
+    gap: 4px;
+}
+
+.slot-detail strong {
+    color: #1d2530;
+    font-size: 14px;
+}
+
+.slot-detail span {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.slot-status {
+    display: inline-flex;
+    min-height: 26px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 900;
+    padding: 0 12px;
+}
+
+.slot-status.available {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.slot-status.occupied {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.slot-status.blocked {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.slot-actions {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.slot-actions .btn {
+    min-height: 36px;
+    padding: 0 16px;
+}
+
+.slot-actions .btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+@media (max-width: 900px) {
+    .availability-info {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .slot-row {
+        grid-template-columns: 1fr;
+    }
+
+    .slot-actions {
+        justify-content: flex-start;
+    }
+}
+
+@media (max-width: 720px) {
+    .availability-header,
+    .date-selector,
+    .slots-header {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .availability-info {
+        grid-template-columns: 1fr;
+    }
+
+    .date-selector input {
+        width: 100%;
+    }
+}
