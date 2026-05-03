@@ -1,0 +1,90 @@
+.reservas-tabs {
+    display: flex;
+    gap: 10px;
+    border-bottom: 1px solid var(--line);
+    padding: 15px 23px;
+}
+
+.tab-btn {
+    min-height: 36px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: #ffffff;
+    color: #263443;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 800;
+    padding: 0 16px;
+}
+
+.tab-btn.active {
+    border-color: var(--teal);
+    background: var(--teal);
+    color: #ffffff;
+}
+
+.reservas-table {
+    min-width: 920px;
+}
+
+.reservas-table th:nth-child(1) {
+    width: 24%;
+}
+
+.reservas-table th:nth-child(2) {
+    width: 18%;
+}
+
+.reservas-table th:nth-child(3) {
+    width: 14%;
+}
+
+.reservas-table th:nth-child(4) {
+    width: 16%;
+}
+
+.reservas-table th:nth-child(5) {
+    width: 14%;
+}
+
+.reservas-table th:nth-child(6) {
+    width: 14%;
+    text-align: center;
+}
+
+.reserva-cell strong {
+    display: block;
+    color: #1d2530;
+    font-weight: 800;
+}
+
+.reserva-cell span {
+    display: block;
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.status-badge.activa {
+    background: var(--green);
+}
+
+.status-badge.cancelada {
+    background: var(--danger);
+}
+
+.status-badge.finalizada {
+    background: #64748b;
+}
+
+.icon-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+@media (max-width: 720px) {
+    .reservas-tabs {
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+}

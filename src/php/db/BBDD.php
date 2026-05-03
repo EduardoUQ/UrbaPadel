@@ -31,6 +31,7 @@ $hashAdmin = password_hash('admin1234', PASSWORD_DEFAULT);
 
 // Hash contraseña usuario
 $hashUsuario101 = password_hash('usuario101', PASSWORD_DEFAULT);
+$hashUsuario201 = password_hash('usuario201', PASSWORD_DEFAULT);
 
 // Crear tablas
 $sql = "
@@ -225,6 +226,9 @@ VALUES (1, '08:00', '22:00', '60_MIN', 120, 1, 7, 30, 0, TRUE, TRUE, 60);
 
 INSERT INTO vivienda (id_urbanizacion, codigo_vivienda, nombre_usuario, passwd_hash, email_notificaciones, telefono_contacto)
 VALUES (1, 'A-101', 'usuario101', '$hashUsuario101', 'usuario101@urbanpadel.com', '123456789');
+
+INSERT INTO vivienda (id_urbanizacion, codigo_vivienda, nombre_usuario, passwd_hash, email_notificaciones, telefono_contacto)
+VALUES (2, 'B-201', 'usuario201', '$hashUsuario201', 'usuario201@urbanpadel.com', '987654321');
 
 INSERT INTO vivienda_espacio_permiso (id_vivienda, id_espacio, puede_reservar)
 VALUES (1, 1, TRUE);

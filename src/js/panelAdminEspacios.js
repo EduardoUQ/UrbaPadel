@@ -11,6 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
   let idUrbanizacion = obtenerIdUrbanizacionSeleccionada();
   const navViviendas = document.getElementById("nav-viviendas");
   const VIVIENDAS_URL = "panelAdminViviendas.html";
+  const navReservas = document.getElementById("nav-reservas");
+  const RESERVAS_URL = "panelAdminReservas.html";
 
   if (!tableBody) {
     return;
@@ -22,6 +24,7 @@ document.addEventListener("DOMContentLoaded", function () {
   pintarUrbanizacionGuardada();
   validarSesionAdmin();
   prepararNavViviendas();
+  prepararNavReservas();
 
   function prepararNavViviendas() {
     if (!navViviendas) {
@@ -42,6 +45,28 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       navViviendas.href = `${VIVIENDAS_URL}?idUrbanizacion=${encodeURIComponent(idUrbanizacion)}`;
+    });
+  }
+
+  function prepararNavReservas() {
+    if (!navReservas) {
+      return;
+    }
+
+    navReservas.addEventListener("click", function (event) {
+      if (!idUrbanizacion) {
+        event.preventDefault();
+        mostrarModalMensaje(
+          "Selecciona una urbanizacion antes de gestionar reservas.",
+          false,
+          function () {
+            window.location.href = URBANIZACIONES_URL;
+          },
+        );
+        return;
+      }
+
+      navReservas.href = `${RESERVAS_URL}?idUrbanizacion=${encodeURIComponent(idUrbanizacion)}`;
     });
   }
 
