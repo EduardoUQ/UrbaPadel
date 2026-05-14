@@ -1,5 +1,3 @@
-/* panelAdminViviendas.css */
-
 * {
     box-sizing: border-box;
     margin: 0;
@@ -29,7 +27,8 @@ body {
 }
 
 button,
-input {
+input,
+select {
     font: inherit;
 }
 
@@ -53,11 +52,6 @@ a {
     border-right: 1px solid var(--line);
     background: var(--sidebar-bg);
     padding: 27px 20px;
-}
-
-.footer-actions {
-    display: flex;
-    gap: 10px;
 }
 
 .brand {
@@ -251,13 +245,67 @@ a {
     font-weight: 700;
 }
 
+.saved-controls {
+    display: grid;
+    gap: 14px;
+    border-top: 1px solid var(--line);
+    background: #fbfefe;
+    padding: 16px 23px;
+}
+
+.saved-controls[hidden] {
+    display: none;
+}
+
+.filters-grid {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(110px, 1fr));
+    gap: 10px;
+}
+
+.filters-grid input,
+.filters-grid select,
+.page-size-label select {
+    height: 38px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--field);
+    color: var(--text);
+    outline: none;
+    padding: 0 10px;
+}
+
+.filters-grid input:focus,
+.filters-grid select:focus,
+.page-size-label select:focus {
+    border-color: var(--teal);
+    box-shadow: 0 0 0 3px rgba(10, 160, 154, 0.12);
+}
+
+.filters-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+.page-size-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
+    margin-left: auto;
+}
+
 .table-wrap {
-    overflow-x: auto;
+    overflow-x: hidden;
 }
 
 .viviendas-table {
     width: 100%;
-    min-width: 1200px;
+    table-layout: fixed;
     border-collapse: collapse;
 }
 
@@ -274,11 +322,13 @@ a {
     font-weight: 800;
     text-align: left;
     white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .viviendas-table th,
 .viviendas-table td {
-    padding: 10px 12px;
+    padding: 8px;
 }
 
 .viviendas-table td {
@@ -290,15 +340,8 @@ a {
     white-space: nowrap;
 }
 
-.viviendas-message {
-    color: var(--muted);
-    font-weight: 700;
-    text-align: center;
-    padding: 32px;
-}
-
 .table-input {
-    width: 150px;
+    max-width: 100%;
     height: 36px;
     border: 1px solid var(--line);
     border-radius: 6px;
@@ -329,6 +372,96 @@ a {
     cursor: not-allowed;
 }
 
+/* ID */
+.viviendas-table th:nth-child(1),
+.viviendas-table td:nth-child(1) {
+    width: 40px;
+}
+
+/* ID Urbanización */
+.viviendas-table th:nth-child(2),
+.viviendas-table td:nth-child(2) {
+    width: 50px;
+}
+
+/* Código */
+.viviendas-table th:nth-child(3),
+.viviendas-table td:nth-child(3) {
+    width: 75px;
+}
+
+/* Usuario */
+.viviendas-table th:nth-child(4),
+.viviendas-table td:nth-child(4) {
+    width: 75px;
+}
+
+/* Email */
+.viviendas-table th:nth-child(5),
+.viviendas-table td:nth-child(5) {
+    width: 180px;
+}
+
+.viviendas-table td:nth-child(5) .table-input {
+    width: 170px;
+}
+
+/* Teléfono */
+.viviendas-table th:nth-child(6),
+.viviendas-table td:nth-child(6) {
+    width: 110px;
+}
+
+.viviendas-table td:nth-child(6) .table-input {
+    width: 100px;
+}
+
+/* Bloque, Portal, Escalera, Planta, Puerta */
+.viviendas-table th:nth-child(7),
+.viviendas-table th:nth-child(8),
+.viviendas-table th:nth-child(9),
+.viviendas-table th:nth-child(10),
+.viviendas-table th:nth-child(11),
+.viviendas-table td:nth-child(7),
+.viviendas-table td:nth-child(8),
+.viviendas-table td:nth-child(9),
+.viviendas-table td:nth-child(10),
+.viviendas-table td:nth-child(11) {
+    width: 58px;
+}
+
+.viviendas-table td:nth-child(7) .table-input,
+.viviendas-table td:nth-child(8) .table-input,
+.viviendas-table td:nth-child(9) .table-input,
+.viviendas-table td:nth-child(10) .table-input,
+.viviendas-table td:nth-child(11) .table-input {
+    width: 48px;
+}
+
+/* Descripción */
+.viviendas-table th:nth-child(12),
+.viviendas-table td:nth-child(12) {
+    width: 150px;
+}
+
+.viviendas-table td:nth-child(12) .table-input {
+    width: 140px;
+}
+
+/* SU */
+.viviendas-table th:nth-child(13),
+.viviendas-table td:nth-child(13) {
+    width: 40px;
+    text-align: center;
+}
+
+.viviendas-message {
+    color: var(--muted);
+    font-weight: 700;
+    text-align: center;
+    padding: 32px;
+}
+
 .list-footer {
     display: flex;
     min-height: 58px;
@@ -344,9 +477,30 @@ a {
     font-weight: 700;
 }
 
+.footer-actions {
+    display: flex;
+    gap: 10px;
+}
+
 #save-homes:disabled {
     opacity: 0.7;
     cursor: not-allowed;
+}
+
+.pagination {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.pagination[hidden] {
+    display: none;
+}
+
+#page-info {
+    color: var(--muted);
+    font-size: 14px;
+    font-weight: 800;
 }
 
 .modal-backdrop {
@@ -442,6 +596,14 @@ a {
     .content-header .btn {
         align-self: flex-start;
     }
+
+    .filters-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .page-size-label {
+        margin-left: 0;
+    }
 }
 
 @media (max-width: 720px) {
@@ -513,56 +675,31 @@ a {
         align-items: stretch;
         flex-direction: column;
     }
-}
 
-.viviendas-table th,
-.viviendas-table td {
-    padding: 8px 8px;
-}
+    .filters-grid {
+        grid-template-columns: 1fr;
+    }
 
-.viviendas-table th:nth-child(8),
-.viviendas-table th:nth-child(9),
-.viviendas-table th:nth-child(10),
-.viviendas-table th:nth-child(11),
-.viviendas-table th:nth-child(12),
-.viviendas-table td:nth-child(8),
-.viviendas-table td:nth-child(9),
-.viviendas-table td:nth-child(10),
-.viviendas-table td:nth-child(11),
-.viviendas-table td:nth-child(12) {
-    width: 58px;
-    max-width: 58px;
-}
+    .filters-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
 
-.viviendas-table th:nth-child(8) .table-input,
-.viviendas-table th:nth-child(9) .table-input,
-.viviendas-table th:nth-child(10) .table-input,
-.viviendas-table th:nth-child(11) .table-input,
-.viviendas-table th:nth-child(12) .table-input,
-.viviendas-table td:nth-child(8) .table-input,
-.viviendas-table td:nth-child(9) .table-input,
-.viviendas-table td:nth-child(10) .table-input,
-.viviendas-table td:nth-child(11) .table-input,
-.viviendas-table td:nth-child(12) .table-input {
-    width: 50px;
-}
+    .filters-actions .btn,
+    .page-size-label,
+    .page-size-label select {
+        width: 100%;
+    }
 
-.table-input {
-    width: 125px;
-}
+    .footer-actions {
+        flex-direction: column;
+    }
 
-.viviendas-table td:nth-child(13) .table-input {
-    width: 170px;
-}
+    .table-wrap {
+        overflow-x: auto;
+    }
 
-/* Email */
-.viviendas-table th:nth-child(6) .table-input,
-.viviendas-table td:nth-child(6) .table-input {
-    width: 220px;
-}
-
-/*telf*/
-.viviendas-table th:nth-child(7) .table-input,
-.viviendas-table td:nth-child(7) .table-input {
-    width: 90px;
+    .viviendas-table {
+        min-width: 1100px;
+    }
 }

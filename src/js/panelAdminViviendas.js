@@ -10,6 +10,15 @@ document.addEventListener("DOMContentLoaded", function () {
   const csvFileInput = document.getElementById("csv-file");
   const saveHomesButton = document.getElementById("save-homes");
   const editHomesButton = document.getElementById("edit-homes");
+  const savedControls = document.getElementById("saved-controls");
+  const applyFiltersButton = document.getElementById("apply-filters");
+  const clearFiltersButton = document.getElementById("clear-filters");
+  const pageSizeSelect = document.getElementById("page-size");
+  const paginationControls = document.getElementById("pagination-controls");
+  const prevPageButton = document.getElementById("prev-page");
+  const nextPageButton = document.getElementById("next-page");
+  const pageInfo = document.getElementById("page-info");
+  const toolbarHelp = document.getElementById("toolbar-help");
 
   const LOGIN_URL = "login.html";
   const URBANIZACIONES_URL = "panelAdminUrbanizaciones.html";
@@ -17,9 +26,14 @@ document.addEventListener("DOMContentLoaded", function () {
   let idUrbanizacion = obtenerIdUrbanizacionSeleccionada();
   let espacios = [];
   let viviendasPreview = [];
+  let viviendasFiltradas = [];
   let modoEdicion = true;
+  let esListadoGuardado = false;
+  let paginaActual = 1;
+  let registrosPorPagina = "all";
 
   prepararLogout();
+  prepararFiltrosYPaginacion();
   pintarUrbanizacionGuardada();
   validarSesionAdmin();
 
@@ -103,33 +117,74 @@ document.addEventListener("DOMContentLoaded", function () {
       .then(parsearJSON)
       .then((data) => {
         if (data.status !== "success") {
-          mostrarMensaje(
-            data.message || "No se pudieron cargar las viviendas.",
-          );
-          actualizarContador(0);
+          mostrarMensaje(data.message || "No se pudieron cargar las viviendas.");
+          actualizarContador(0, 0);
           return;
         }
 
         viviendasPreview = data.viviendas || [];
+        viviendasFiltradas = viviendasPreview.slice();
 
         if (viviendasPreview.length === 0) {
+          esListadoGuardado = false;
           modoEdicion = true;
-          mostrarMensaje(
-            "Todavia no hay viviendas registradas. Sube un archivo CSV para previsualizarlas.",
-          );
-          actualizarContador(0);
-          if (saveHomesButton) saveHomesButton.hidden = true;
-          if (editHomesButton) editHomesButton.hidden = true;
+          mostrarMensaje("Todavia no hay viviendas registradas. Sube un archivo CSV para previsualizarlas.");
+          actualizarContador(0, 0);
+          actualizarControlesListado();
           return;
         }
 
+        esListadoGuardado = true;
         modoEdicion = false;
+        paginaActual = 1;
         pintarTablaEditable(true);
       })
       .catch((error) => {
         console.error("Error:", error);
         mostrarMensaje("Error al conectar con el servidor.");
       });
+  }
+
+  function prepararFiltrosYPaginacion() {
+    if (applyFiltersButton) {
+      applyFiltersButton.addEventListener("click", function () {
+        aplicarFiltros();
+      });
+    }
+
+    if (clearFiltersButton) {
+      clearFiltersButton.addEventListener("click", function () {
+        limpiarFiltros();
+      });
+    }
+
+    if (pageSizeSelect) {
+      pageSizeSelect.addEventListener("change", function () {
+        registrosPorPagina = pageSizeSelect.value;
+        paginaActual = 1;
+        pintarTablaEditable(!modoEdicion);
+      });
+    }
+
+    if (prevPageButton) {
+      prevPageButton.addEventListener("click", function () {
+        if (paginaActual > 1) {
+          paginaActual--;
+          pintarTablaEditable(!modoEdicion);
+        }
+      });
+    }
+
+    if (nextPageButton) {
+      nextPageButton.addEventListener("click", function () {
+        const totalPaginas = obtenerTotalPaginas();
+
+        if (paginaActual < totalPaginas) {
+          paginaActual++;
+          pintarTablaEditable(!modoEdicion);
+        }
+      });
+    }
   }
 
   if (csvFileInput) {
@@ -154,10 +209,7 @@ document.addEventListener("DOMContentLoaded", function () {
           prepararPreview(filas);
         } catch (error) {
           console.error("Error:", error);
-          mostrarModalMensaje(
-            error.message || "No se pudo leer el CSV.",
-            false,
-          );
+          mostrarModalMensaje(error.message || "No se pudo leer el CSV.", false);
         }
       };
 
@@ -182,6 +234,11 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    esListadoGuardado = false;
+    modoEdicion = true;
+    paginaActual = 1;
+    limpiarFiltrosSinPintar();
+
     viviendasPreview = filas.map((fila) => ({
       id: "",
       id_urbanizacion: idUrbanizacion,
@@ -201,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
       permisos: crearPermisosPorDefecto(),
     }));
 
-    modoEdicion = true;
+    viviendasFiltradas = viviendasPreview.slice();
     pintarTablaEditable(false);
   }
 
@@ -215,16 +272,19 @@ document.addEventListener("DOMContentLoaded", function () {
     return permisos;
   }
 
-  function pintarTablaEditable(guardadas) {
+  function pintarTablaEditable(camposBloqueados) {
     tableHead.innerHTML = "";
     tableBody.innerHTML = "";
+
+    const mostrarPassword = !esListadoGuardado;
+    const viviendasAMostrar = obtenerViviendasVisibles();
 
     const columnasBase = [
       "ID",
       "ID Urb.",
       "Código",
       "Usuario",
-      ...(guardadas ? [] : ["Password"]),
+      ...(mostrarPassword ? ["Password"] : []),
       "Email",
       "Teléfono",
       "Bloque",
@@ -252,26 +312,24 @@ document.addEventListener("DOMContentLoaded", function () {
 
     tableHead.appendChild(trHead);
 
-    viviendasPreview.forEach((vivienda, index) => {
-      tableBody.appendChild(crearFilaVivienda(vivienda, index, guardadas));
-    });
+    if (viviendasAMostrar.length === 0) {
+      mostrarFilaSinResultados(columnasBase.length + espacios.length);
+    } else {
+      viviendasAMostrar.forEach((vivienda) => {
+        tableBody.appendChild(crearFilaVivienda(vivienda, camposBloqueados, mostrarPassword));
+      });
+    }
 
-    actualizarContador(viviendasPreview.length);
+    actualizarContador(viviendasAMostrar.length, viviendasFiltradas.length);
 
-    if (guardadas) {
+    if (camposBloqueados) {
       modoEdicion = false;
     }
 
-    if (saveHomesButton) {
-      saveHomesButton.hidden = !modoEdicion || viviendasPreview.length === 0;
-    }
-
-    if (editHomesButton) {
-      editHomesButton.hidden = modoEdicion || viviendasPreview.length === 0;
-    }
+    actualizarControlesListado();
   }
 
-  function crearFilaVivienda(vivienda, index, guardada) {
+  function crearFilaVivienda(vivienda, camposBloqueados, mostrarPassword) {
     const tr = document.createElement("tr");
 
     tr.appendChild(crearCeldaTexto(vivienda.id || "-"));
@@ -279,56 +337,23 @@ document.addEventListener("DOMContentLoaded", function () {
     tr.appendChild(crearCeldaTexto(vivienda.codigo_vivienda || "-"));
     tr.appendChild(crearCeldaTexto(vivienda.nombre_usuario || "-"));
 
-    if (!guardada) {
-      tr.appendChild(
-        crearCeldaInput(index, "password", vivienda.password, guardada),
-      );
+    if (mostrarPassword) {
+      tr.appendChild(crearCeldaInput(vivienda, "password", vivienda.password, camposBloqueados));
     }
-    tr.appendChild(
-      crearCeldaInput(
-        index,
-        "email_notificaciones",
-        vivienda.email_notificaciones,
-        guardada,
-      ),
-    );
-    tr.appendChild(
-      crearCeldaInput(
-        index,
-        "telefono_contacto",
-        vivienda.telefono_contacto,
-        guardada,
-      ),
-    );
-    tr.appendChild(crearCeldaInput(index, "bloque", vivienda.bloque, guardada));
-    tr.appendChild(crearCeldaInput(index, "portal", vivienda.portal, guardada));
-    tr.appendChild(
-      crearCeldaInput(index, "escalera", vivienda.escalera, guardada),
-    );
-    tr.appendChild(crearCeldaInput(index, "planta", vivienda.planta, guardada));
-    tr.appendChild(crearCeldaInput(index, "puerta", vivienda.puerta, guardada));
-    tr.appendChild(
-      crearCeldaInput(
-        index,
-        "descripcion_extra",
-        vivienda.descripcion_extra,
-        guardada,
-      ),
-    );
-    tr.appendChild(
-      crearCeldaCheckbox(
-        index,
-        "superusuario",
-        vivienda.superusuario,
-        guardada,
-      ),
-    );
+
+    tr.appendChild(crearCeldaInput(vivienda, "email_notificaciones", vivienda.email_notificaciones, camposBloqueados));
+    tr.appendChild(crearCeldaInput(vivienda, "telefono_contacto", vivienda.telefono_contacto, camposBloqueados));
+    tr.appendChild(crearCeldaInput(vivienda, "bloque", vivienda.bloque, camposBloqueados));
+    tr.appendChild(crearCeldaInput(vivienda, "portal", vivienda.portal, camposBloqueados));
+    tr.appendChild(crearCeldaInput(vivienda, "escalera", vivienda.escalera, camposBloqueados));
+    tr.appendChild(crearCeldaInput(vivienda, "planta", vivienda.planta, camposBloqueados));
+    tr.appendChild(crearCeldaInput(vivienda, "puerta", vivienda.puerta, camposBloqueados));
+    tr.appendChild(crearCeldaInput(vivienda, "descripcion_extra", vivienda.descripcion_extra, camposBloqueados));
+    tr.appendChild(crearCeldaCheckbox(vivienda, "superusuario", vivienda.superusuario, camposBloqueados));
 
     espacios.forEach((espacio) => {
       const permisos = vivienda.permisos || {};
-      tr.appendChild(
-        crearCeldaPermiso(index, espacio.id, permisos[espacio.id], guardada),
-      );
+      tr.appendChild(crearCeldaPermiso(vivienda, espacio.id, permisos[espacio.id], camposBloqueados));
     });
 
     return tr;
@@ -340,7 +365,7 @@ document.addEventListener("DOMContentLoaded", function () {
     return td;
   }
 
-  function crearCeldaInput(index, campo, valor, disabled) {
+  function crearCeldaInput(vivienda, campo, valor, disabled) {
     const td = document.createElement("td");
     const input = document.createElement("input");
 
@@ -350,14 +375,14 @@ document.addEventListener("DOMContentLoaded", function () {
     input.className = "table-input";
 
     input.addEventListener("input", function () {
-      viviendasPreview[index][campo] = input.value;
+      vivienda[campo] = input.value;
     });
 
     td.appendChild(input);
     return td;
   }
 
-  function crearCeldaCheckbox(index, campo, checked, disabled) {
+  function crearCeldaCheckbox(vivienda, campo, checked, disabled) {
     const td = document.createElement("td");
     const input = document.createElement("input");
 
@@ -367,14 +392,14 @@ document.addEventListener("DOMContentLoaded", function () {
     input.className = "table-check";
 
     input.addEventListener("change", function () {
-      viviendasPreview[index][campo] = input.checked;
+      vivienda[campo] = input.checked;
     });
 
     td.appendChild(input);
     return td;
   }
 
-  function crearCeldaPermiso(index, idEspacio, checked, disabled) {
+  function crearCeldaPermiso(vivienda, idEspacio, checked, disabled) {
     const td = document.createElement("td");
     const input = document.createElement("input");
 
@@ -384,11 +409,11 @@ document.addEventListener("DOMContentLoaded", function () {
     input.className = "table-check";
 
     input.addEventListener("change", function () {
-      if (!viviendasPreview[index].permisos) {
-        viviendasPreview[index].permisos = {};
+      if (!vivienda.permisos) {
+        vivienda.permisos = {};
       }
 
-      viviendasPreview[index].permisos[idEspacio] = input.checked;
+      vivienda.permisos[idEspacio] = input.checked;
     });
 
     td.appendChild(input);
@@ -425,26 +450,183 @@ document.addEventListener("DOMContentLoaded", function () {
         saveHomesButton.disabled = false;
 
         if (data.status !== "success") {
-          mostrarModalMensaje(
-            data.message || "No se pudieron guardar las viviendas.",
-            false,
-          );
+          mostrarModalMensaje(data.message || "No se pudieron guardar las viviendas.", false);
           return;
         }
 
         viviendasPreview = data.viviendas || [];
+        viviendasFiltradas = viviendasPreview.slice();
+        esListadoGuardado = true;
         modoEdicion = false;
+        paginaActual = 1;
+        limpiarFiltrosSinPintar();
         pintarTablaEditable(true);
         mostrarModalMensaje("Viviendas guardadas correctamente.", true);
       })
       .catch((error) => {
         console.error("Error completo al guardar:", error);
         saveHomesButton.disabled = false;
-        mostrarModalMensaje(
-          "Error al conectar con el servidor. Revisa la consola.",
-          false,
-        );
+        mostrarModalMensaje("Error al conectar con el servidor. Revisa la consola.", false);
       });
+  }
+
+  function aplicarFiltros() {
+    viviendasFiltradas = viviendasPreview.filter((vivienda) => {
+      return (
+        cumpleFiltro(vivienda.id, "filter-id") &&
+        cumpleFiltro(vivienda.codigo_vivienda, "filter-codigo") &&
+        cumpleFiltro(vivienda.nombre_usuario, "filter-usuario") &&
+        cumpleFiltro(vivienda.email_notificaciones, "filter-email") &&
+        cumpleFiltro(vivienda.telefono_contacto, "filter-telefono") &&
+        cumpleFiltro(vivienda.bloque, "filter-bloque") &&
+        cumpleFiltro(vivienda.portal, "filter-portal") &&
+        cumpleFiltro(vivienda.escalera, "filter-escalera") &&
+        cumpleFiltro(vivienda.planta, "filter-planta") &&
+        cumpleFiltro(vivienda.puerta, "filter-puerta") &&
+        cumpleFiltro(vivienda.descripcion_extra, "filter-descripcion") &&
+        cumpleFiltroSuperusuario(vivienda.superusuario)
+      );
+    });
+
+    paginaActual = 1;
+    pintarTablaEditable(!modoEdicion);
+  }
+
+  function cumpleFiltro(valor, idInput) {
+    const input = document.getElementById(idInput);
+    const filtro = input ? input.value.trim().toLowerCase() : "";
+
+    if (filtro === "") {
+      return true;
+    }
+
+    return String(valor || "").toLowerCase().includes(filtro);
+  }
+
+  function cumpleFiltroSuperusuario(superusuario) {
+    const select = document.getElementById("filter-superusuario");
+
+    if (!select || select.value === "") {
+      return true;
+    }
+
+    return select.value === "1" ? Boolean(superusuario) : !Boolean(superusuario);
+  }
+
+  function limpiarFiltros() {
+    limpiarFiltrosSinPintar();
+    viviendasFiltradas = viviendasPreview.slice();
+    paginaActual = 1;
+    pintarTablaEditable(!modoEdicion);
+  }
+
+  function limpiarFiltrosSinPintar() {
+    const ids = [
+      "filter-id",
+      "filter-codigo",
+      "filter-usuario",
+      "filter-email",
+      "filter-telefono",
+      "filter-bloque",
+      "filter-portal",
+      "filter-escalera",
+      "filter-planta",
+      "filter-puerta",
+      "filter-descripcion",
+    ];
+
+    ids.forEach((id) => {
+      const input = document.getElementById(id);
+
+      if (input) {
+        input.value = "";
+      }
+    });
+
+    const select = document.getElementById("filter-superusuario");
+
+    if (select) {
+      select.value = "";
+    }
+  }
+
+  function obtenerViviendasVisibles() {
+    if (!esListadoGuardado) {
+      return viviendasPreview;
+    }
+
+    if (registrosPorPagina === "all") {
+      return viviendasFiltradas;
+    }
+
+    const limite = Number(registrosPorPagina);
+    const inicio = (paginaActual - 1) * limite;
+    const fin = inicio + limite;
+
+    return viviendasFiltradas.slice(inicio, fin);
+  }
+
+  function obtenerTotalPaginas() {
+    if (registrosPorPagina === "all") {
+      return 1;
+    }
+
+    const limite = Number(registrosPorPagina);
+
+    return Math.max(1, Math.ceil(viviendasFiltradas.length / limite));
+  }
+
+  function actualizarControlesListado() {
+    const hayViviendas = viviendasPreview.length > 0;
+
+    if (savedControls) {
+      savedControls.hidden = !esListadoGuardado || !hayViviendas;
+    }
+
+    if (toolbarHelp) {
+      toolbarHelp.textContent = esListadoGuardado && hayViviendas
+        ? "Filtra, pagina o edita las viviendas registradas."
+        : "Sube un CSV, revisa los datos, modifica lo necesario y pulsa guardar.";
+    }
+
+    if (saveHomesButton) {
+      saveHomesButton.hidden = !modoEdicion || !hayViviendas;
+    }
+
+    if (editHomesButton) {
+      editHomesButton.hidden = modoEdicion || !hayViviendas || !esListadoGuardado;
+    }
+
+    actualizarPaginacion();
+  }
+
+  function actualizarPaginacion() {
+    const totalPaginas = obtenerTotalPaginas();
+    const usarPaginacion = esListadoGuardado && registrosPorPagina !== "all" && viviendasFiltradas.length > 0;
+
+    if (paginationControls) {
+      paginationControls.hidden = !usarPaginacion;
+    }
+
+    if (pageInfo) {
+      pageInfo.textContent = `Página ${paginaActual} de ${totalPaginas}`;
+    }
+
+    if (prevPageButton) {
+      prevPageButton.disabled = paginaActual <= 1;
+    }
+
+    if (nextPageButton) {
+      nextPageButton.disabled = paginaActual >= totalPaginas;
+    }
+  }
+
+  function mostrarFilaSinResultados(colspan) {
+    tableBody.innerHTML = `
+      <tr>
+        <td class="viviendas-message" colspan="${colspan}">No hay viviendas que cumplan los filtros.</td>
+      </tr>
+    `;
   }
 
   function validarViviendasAntesGuardar() {
@@ -454,35 +636,22 @@ document.addEventListener("DOMContentLoaded", function () {
     for (let i = 0; i < viviendasPreview.length; i++) {
       const vivienda = viviendasPreview[i];
 
-      vivienda.email_notificaciones = String(
-        vivienda.email_notificaciones || "",
-      ).trim();
-      vivienda.telefono_contacto = String(
-        vivienda.telefono_contacto || "",
-      ).trim();
+      vivienda.email_notificaciones = String(vivienda.email_notificaciones || "").trim();
+      vivienda.telefono_contacto = String(vivienda.telefono_contacto || "").trim();
       vivienda.bloque = String(vivienda.bloque || "").trim();
       vivienda.portal = String(vivienda.portal || "").trim();
       vivienda.escalera = String(vivienda.escalera || "").trim();
       vivienda.planta = String(vivienda.planta || "").trim();
       vivienda.puerta = String(vivienda.puerta || "").trim();
-      vivienda.descripcion_extra = String(
-        vivienda.descripcion_extra || "",
-      ).trim();
+      vivienda.descripcion_extra = String(vivienda.descripcion_extra || "").trim();
       vivienda.password = String(vivienda.password || "").trim();
 
-      if (!vivienda.email_notificaciones) {
-        return `La vivienda de la fila ${i + 1} no tiene email.`;
-      }
-
-      if (!esEmailValido(vivienda.email_notificaciones)) {
-        return `El email de la fila ${i + 1} no tiene un formato valido.`;
-      }
+      if (!vivienda.email_notificaciones) return `La vivienda de la fila ${i + 1} no tiene email.`;
+      if (!esEmailValido(vivienda.email_notificaciones)) return `El email de la fila ${i + 1} no tiene un formato valido.`;
 
       const emailNormalizado = vivienda.email_notificaciones.toLowerCase();
 
-      if (emails.has(emailNormalizado)) {
-        return `El email ${vivienda.email_notificaciones} esta repetido.`;
-      }
+      if (emails.has(emailNormalizado)) return `El email ${vivienda.email_notificaciones} esta repetido.`;
 
       emails.add(emailNormalizado);
 
@@ -491,37 +660,22 @@ document.addEventListener("DOMContentLoaded", function () {
       }
 
       if (!vivienda.id) {
-        if (!vivienda.password) {
-          return `La vivienda de la fila ${i + 1} no tiene password.`;
-        }
-
+        if (!vivienda.password) return `La vivienda de la fila ${i + 1} no tiene password.`;
         if (!esPasswordValida(vivienda.password)) {
           return `La password de la fila ${i + 1} debe tener minimo 8 caracteres, mayuscula, minuscula, numero y simbolo.`;
         }
-
-        if (passwords.has(vivienda.password)) {
-          return `La password de la fila ${i + 1} esta repetida.`;
-        }
-
+        if (passwords.has(vivienda.password)) return `La password de la fila ${i + 1} esta repetida.`;
         passwords.add(vivienda.password);
       }
 
-      if (vivienda.bloque.length > 20)
-        return `El bloque de la fila ${i + 1} supera los 20 caracteres.`;
-      if (vivienda.portal.length > 20)
-        return `El portal de la fila ${i + 1} supera los 20 caracteres.`;
-      if (vivienda.escalera.length > 20)
-        return `La escalera de la fila ${i + 1} supera los 20 caracteres.`;
-      if (vivienda.planta.length > 20)
-        return `La planta de la fila ${i + 1} supera los 20 caracteres.`;
-      if (vivienda.puerta.length > 20)
-        return `La puerta de la fila ${i + 1} supera los 20 caracteres.`;
-      if (vivienda.descripcion_extra.length > 255)
-        return `La descripcion de la fila ${i + 1} supera los 255 caracteres.`;
+      if (vivienda.bloque.length > 20) return `El bloque de la fila ${i + 1} supera los 20 caracteres.`;
+      if (vivienda.portal.length > 20) return `El portal de la fila ${i + 1} supera los 20 caracteres.`;
+      if (vivienda.escalera.length > 20) return `La escalera de la fila ${i + 1} supera los 20 caracteres.`;
+      if (vivienda.planta.length > 20) return `La planta de la fila ${i + 1} supera los 20 caracteres.`;
+      if (vivienda.puerta.length > 20) return `La puerta de la fila ${i + 1} supera los 20 caracteres.`;
+      if (vivienda.descripcion_extra.length > 255) return `La descripcion de la fila ${i + 1} supera los 255 caracteres.`;
 
-      const permisosMarcados = Object.values(vivienda.permisos || {}).some(
-        Boolean,
-      );
+      const permisosMarcados = Object.values(vivienda.permisos || {}).some(Boolean);
 
       if (!permisosMarcados) {
         return `La vivienda de la fila ${i + 1} no tiene ningun espacio permitido.`;
@@ -540,16 +694,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function esPasswordValida(password) {
-    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(
-      password,
-    );
+    return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(password);
   }
 
   function leerCSV(texto) {
-    const lineas = texto
-      .replace(/\r/g, "")
-      .split("\n")
-      .filter((linea) => linea.trim() !== "");
+    const lineas = texto.replace(/\r/g, "").split("\n").filter((linea) => linea.trim() !== "");
 
     if (lineas.length < 2) {
       throw new Error("El CSV debe tener cabecera y al menos una vivienda.");
@@ -564,9 +713,7 @@ document.addEventListener("DOMContentLoaded", function () {
       const valores = dividirLineaCSV(linea, separador);
 
       if (valores.length !== cabeceras.length) {
-        throw new Error(
-          `La fila ${index + 2} no tiene el mismo numero de columnas que la cabecera.`,
-        );
+        throw new Error(`La fila ${index + 2} no tiene el mismo numero de columnas que la cabecera.`);
       }
 
       const fila = {};
@@ -631,9 +778,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function limpiarValorCSV(valor) {
-    return String(valor || "")
-      .trim()
-      .replace(/^"|"$/g, "");
+    return String(valor || "").trim().replace(/^"|"$/g, "");
   }
 
   function normalizarCabecera(cabecera) {
@@ -684,9 +829,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function prepararLogout() {
-    if (!logoutButton) {
-      return;
-    }
+    if (!logoutButton) return;
 
     logoutButton.addEventListener("click", function (event) {
       event.preventDefault();
@@ -707,8 +850,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function obtenerIdUrbanizacionSeleccionada() {
     const params = new URLSearchParams(window.location.search);
-    const idUrl =
-      Number(params.get("idUrbanizacion") || params.get("idurbanizacion")) || 0;
+    const idUrl = Number(params.get("idUrbanizacion") || params.get("idurbanizacion")) || 0;
 
     if (idUrl > 0) {
       sessionStorage.setItem("idUrbanizacionSeleccionada", idUrl);
@@ -734,9 +876,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function obtenerUrbanizacionGuardada() {
     try {
-      return JSON.parse(
-        sessionStorage.getItem("urbanizacionSeleccionada") || "null",
-      );
+      return JSON.parse(sessionStorage.getItem("urbanizacionSeleccionada") || "null");
     } catch (error) {
       return null;
     }
@@ -744,16 +884,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function guardarUrbanizacion(urbanizacion) {
     sessionStorage.setItem("idUrbanizacionSeleccionada", urbanizacion.id);
-    sessionStorage.setItem(
-      "urbanizacionSeleccionada",
-      JSON.stringify(urbanizacion),
-    );
+    sessionStorage.setItem("urbanizacionSeleccionada", JSON.stringify(urbanizacion));
     idUrbanizacion = Number(urbanizacion.id) || idUrbanizacion;
   }
 
-  function actualizarContador(total) {
-    viviendasCount.textContent =
-      total === 1 ? "Mostrando 1 vivienda" : `Mostrando ${total} viviendas`;
+  function actualizarContador(mostradas, filtradas) {
+    if (!viviendasCount) return;
+
+    if (!esListadoGuardado) {
+      viviendasCount.textContent = mostradas === 1 ? "Mostrando 1 vivienda" : `Mostrando ${mostradas} viviendas`;
+      return;
+    }
+
+    viviendasCount.textContent = `Mostrando ${mostradas} de ${filtradas} viviendas filtradas (${viviendasPreview.length} total)`;
   }
 
   function mostrarMensaje(texto) {
@@ -788,12 +931,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const acceptButton = modal.querySelector(".modal-accept");
 
     modalText.textContent = mensaje;
-    modalIcon.className = correcto
-      ? "modal-icon modal-icon-success"
-      : "modal-icon modal-icon-error";
-    modalIcon.innerHTML = correcto
-      ? '<i class="fa-solid fa-check"></i>'
-      : '<i class="fa-solid fa-xmark"></i>';
+    modalIcon.className = correcto ? "modal-icon modal-icon-success" : "modal-icon modal-icon-error";
+    modalIcon.innerHTML = correcto ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>';
     cancelButton.hidden = true;
     acceptButton.textContent = "Aceptar";
     modal.hidden = false;
@@ -810,9 +949,7 @@ document.addEventListener("DOMContentLoaded", function () {
   function crearModal() {
     let modal = document.getElementById("viviendas-modal");
 
-    if (modal) {
-      return modal;
-    }
+    if (modal) return modal;
 
     modal = document.createElement("div");
     modal.id = "viviendas-modal";
