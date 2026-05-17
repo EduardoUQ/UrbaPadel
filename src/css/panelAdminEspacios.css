@@ -430,6 +430,10 @@ a {
     gap: 8px;
 }
 
+.pagination[hidden] {
+    display: none;
+}
+
 .pagination .btn {
     min-height: 36px;
     padding: 0 16px;

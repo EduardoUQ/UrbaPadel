@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const adminName = document.getElementById("admin-name");
   const logoutButton = document.getElementById("logout");
   const urbanizationName = document.getElementById("urbanization-name");
+  const breadcrumbUrbanization = document.getElementById("breadcrumb-urbanization");
   const csvFileInput = document.getElementById("csv-file");
   const saveHomesButton = document.getElementById("save-homes");
   const editHomesButton = document.getElementById("edit-homes");
@@ -871,6 +872,10 @@ document.addEventListener("DOMContentLoaded", function () {
   function pintarNombreUrbanizacion(nombre) {
     if (urbanizationName) {
       urbanizationName.textContent = nombre || "la comunidad";
+    }
+
+    if (breadcrumbUrbanization) {
+      breadcrumbUrbanization.textContent = nombre ? `${nombre} /` : "";
     }
   }
 

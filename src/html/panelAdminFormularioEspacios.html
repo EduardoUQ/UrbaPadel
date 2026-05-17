@@ -24,21 +24,13 @@
                     <i class="fa-solid fa-chart-column"></i>
                     <span>Panel General</span>
                 </a>
-                <a href="#" class="nav-item">
-                    <i class="fa-regular fa-calendar-check"></i>
-                    <span>Reservas</span>
-                </a>
                 <a href="panelAdminEspacios.html" class="nav-item active" aria-current="page">
                     <i class="fa-solid fa-location-dot"></i>
                     <span>Espacios</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="panelAdminViviendas.html" class="nav-item" id="nav-viviendas">
                     <i class="fa-solid fa-users"></i>
-                    <span>Vecinos y Portales</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fa-regular fa-bell"></i>
-                    <span>Notificaciones</span>
+                    <span>Viviendas</span>
                 </a>
             </nav>
 
@@ -57,6 +49,8 @@
         <main class="main-panel">
             <header class="topbar">
                 <div class="breadcrumbs" aria-label="Ruta">
+                    <span id="breadcrumb-urbanization"></span>
+                    <i class="fa-solid fa-chevron-right" id="breadcrumb-urbanization-separator" hidden></i>
                     <a href="panelAdminEspacios.html" id="back-to-spaces">Espacios</a>
                     <i class="fa-solid fa-chevron-right"></i>
                     <span id="breadcrumb-action">Nuevo Espacio</span>
@@ -72,7 +66,8 @@
                 <div class="content-header">
                     <div>
                         <h1 id="form-title">Anadir Nuevo Espacio</h1>
-                        <p id="form-subtitle">Crea una nueva pista o espacio comun disponible para reservar en la comunidad.</p>
+                        <p id="form-subtitle">Crea una nueva pista o espacio comun disponible para reservar en la
+                            comunidad.</p>
                     </div>
                 </div>
 
@@ -98,7 +93,8 @@
 
                             <div class="field field-wide">
                                 <label for="description">Descripcion</label>
-                                <textarea id="description" name="description" placeholder="Breve descripcion del espacio..."></textarea>
+                                <textarea id="description" name="description"
+                                    placeholder="Breve descripcion del espacio..."></textarea>
                                 <p id="error-description"></p>
                             </div>
                         </div>
@@ -141,13 +137,15 @@
 
                             <div class="field">
                                 <label for="maxDayReservation">Maximas reservas por dia</label>
-                                <input id="maxDayReservation" name="maxDayReservation" type="number" min="1" placeholder="1">
+                                <input id="maxDayReservation" name="maxDayReservation" type="number" min="1"
+                                    placeholder="1">
                                 <p id="error-maxDayReservation"></p>
                             </div>
 
                             <div class="field">
                                 <label for="maxWeekReservation">Maximas reservas por semana</label>
-                                <input id="maxWeekReservation" name="maxWeekReservation" type="number" min="1" placeholder="7">
+                                <input id="maxWeekReservation" name="maxWeekReservation" type="number" min="1"
+                                    placeholder="7">
                                 <p id="error-maxWeekReservation"></p>
                             </div>
 
@@ -159,7 +157,8 @@
 
                             <div class="field">
                                 <label for="minutesBetweenReservations">Minutos entre reservas</label>
-                                <input id="minutesBetweenReservations" name="minutesBetweenReservations" type="number" min="0" placeholder="0">
+                                <input id="minutesBetweenReservations" name="minutesBetweenReservations" type="number"
+                                    min="0" placeholder="0">
                                 <p id="error-minutesBetweenReservations"></p>
                             </div>
 
@@ -183,7 +182,8 @@
 
                             <div class="field">
                                 <label for="minutesLimitCancel">Minutos limite para cancelar</label>
-                                <input id="minutesLimitCancel" name="minutesLimitCancel" type="number" min="0" placeholder="60">
+                                <input id="minutesLimitCancel" name="minutesLimitCancel" type="number" min="0"
+                                    placeholder="60">
                                 <p id="error-minutesLimitCancel"></p>
                             </div>
                         </div>

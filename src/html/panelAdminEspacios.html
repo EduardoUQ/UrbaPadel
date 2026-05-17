@@ -49,6 +49,7 @@
         <main class="main-panel">
             <header class="topbar">
                 <div class="breadcrumbs" aria-label="Ruta">
+                    <span id="breadcrumb-urbanization"></span>
                     <span>Espacios</span>
                 </div>
 
@@ -96,9 +97,9 @@
 
                     <div class="list-footer">
                         <p id="spaces-count">Mostrando 0 espacios</p>
-                        <div class="pagination">
-                            <button class="btn btn-secondary" type="button" disabled>Anterior</button>
-                            <button class="btn btn-secondary" type="button" disabled>Siguiente</button>
+                        <div class="pagination" id="spaces-pagination" hidden>
+                            <button class="btn btn-secondary" id="prev-page" type="button">Anterior</button>
+                            <button class="btn btn-secondary" id="next-page" type="button">Siguiente</button>
                         </div>
                     </div>
                 </section>
