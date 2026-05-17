@@ -6,6 +6,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const logoutButton = document.getElementById("logout");
     const title = document.getElementById("form-title");
     const subtitle = document.getElementById("form-subtitle");
+    const breadcrumbUrbanization = document.getElementById("breadcrumb-urbanization");
+    const breadcrumbUrbanizationSeparator = document.getElementById("breadcrumb-urbanization-separator");
     const breadcrumbAction = document.getElementById("breadcrumb-action");
     const backToSpaces = document.getElementById("back-to-spaces");
     const LOGIN_URL = "login.html";
@@ -40,6 +42,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     prepararNavegacion();
     prepararEventos();
+    pintarUrbanizacionGuardada();
     validarSesionAdmin();
 
     function campo(inputId, nombre, mensaje, validar) {
@@ -335,6 +338,32 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function obtenerUrlPanelEspacios() {
         return idUrbanizacion ? `${PANEL_ESPACIOS_URL}?idUrbanizacion=${encodeURIComponent(idUrbanizacion)}` : PANEL_ESPACIOS_URL;
+    }
+
+    function pintarUrbanizacionGuardada() {
+        const urbanizacion = obtenerUrbanizacionGuardada();
+
+        if (urbanizacion && Number(urbanizacion.id) === Number(idUrbanizacion)) {
+            pintarNombreUrbanizacion(urbanizacion.nombre);
+        }
+    }
+
+    function pintarNombreUrbanizacion(nombre) {
+        if (breadcrumbUrbanization) {
+            breadcrumbUrbanization.textContent = nombre || "";
+        }
+
+        if (breadcrumbUrbanizationSeparator) {
+            breadcrumbUrbanizationSeparator.hidden = !nombre;
+        }
+    }
+
+    function obtenerUrbanizacionGuardada() {
+        try {
+            return JSON.parse(sessionStorage.getItem("urbanizacionSeleccionada") || "null");
+        } catch (error) {
+            return null;
+        }
     }
 
     function mostrarModal(mensaje, correcto, onClose) {

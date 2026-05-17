@@ -4,11 +4,18 @@ document.addEventListener("DOMContentLoaded", function () {
   const adminName = document.getElementById("admin-name");
   const logoutButton = document.getElementById("logout");
   const urbanizationName = document.getElementById("urbanization-name");
+  const breadcrumbUrbanization = document.getElementById("breadcrumb-urbanization");
   const createSpaceLink = document.getElementById("create-space");
+  const paginationControls = document.getElementById("spaces-pagination");
+  const prevPageButton = document.getElementById("prev-page");
+  const nextPageButton = document.getElementById("next-page");
   const LOGIN_URL = "login.html";
   const URBANIZACIONES_URL = "panelAdminUrbanizaciones.html";
   const FORMULARIO_ESPACIO_URL = "panelAdminFormularioEspacios.html";
+  const ESPACIOS_POR_PAGINA = 5;
   let idUrbanizacion = obtenerIdUrbanizacionSeleccionada();
+  let espaciosDisponibles = [];
+  let paginaActual = 1;
   const navViviendas = document.getElementById("nav-viviendas");
   const VIVIENDAS_URL = "panelAdminViviendas.html";
   const navReservas = document.getElementById("nav-reservas");
@@ -24,7 +31,27 @@ document.addEventListener("DOMContentLoaded", function () {
   pintarUrbanizacionGuardada();
   validarSesionAdmin();
   prepararNavViviendas();
-  prepararNavReservas();
+  prepararPaginacion();
+
+  function prepararPaginacion() {
+    if (prevPageButton) {
+      prevPageButton.addEventListener("click", function () {
+        if (paginaActual > 1) {
+          paginaActual--;
+          pintarEspaciosPagina();
+        }
+      });
+    }
+
+    if (nextPageButton) {
+      nextPageButton.addEventListener("click", function () {
+        if (paginaActual < obtenerTotalPaginas()) {
+          paginaActual++;
+          pintarEspaciosPagina();
+        }
+      });
+    }
+  }
 
   function prepararNavViviendas() {
     if (!navViviendas) {
@@ -170,6 +197,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (data.status !== "success") {
           mostrarMensaje(data.message || "No se pudieron cargar los espacios.");
           actualizarContador(0);
+          actualizarPaginacion();
           return;
         }
 
@@ -188,19 +216,60 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function pintarEspacios(espacios) {
-    tableBody.innerHTML = "";
-    actualizarContador(espacios.length);
+    espaciosDisponibles = espacios;
+    paginaActual = 1;
+    pintarEspaciosPagina();
+  }
 
-    if (espacios.length === 0) {
+  function pintarEspaciosPagina() {
+    tableBody.innerHTML = "";
+    actualizarContador(espaciosDisponibles.length);
+
+    if (espaciosDisponibles.length === 0) {
       mostrarMensaje(
         "Todavia no hay espacios registrados para esta urbanizacion.",
       );
+      actualizarPaginacion();
       return;
     }
 
-    espacios.forEach((espacio) => {
+    obtenerEspaciosPagina().forEach((espacio) => {
       tableBody.appendChild(crearFilaEspacio(espacio));
     });
+
+    actualizarPaginacion();
+  }
+
+  function obtenerEspaciosPagina() {
+    const inicio = (paginaActual - 1) * ESPACIOS_POR_PAGINA;
+    return espaciosDisponibles.slice(inicio, inicio + ESPACIOS_POR_PAGINA);
+  }
+
+  function obtenerTotalPaginas() {
+    return Math.max(
+      1,
+      Math.ceil(espaciosDisponibles.length / ESPACIOS_POR_PAGINA),
+    );
+  }
+
+  function actualizarPaginacion() {
+    const totalPaginas = obtenerTotalPaginas();
+
+    if (paginaActual > totalPaginas) {
+      paginaActual = totalPaginas;
+    }
+
+    if (paginationControls) {
+      paginationControls.hidden = espaciosDisponibles.length <= ESPACIOS_POR_PAGINA;
+    }
+
+    if (prevPageButton) {
+      prevPageButton.disabled = paginaActual <= 1;
+    }
+
+    if (nextPageButton) {
+      nextPageButton.disabled = paginaActual >= totalPaginas;
+    }
   }
 
   function crearFilaEspacio(espacio) {
@@ -325,6 +394,10 @@ document.addEventListener("DOMContentLoaded", function () {
     if (urbanizationName) {
       urbanizationName.textContent = nombre || "la comunidad";
     }
+
+    if (breadcrumbUrbanization) {
+      breadcrumbUrbanization.textContent = nombre ? `${nombre} /` : "";
+    }
   }
 
   function obtenerUrbanizacionGuardada() {
@@ -356,6 +429,12 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
+    if (total > ESPACIOS_POR_PAGINA) {
+      const visibles = obtenerEspaciosPagina().length;
+      spacesCount.textContent = `Mostrando ${visibles} de ${total} espacios`;
+      return;
+    }
+
     spacesCount.textContent =
       total === 1 ? "Mostrando 1 espacio" : `Mostrando ${total} espacios`;
   }
@@ -366,6 +445,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 <td colspan="5" class="spaces-message">${escaparHTML(texto)}</td>
             </tr>
         `;
+    espaciosDisponibles = [];
+    paginaActual = 1;
+    actualizarPaginacion();
   }
 
   function formatearHora(hora) {

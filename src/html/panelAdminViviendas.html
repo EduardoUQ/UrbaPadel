@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminViviendas.css">
+    <link rel="icon" href="data:,">
     <title>Viviendas</title>
 </head>
 
@@ -55,6 +56,7 @@
         <main class="main-panel">
             <header class="topbar">
                 <div class="breadcrumbs">
+                    <span id="breadcrumb-urbanization"></span>
                     <span>Viviendas</span>
                 </div>
 
@@ -80,9 +82,52 @@
 
                 <section class="list-card">
                     <div class="list-toolbar">
-                        <p class="toolbar-help">
+                        <p class="toolbar-help" id="toolbar-help">
                             Sube un CSV, revisa los datos, modifica lo necesario y pulsa guardar.
                         </p>
+                    </div>
+
+                    <div class="saved-controls" id="saved-controls" hidden>
+                        <div class="filters-grid">
+                            <input id="filter-id" type="text" placeholder="ID">
+                            <input id="filter-codigo" type="text" placeholder="Código">
+                            <input id="filter-usuario" type="text" placeholder="Usuario">
+                            <input id="filter-email" type="text" placeholder="Email">
+                            <input id="filter-telefono" type="text" placeholder="Teléfono">
+                            <input id="filter-bloque" type="text" placeholder="Bloque">
+                            <input id="filter-portal" type="text" placeholder="Portal">
+                            <input id="filter-escalera" type="text" placeholder="Escalera">
+                            <input id="filter-planta" type="text" placeholder="Planta">
+                            <input id="filter-puerta" type="text" placeholder="Puerta">
+                            <input id="filter-descripcion" type="text" placeholder="Descripción">
+
+                            <select id="filter-superusuario">
+                                <option value="">SU: todos</option>
+                                <option value="1">Solo SU</option>
+                                <option value="0">No SU</option>
+                            </select>
+                        </div>
+
+                        <div class="filters-actions">
+                            <button class="btn btn-primary" id="apply-filters" type="button">
+                                <i class="fa-solid fa-filter"></i>
+                                <span>Filtrar</span>
+                            </button>
+
+                            <button class="btn btn-secondary" id="clear-filters" type="button">
+                                <i class="fa-solid fa-eraser"></i>
+                                <span>Limpiar</span>
+                            </button>
+
+                            <label class="page-size-label" for="page-size">
+                                Mostrar
+                                <select id="page-size">
+                                    <option value="all">Todas</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                </select>
+                            </label>
+                        </div>
                     </div>
 
                     <div class="table-wrap">
@@ -94,6 +139,12 @@
 
                     <div class="list-footer">
                         <p id="viviendas-count">Mostrando 0 viviendas</p>
+
+                        <div class="pagination" id="pagination-controls" hidden>
+                            <button class="btn btn-secondary" id="prev-page" type="button">Anterior</button>
+                            <span id="page-info">Página 1 de 1</span>
+                            <button class="btn btn-secondary" id="next-page" type="button">Siguiente</button>
+                        </div>
 
                         <div class="footer-actions">
                             <button class="btn btn-secondary" id="edit-homes" type="button" hidden>
