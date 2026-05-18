@@ -16,6 +16,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
 }
 
 require_once(__DIR__ . '/db/conexion.php');
+require_once(__DIR__ . '/listaEsperaFunciones.php');
 
 if (!isset($conexion) || !($conexion instanceof mysqli)) {
     echo json_encode([
@@ -157,6 +158,14 @@ function cancelarReservaAdmin($conexion)
 
     $stmt->close();
 
+    adjudicarSiguienteListaEspera(
+        $conexion,
+        (int)$reserva['id_espacio'],
+        $reserva['fecha_inicio'],
+        $reserva['fecha_fin'],
+        0
+    );
+
     responder($conexion, 'success', 'Reserva cancelada correctamente');
 }
 
@@ -193,13 +202,16 @@ function obtenerUrbanizacion($conexion, $idUrbanizacion)
 function obtenerReservaUrbanizacion($conexion, $idReserva, $idUrbanizacion)
 {
     $sql = "SELECT 
-                r.id,
-                r.estado
-            FROM reserva r
-            INNER JOIN espacio e ON e.id = r.id_espacio
-            WHERE r.id = ?
-                AND e.id_urbanizacion = ?
-            LIMIT 1";
+            r.id,
+            r.id_espacio,
+            r.fecha_inicio,
+            r.fecha_fin,
+            r.estado
+        FROM reserva r
+        INNER JOIN espacio e ON e.id = r.id_espacio
+        WHERE r.id = ?
+            AND e.id_urbanizacion = ?
+        LIMIT 1";
 
     $stmt = $conexion->prepare($sql);
 

@@ -192,13 +192,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const row = document.createElement("div");
         row.className = "slot-row";
 
-        const disponible = franja.estado === "DISPONIBLE";
+        const franjaPasada = esFranjaPasada(franja);
+        const disponible = franja.estado === "DISPONIBLE" && !franjaPasada;
         const ocupada = franja.estado === "OCUPADA";
         const bloqueada = franja.estado === "BLOQUEADA";
+        const permiteListaEspera = espacioSeleccionado && (Number(espacioSeleccionado.permite_lista_espera) === 1 || espacioSeleccionado.permite_lista_espera === true);
 
         const claseEstado = disponible ? "available" : (bloqueada ? "blocked" : "occupied");
-        const textoEstado = disponible ? "Disponible" : (bloqueada ? "Bloqueado" : "Ocupado");
-        const detalle = obtenerDetalleFranja(franja);
+        const textoEstado = disponible ? "Disponible" : (franjaPasada ? "No disponible" : (bloqueada ? "Bloqueado" : "Ocupado"));
+        const detalle = obtenerDetalleFranja(franja, franjaPasada);
 
         row.innerHTML = `
             <div class="slot-time">
@@ -214,17 +216,27 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
 
             <div class="slot-actions">
-                <button class="btn btn-primary js-reservar" type="button" ${disponible ? "" : "disabled"}>
-                    Reservar
-                </button>
+            ${disponible
+                ? `<button class="btn btn-primary js-reservar" type="button">Reservar</button>`
+                : ocupada && permiteListaEspera && !franjaPasada
+                    ? `<button class="btn btn-secondary js-lista-espera" type="button">Lista de espera</button>`
+                    : `<button class="btn btn-secondary" type="button" disabled>No disponible</button>`
+            }
             </div>
         `;
 
         const botonReservar = row.querySelector(".js-reservar");
+        const botonListaEspera = row.querySelector(".js-lista-espera");
 
         if (botonReservar && disponible) {
             botonReservar.addEventListener("click", function () {
-            crearReserva(franja, botonReservar);
+                crearReserva(franja, botonReservar);
+            });
+        }
+
+        if (botonListaEspera && ocupada) {
+            botonListaEspera.addEventListener("click", function () {
+                apuntarListaEspera(franja, botonListaEspera);
             });
         }
 
@@ -232,47 +244,92 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function crearReserva(franja, botonReservar) {
-    const formData = new FormData();
-    formData.append("idEspacio", idEspacio);
-    formData.append("fechaInicio", franja.fecha_inicio);
-    formData.append("fechaFin", franja.fecha_fin);
+        const formData = new FormData();
+        formData.append("idEspacio", idEspacio);
+        formData.append("fechaInicio", franja.fecha_inicio);
+        formData.append("fechaFin", franja.fecha_fin);
 
-    if (botonReservar) {
-        botonReservar.disabled = true;
-        botonReservar.textContent = "Reservando...";
+        if (botonReservar) {
+            botonReservar.disabled = true;
+            botonReservar.textContent = "Reservando...";
+        }
+
+        fetch("../php/crearReserva.php", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => response.text())
+            .then(parsearJson)
+            .then(data => {
+                const correcto = data.status === "success";
+
+                mostrarModalMensaje(
+                    correcto ? "Reserva creada correctamente" : (data.message || "No se pudo crear la reserva"),
+                    correcto
+                );
+
+                if (correcto) {
+                    cargarDisponibilidad();
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                mostrarModalMensaje("Error al conectar con el servidor.", false);
+            })
+            .finally(() => {
+                if (botonReservar) {
+                    botonReservar.disabled = false;
+                    botonReservar.textContent = "Reservar";
+                }
+            });
     }
 
-    fetch("../php/crearReserva.php", {
-        method: "POST",
-        body: formData
-     })
-        .then(response => response.text())
-        .then(parsearJson)
-        .then(data => {
-            const correcto = data.status === "success";
+    function apuntarListaEspera(franja, botonListaEspera) {
+        const formData = new FormData();
+        formData.append("idEspacio", idEspacio);
+        formData.append("fechaInicio", franja.fecha_inicio);
+        formData.append("fechaFin", franja.fecha_fin);
 
-            mostrarModalMensaje(
-                correcto ? "Reserva creada correctamente" : (data.message || "No se pudo crear la reserva"),
-                correcto
-            );
+        if (botonListaEspera) {
+            botonListaEspera.disabled = true;
+            botonListaEspera.textContent = "Apuntando...";
+        }
 
-            if (correcto) {
-                cargarDisponibilidad();
-            }
+        fetch("../php/listaEsperaUsuario.php", {
+            method: "POST",
+            body: formData
         })
-        .catch(error => {
-            console.error("Error:", error);
-            mostrarModalMensaje("Error al conectar con el servidor.", false);
-        })
-        .finally(() => {
-            if (botonReservar) {
-                botonReservar.disabled = false;
-                botonReservar.textContent = "Reservar";
-            }
-        });
+            .then(response => response.text())
+            .then(parsearJson)
+            .then(data => {
+                const correcto = data.status === "success";
+
+                mostrarModalMensaje(
+                    correcto ? "Te has apuntado a la lista de espera" : (data.message || "No se pudo apuntar a la lista de espera"),
+                    correcto
+                );
+
+                if (correcto) {
+                    cargarDisponibilidad();
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                mostrarModalMensaje("Error al conectar con el servidor.", false);
+            })
+            .finally(() => {
+                if (botonListaEspera) {
+                    botonListaEspera.disabled = false;
+                    botonListaEspera.textContent = "Lista de espera";
+                }
+            });
     }
 
-    function obtenerDetalleFranja(franja) {
+    function obtenerDetalleFranja(franja, franjaPasada) {
+        if (franjaPasada) {
+            return "Esta franja ya ha pasado.";
+        }
+
         if (franja.estado === "DISPONIBLE") {
             return "Puedes reservar esta franja.";
         }
@@ -286,6 +343,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         return "Franja no disponible.";
+    }
+
+    function esFranjaPasada(franja) {
+        if (!franja.fecha_inicio) {
+            return false;
+        }
+
+        const ahora = new Date();
+        const inicioFranja = new Date(String(franja.fecha_inicio).replace(" ", "T"));
+
+        return inicioFranja < ahora;
     }
 
     function mostrarMensaje(texto) {

@@ -16,6 +16,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'usuario') {
 }
 
 require_once(__DIR__ . '/db/conexion.php');
+require_once(__DIR__ . '/listaEsperaFunciones.php');
 
 if (!isset($conexion) || !($conexion instanceof mysqli)) {
     echo json_encode([
@@ -62,24 +63,33 @@ if ($minutosLimite > 0) {
 
 cancelarReserva($conexion, $idReserva, $idVivienda);
 
+adjudicarSiguienteListaEspera(
+    $conexion,
+    (int)$reserva['id_espacio'],
+    $reserva['fecha_inicio'],
+    $reserva['fecha_fin'],
+    $idVivienda
+);
+
 responder($conexion, 'success', 'Reserva cancelada correctamente');
 
 function obtenerReservaCancelable($conexion, $idReserva, $idVivienda)
 {
     $sql = "SELECT 
-                r.id,
-                r.fecha_inicio,
-                r.fecha_fin,
-                r.estado,
-                ec.permite_cancelacion,
-                ec.minutos_limite_cancelacion
-            FROM reserva r
-            INNER JOIN espacio e ON e.id = r.id_espacio
-            LEFT JOIN espacio_configuracion ec ON ec.id_espacio = e.id
-            WHERE r.id = ?
-                AND r.id_vivienda = ?
-                AND r.estado = 'ACTIVA'
-            LIMIT 1";
+            r.id,
+            r.id_espacio,
+            r.fecha_inicio,
+            r.fecha_fin,
+            r.estado,
+            ec.permite_cancelacion,
+            ec.minutos_limite_cancelacion
+        FROM reserva r
+        INNER JOIN espacio e ON e.id = r.id_espacio
+        LEFT JOIN espacio_configuracion ec ON ec.id_espacio = e.id
+        WHERE r.id = ?
+            AND r.id_vivienda = ?
+            AND r.estado = 'ACTIVA'
+        LIMIT 1";
 
     $stmt = $conexion->prepare($sql);
 
