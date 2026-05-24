@@ -27,17 +27,18 @@ body {
 .logo {
     display: flex;
     align-items: center;
+    justify-content: center;
+    text-align: center;
     gap: 10px;
     margin-bottom: 40px;
     font-weight: bold;
     color: #1f7a7a;
 }
 
-.logo-icon {
-    width: 20px;
-    height: 20px;
-    background: #1f7a7a;
-    border-radius: 4px;
+.logo-img {
+    width: 16rem;
+    height: 5rem;
+    text-align: center;
 }
 
 h2 {
@@ -132,12 +133,20 @@ button:hover {
 /* RIGHT PANEL */
 .right-panel {
     width: 60%;
-    background: url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c') center/cover no-repeat;
+    background: url('../img/FondoLogin.png') center/cover no-repeat;
     position: relative;
+}
+
+.right-panel::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.38);
 }
 
 .overlay {
     position: absolute;
+    z-index: 1;
     bottom: 50px;
     left: 50px;
     color: white;
@@ -157,7 +166,7 @@ button:hover {
 /* EMPTY MESSAGE */
 .errorMessage {
     color: #A71D2D;
-    font-size: 0.5rem;
+    font-size: 0.75rem;
     margin-bottom: 1.5rem;
 }
 
