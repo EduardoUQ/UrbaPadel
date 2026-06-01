@@ -31,6 +31,7 @@
                 <a href="misReservas.html" class="nav-item">
                     <i class="fa-solid fa-calendar-days"></i>
                     <span>Mis Reservas</span>
+                    <span class="nav-badge" id="reservas-badge" hidden>0</span>
                 </a>
 
                 <a href="../html/incidenciasUsuario.html" class="nav-item">
@@ -109,6 +110,28 @@
                         </dl>
                     </article>
 
+                    <article class="availability-card" id="incidencias-card" hidden>
+                        <div class="incidencias-espacio-header">
+                            <div>
+                                <div class="incidencias-title-row">
+                                    <h2>Incidencias pendientes</h2>
+
+                                    <div class="incidencias-count-wrap">
+                                        <i class="fa-solid fa-triangle-exclamation"></i>
+                                        <span class="status-badge incidencia-badge"
+                                            id="incidencias-count-badge">0</span>
+                                    </div>
+                                </div>
+
+                                <p>Este espacio tiene incidencias sin resolver comunicadas por usuarios.</p>
+                            </div>
+                        </div>
+
+                        <div class="incidencias-espacio-list" id="incidencias-espacio-list">
+                            <p class="spaces-message">Cargando incidencias...</p>
+                        </div>
+                    </article>
+
                     <article class="availability-card">
                         <div class="date-selector">
                             <div>
@@ -138,6 +161,7 @@
     </div>
 
     <script src="../js/disponibilidadEspacio.js"></script>
+    <script src="../js/notificacionesUsuario.js"></script>
 </body>
 
 </html>
