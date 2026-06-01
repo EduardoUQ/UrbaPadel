@@ -136,6 +136,25 @@
     background: var(--green);
 }
 
+.nav-badge {
+    display: inline-flex;
+    min-width: 18px;
+    height: 18px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 999px;
+    background: var(--danger);
+    color: #ffffff;
+    font-size: 11px;
+    font-weight: 900;
+    margin-left: auto;
+    padding: 0 6px;
+}
+
+.nav-badge[hidden] {
+    display: none;
+}
+
 @media (max-width: 720px) {
     .form-actions {
         align-items: stretch;

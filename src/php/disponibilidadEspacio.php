@@ -61,8 +61,24 @@ if (!$espacio) {
 $franjas = generarFranjas($espacio, $fecha);
 $reservas = obtenerReservasDia($conexion, $idEspacio, $fecha);
 $bloqueos = obtenerBloqueosDia($conexion, $idEspacio, $fecha);
+$listasEsperaUsuario = obtenerListasEsperaUsuario($conexion, $idEspacio, $idVivienda, $fecha);
 
 foreach ($franjas as $indice => $franja) {
+
+    $franjas[$indice]['es_mi_reserva'] = false;
+
+    $listaEspera = buscarListaEsperaFranja(
+        $franja['fecha_inicio'],
+        $franja['fecha_fin'],
+        $listasEsperaUsuario
+    );
+
+    if ($listaEspera) {
+        $franjas[$indice]['mi_posicion_lista_espera'] = (int)$listaEspera['posicion'];
+    } else {
+        $franjas[$indice]['mi_posicion_lista_espera'] = null;
+    }
+
     $bloqueo = buscarSolapamiento($franja['fecha_inicio'], $franja['fecha_fin'], $bloqueos);
 
     if ($bloqueo) {
@@ -76,11 +92,14 @@ foreach ($franjas as $indice => $franja) {
     if ($reserva) {
         $franjas[$indice]['estado'] = 'OCUPADA';
         $franjas[$indice]['vivienda'] = $reserva['codigo_vivienda'];
+        $franjas[$indice]['es_mi_reserva'] = ((int)$reserva['id_vivienda'] === (int)$idVivienda);
         continue;
     }
 
     $franjas[$indice]['estado'] = 'DISPONIBLE';
 }
+
+$incidenciasPendientes = obtenerIncidenciasPendientesEspacio($conexion, $idEspacio);
 
 $conexion->close();
 
@@ -88,7 +107,8 @@ echo json_encode([
     'status' => 'success',
     'espacio' => $espacio,
     'fecha' => $fecha,
-    'franjas' => $franjas
+    'franjas' => $franjas,
+    'incidencias_pendientes' => $incidenciasPendientes
 ]);
 
 function obtenerEspacioPermitido($conexion, $idVivienda, $idEspacio)
@@ -212,16 +232,17 @@ function obtenerReservasDia($conexion, $idEspacio, $fecha)
     $finDia = $fecha . ' 23:59:59';
 
     $sql = "SELECT 
-                r.fecha_inicio,
-                r.fecha_fin,
-                v.codigo_vivienda
-            FROM reserva r
-            INNER JOIN vivienda v ON v.id = r.id_vivienda
-            WHERE r.id_espacio = ?
-                AND r.estado = 'ACTIVA'
-                AND r.fecha_inicio < ?
-                AND r.fecha_fin > ?
-            ORDER BY r.fecha_inicio ASC";
+            r.id_vivienda,
+            r.fecha_inicio,
+            r.fecha_fin,
+            v.codigo_vivienda
+        FROM reserva r
+        INNER JOIN vivienda v ON v.id = r.id_vivienda
+        WHERE r.id_espacio = ?
+            AND r.estado = 'ACTIVA'
+            AND r.fecha_inicio < ?
+            AND r.fecha_fin > ?
+        ORDER BY r.fecha_inicio ASC";
 
     $stmt = $conexion->prepare($sql);
 
@@ -294,4 +315,101 @@ function buscarSolapamiento($inicioFranja, $finFranja, $elementos)
     }
 
     return null;
+}
+
+function obtenerListasEsperaUsuario($conexion, $idEspacio, $idVivienda, $fecha)
+{
+    $inicioDia = $fecha . ' 00:00:00';
+    $finDia = $fecha . ' 23:59:59';
+
+    $sql = "SELECT 
+                fecha_inicio_deseada,
+                fecha_fin_deseada,
+                posicion
+            FROM lista_espera
+            WHERE id_espacio = ?
+                AND id_vivienda = ?
+                AND estado = 'EN_ESPERA'
+                AND fecha_inicio_deseada < ?
+                AND fecha_fin_deseada > ?";
+
+    $stmt = $conexion->prepare($sql);
+
+    if (!$stmt) {
+        return [];
+    }
+
+    $stmt->bind_param('iiss', $idEspacio, $idVivienda, $finDia, $inicioDia);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    $listas = [];
+
+    if ($resultado) {
+        while ($fila = $resultado->fetch_assoc()) {
+            $listas[] = $fila;
+        }
+    }
+
+    $stmt->close();
+
+    return $listas;
+}
+
+function buscarListaEsperaFranja($inicioFranja, $finFranja, $listasEspera)
+{
+    foreach ($listasEspera as $lista) {
+        if (
+            $lista['fecha_inicio_deseada'] < $finFranja &&
+            $lista['fecha_fin_deseada'] > $inicioFranja
+        ) {
+            return $lista;
+        }
+    }
+
+    return null;
+}
+
+function obtenerIncidenciasPendientesEspacio($conexion, $idEspacio)
+{
+    $sql = "SELECT 
+                c.id,
+                c.comentario,
+                c.fecha_creacion,
+                v.codigo_vivienda
+            FROM comentario_espacio c
+            INNER JOIN vivienda v ON v.id = c.id_vivienda
+            WHERE c.id_espacio = ?
+                AND c.visible = 1
+                AND c.resuelto = 0
+            ORDER BY c.fecha_creacion DESC";
+
+    $stmt = $conexion->prepare($sql);
+
+    if (!$stmt) {
+        return [];
+    }
+
+    $stmt->bind_param('i', $idEspacio);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    $incidencias = [];
+
+    if ($resultado) {
+        while ($fila = $resultado->fetch_assoc()) {
+            $fecha = new DateTime($fila['fecha_creacion']);
+
+            $incidencias[] = [
+                'id' => (int)$fila['id'],
+                'comentario' => $fila['comentario'],
+                'fecha_creacion' => $fecha->format('d/m/Y H:i'),
+                'codigo_vivienda' => $fila['codigo_vivienda']
+            ];
+        }
+    }
+
+    $stmt->close();
+
+    return $incidencias;
 }

@@ -14,6 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectedSpaceUnit = document.getElementById("selected-space-unit");
     const selectedSpaceWaitlist = document.getElementById("selected-space-waitlist");
 
+    const incidenciasCard = document.getElementById("incidencias-card");
+    const incidenciasEspacioList = document.getElementById("incidencias-espacio-list");
+    const incidenciasCountBadge = document.getElementById("incidencias-count-badge");
+
     const LOGIN_URL = "login.html";
     const PANEL_USUARIO_URL = "panelUsuario.html";
 
@@ -121,6 +125,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     pintarEspacio(data.espacio);
                 }
 
+                pintarIncidenciasPendientes(data.incidencias_pendientes || []);
                 pintarFranjas(data.franjas || []);
             })
             .catch(error => {
@@ -171,6 +176,42 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    function pintarIncidenciasPendientes(incidencias) {
+        if (!incidenciasCard || !incidenciasEspacioList) {
+            return;
+        }
+
+        incidenciasEspacioList.innerHTML = "";
+
+        if (!incidencias || incidencias.length === 0) {
+            incidenciasCard.hidden = true;
+            return;
+        }
+
+        incidenciasCard.hidden = false;
+
+        if (incidenciasCountBadge) {
+            incidenciasCountBadge.textContent = incidencias.length;
+        }
+
+        incidencias.forEach(incidencia => {
+            const item = document.createElement("div");
+            item.className = "incidencia-pendiente-item";
+
+            item.innerHTML = `
+            <div class="incidencia-pendiente-content">
+                <strong>${escaparHTML(incidencia.comentario)}</strong>
+                <span>
+                    Comunicada por vivienda ${escaparHTML(incidencia.codigo_vivienda)} · 
+                    ${escaparHTML(incidencia.fecha_creacion)}
+                </span>
+            </div>
+        `;
+
+            incidenciasEspacioList.appendChild(item);
+        });
+    }
+
     function pintarFranjas(franjas) {
         slotsList.innerHTML = "";
 
@@ -186,6 +227,8 @@ document.addEventListener("DOMContentLoaded", function () {
         franjas.forEach(franja => {
             slotsList.appendChild(crearFilaFranja(franja));
         });
+
+        console.log(franjas);
     }
 
     function crearFilaFranja(franja) {
@@ -197,7 +240,9 @@ document.addEventListener("DOMContentLoaded", function () {
         const ocupada = franja.estado === "OCUPADA";
         const bloqueada = franja.estado === "BLOQUEADA";
         const permiteListaEspera = espacioSeleccionado && (Number(espacioSeleccionado.permite_lista_espera) === 1 || espacioSeleccionado.permite_lista_espera === true);
-
+        const posicionListaEspera = Number(franja.mi_posicion_lista_espera) || 0;
+        const yaEstaEnListaEspera = posicionListaEspera > 0;
+        const esMiReserva = franja.es_mi_reserva === true || Number(franja.es_mi_reserva) === 1;
         const claseEstado = disponible ? "available" : (bloqueada ? "blocked" : "occupied");
         const textoEstado = disponible ? "Disponible" : (franjaPasada ? "No disponible" : (bloqueada ? "Bloqueado" : "Ocupado"));
         const detalle = obtenerDetalleFranja(franja, franjaPasada);
@@ -218,9 +263,13 @@ document.addEventListener("DOMContentLoaded", function () {
             <div class="slot-actions">
             ${disponible
                 ? `<button class="btn btn-primary js-reservar" type="button">Reservar</button>`
-                : ocupada && permiteListaEspera && !franjaPasada
-                    ? `<button class="btn btn-secondary js-lista-espera" type="button">Lista de espera</button>`
-                    : `<button class="btn btn-secondary" type="button" disabled>No disponible</button>`
+                : ocupada && esMiReserva
+                    ? `<button class="btn btn-secondary" type="button" disabled>Tu reserva</button>`
+                    : ocupada && permiteListaEspera && !franjaPasada && yaEstaEnListaEspera
+                        ? `<button class="btn btn-secondary" type="button" disabled>Lista de espera: ${posicionListaEspera}</button>`
+                        : ocupada && permiteListaEspera && !franjaPasada
+                            ? `<button class="btn btn-secondary js-lista-espera" type="button">Lista de espera</button>`
+                            : `<button class="btn btn-secondary" type="button" disabled>No disponible</button>`
             }
             </div>
         `;
@@ -336,6 +385,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (franja.estado === "BLOQUEADA") {
             return franja.motivo || "Espacio bloqueado temporalmente.";
+        }
+
+        if (franja.es_mi_reserva === true || Number(franja.es_mi_reserva) === 1) {
+            return "Reserva realizada por ti.";
         }
 
         if (franja.vivienda) {

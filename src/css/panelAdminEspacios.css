@@ -92,6 +92,15 @@ a {
     margin-top: auto;
 }
 
+.nav-title {
+    color: #718080;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    padding: 0 12px 8px;
+    text-transform: uppercase;
+}
+
 .nav-item {
     display: flex;
     min-height: 40px;
