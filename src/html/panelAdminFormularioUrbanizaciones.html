@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminFormularioUrbanizaciones.css">
+    <link rel="stylesheet" href="../css/responsivePanelNavigation.css">
+    <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
     <title>Crear Urbanización</title>
 </head>
 
@@ -13,29 +15,34 @@
     <div class="admin-shell">
         <aside class="sidebar">
             <a href="panelAdminUrbanizaciones.html" class="brand" aria-label="UrbaPadel">
-                <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                <picture>
+                    <source media="(min-width: 721px) and (max-width: 980px)" srcset="../img/UrbaSpaceFavicon.png">
+                    <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                </picture>
             </a>
 
+            <div class="sidebar-navigation">
             <nav class="sidebar-nav" aria-label="Gestión global">
                 <a href="panelAdminUrbanizaciones.html" class="nav-item active" aria-current="page">
-                    <i class="fa-solid fa-table-cells-large"></i>
+                    <i class="fa-regular fa-building"></i>
                     <span>Mis Urbanizaciones</span>
                 </a>
-                <a href="#" class="nav-item">
+                <a href="panelAdminAdministradores.html" class="nav-item">
                     <i class="fa-solid fa-user-group"></i>
                     <span>Administradores</span>
                 </a>
             </nav>
 
             <div class="sidebar-footer">
-                <a href="#" class="nav-item">
+                <a href="panelAdminAjustes.html" class="nav-item">
                     <i class="fa-solid fa-gear"></i>
-                    <span>Ajustes Globales</span>
+                    <span>Ajustes</span>
                 </a>
-                <a href="#" class="nav-item logout">
+                <a href="#" class="nav-item logout" id="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span>Cerrar Sesión</span>
                 </a>
+            </div>
             </div>
         </aside>
 
@@ -50,9 +57,8 @@
                 </div>
 
                 <button class="user-menu" type="button" aria-label="Menú de usuario">
-                    <span class="avatar" aria-hidden="true">S</span>
-                    <span>Super Administrador</span>
-                    <i class="fa-solid fa-chevron-down"></i>
+                    <i class="fa-solid fa-user avatar"></i>
+                    <span id="admin-name">Super Administrador</span>
                 </button>
             </header>
 
@@ -70,7 +76,6 @@
                 <form class="urbanization-form" id="urbanization-form">
                     <div class="field icon-field">
                         <label for="urbanName">Nombre de la Urbanización</label>
-                        <i class="fa-regular fa-building" aria-hidden="true"></i>
                         <input id="urbanName" name="urbanName" type="text" placeholder="Ej. Residencial Los Pinos">
                         <p id="error-urbaName"></p>
                     </div>
@@ -78,7 +83,6 @@
 
                     <div class="field icon-field">
                         <label for="address">Dirección</label>
-                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
                         <input id="address" name="address" type="text" placeholder="Ej. Avenida de la Ilustración 45">
                         <p id="error-address"></p>
                     </div>

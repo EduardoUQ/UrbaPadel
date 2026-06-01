@@ -8,7 +8,9 @@
     <link rel="stylesheet" href="../css/panelAdminUrbanizaciones.css">
     <link rel="stylesheet" href="../css/panelAdminEspacios.css">
     <link rel="stylesheet" href="../css/panelUsuario.css">
-
+    <link rel="stylesheet" href="../css/responsivePanelNavigation.css">
+    <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
+    <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
     <title>Panel Usuario</title>
 </head>
 
@@ -16,9 +18,13 @@
     <div class="admin-shell">
         <aside class="sidebar">
             <a href="#" class="brand" aria-label="UrbaPadel">
-                <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                <picture>
+                    <source media="(min-width: 721px) and (max-width: 980px)" srcset="../img/UrbaSpaceFavicon.png">
+                    <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                </picture>
             </a>
 
+            <div class="sidebar-navigation">
             <nav class="sidebar-nav" aria-label="Panel usuario">
 
                 <a href="../html/panelUsuario.html" class="nav-item active" aria-current="page">
@@ -39,7 +45,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="#" class="nav-item">
+                <a href="panelAdminAjustes.html" class="nav-item">
                     <i class="fa-solid fa-gear"></i>
                     <span>Ajustes</span>
                 </a>
@@ -47,6 +53,7 @@
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span>Cerrar Sesión</span>
                 </a>
+            </div>
             </div>
         </aside>
 

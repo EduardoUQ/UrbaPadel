@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminFormularioEspacios.css">
+    <link rel="stylesheet" href="../css/responsivePanelNavigation.css">
+    <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
     <title>Formulario de Espacios</title>
 </head>
 
@@ -13,9 +15,13 @@
     <div class="admin-shell">
         <aside class="sidebar">
             <a href="panelAdminUrbanizaciones.html" class="brand" aria-label="UrbaPadel">
-                <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                <picture>
+                    <source media="(min-width: 721px) and (max-width: 980px)" srcset="../img/UrbaSpaceFavicon.png">
+                    <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                </picture>
             </a>
 
+            <div class="sidebar-navigation">
             <nav class="sidebar-nav" aria-label="Navegacion principal">
                 <a href="panelAdminUrbanizaciones.html" class="nav-item">
                     <i class="fa-solid fa-chart-column"></i>
@@ -37,14 +43,15 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="#" class="nav-item">
+                <a href="panelAdminAjustes.html" class="nav-item">
                     <i class="fa-solid fa-gear"></i>
                     <span>Ajustes</span>
                 </a>
                 <a href="#" class="nav-item logout" id="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Cerrar Sesión</span>
                 </a>
+            </div>
             </div>
         </aside>
 
@@ -67,8 +74,8 @@
             <section class="content">
                 <div class="content-header">
                     <div>
-                        <h1 id="form-title">Anadir Nuevo Espacio</h1>
-                        <p id="form-subtitle">Crea una nueva pista o espacio comun disponible para reservar en la
+                        <h1 id="form-title">Añadir Nuevo Espacio</h1>
+                        <p id="form-subtitle">Crea una nueva pista o espacio común disponible para reservar en la
                             comunidad.</p>
                     </div>
                 </div>
@@ -76,7 +83,7 @@
                 <form class="space-form" id="space-form">
                     <section class="form-card">
                         <div class="card-heading">
-                            <h2>Informacion General</h2>
+                            <h2>Información General</h2>
                             <p>Detalles principales del espacio a reservar.</p>
                         </div>
 
@@ -88,15 +95,15 @@
                             </div>
 
                             <div class="field">
-                                <label for="spaceType">Tipo de instalacion</label>
+                                <label for="spaceType">Tipo de instalación</label>
                                 <input id="spaceType" name="spaceType" type="text" placeholder="Ej: Pista de Padel">
                                 <p id="error-spaceType"></p>
                             </div>
 
                             <div class="field field-wide">
-                                <label for="description">Descripcion</label>
+                                <label for="description">Descripción</label>
                                 <textarea id="description" name="description"
-                                    placeholder="Breve descripcion del espacio..."></textarea>
+                                    placeholder="Breve descripción del espacio..."></textarea>
                                 <p id="error-description"></p>
                             </div>
                         </div>
@@ -104,8 +111,8 @@
 
                     <section class="form-card">
                         <div class="card-heading">
-                            <h2>Horarios y Limites</h2>
-                            <p>Configura cuando se puede utilizar y las restricciones de tiempo.</p>
+                            <h2>Horarios y Límites</h2>
+                            <p>Configura cuándo se puede utilizar y las restricciones de tiempo.</p>
                         </div>
 
                         <div class="form-grid">
@@ -132,27 +139,27 @@
                             </div>
 
                             <div class="field">
-                                <label for="maxTime">Duracion maxima por reserva (minutos)</label>
+                                <label for="maxTime">Duración máxima por reserva (minutos)</label>
                                 <input id="maxTime" name="maxTime" type="number" min="1" placeholder="120">
                                 <p id="error-maxTime"></p>
                             </div>
 
                             <div class="field">
-                                <label for="maxDayReservation">Maximas reservas por dia</label>
+                                <label for="maxDayReservation">Máximas reservas por día</label>
                                 <input id="maxDayReservation" name="maxDayReservation" type="number" min="1"
                                     placeholder="1">
                                 <p id="error-maxDayReservation"></p>
                             </div>
 
                             <div class="field">
-                                <label for="maxWeekReservation">Maximas reservas por semana</label>
+                                <label for="maxWeekReservation">Máximas reservas por semana</label>
                                 <input id="maxWeekReservation" name="maxWeekReservation" type="number" min="1"
                                     placeholder="7">
                                 <p id="error-maxWeekReservation"></p>
                             </div>
 
                             <div class="field">
-                                <label for="maxAdvance">Maximos dias de anticipacion</label>
+                                <label for="maxAdvance">Máximos días de anticipación</label>
                                 <input id="maxAdvance" name="maxAdvance" type="number" min="1" placeholder="30">
                                 <p id="error-maxAdvance"></p>
                             </div>
@@ -167,23 +174,23 @@
                             <div class="field select-field">
                                 <label for="allowWaitlist">Permite lista de espera</label>
                                 <select id="allowWaitlist" name="allowWaitlist">
-                                    <option value="1" selected>Si</option>
+                                    <option value="1" selected>Sí</option>
                                     <option value="0">No</option>
                                 </select>
                                 <p id="error-allowWaitlist"></p>
                             </div>
 
                             <div class="field select-field">
-                                <label for="allowCancel">Permite cancelacion</label>
+                                <label for="allowCancel">Permite cancelación</label>
                                 <select id="allowCancel" name="allowCancel">
-                                    <option value="1" selected>Si</option>
+                                    <option value="1" selected>Sí</option>
                                     <option value="0">No</option>
                                 </select>
                                 <p id="error-allowCancel"></p>
                             </div>
 
                             <div class="field">
-                                <label for="minutesLimitCancel">Minutos limite para cancelar</label>
+                                <label for="minutesLimitCancel">Minutos límite para cancelar</label>
                                 <input id="minutesLimitCancel" name="minutesLimitCancel" type="number" min="0"
                                     placeholder="60">
                                 <p id="error-minutesLimitCancel"></p>
@@ -200,7 +207,7 @@
                         <div class="field">
                             <label class="sr-only" for="rules">Normas de uso</label>
                             <textarea id="rules" name="rules" class="rules-area"></textarea>
-                            <small>Estas normas apareceran como terminos y condiciones al finalizar una reserva.</small>
+                            <small>Estas normas aparecerán como términos y condiciones al finalizar una reserva.</small>
                             <p id="error-rules"></p>
                         </div>
                     </section>
