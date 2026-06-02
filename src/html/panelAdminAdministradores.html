@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminAdministradores.css">
+    <link rel="stylesheet" href="../css/responsivePanelNavigation.css">
+    <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
     <title>Administradores</title>
 </head>
 
@@ -13,14 +15,16 @@
     <div class="admin-shell">
         <aside class="sidebar">
             <a href="panelAdminUrbanizaciones.html" class="brand" aria-label="UrbaPadel">
-                <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                <picture>
+                    <source media="(min-width: 721px) and (max-width: 980px)" srcset="../img/UrbaSpaceFavicon.png">
+                    <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                </picture>
             </a>
 
+            <div class="sidebar-navigation">
             <nav class="sidebar-nav" aria-label="Gestion global">
-                <p class="nav-title">Gestion Global</p>
-
                 <a href="panelAdminUrbanizaciones.html" class="nav-item">
-                    <i class="fa-solid fa-table-cells-large"></i>
+                    <i class="fa-regular fa-building"></i>
                     <span>Mis Urbanizaciones</span>
                 </a>
                 <a href="#" class="nav-item active" aria-current="page">
@@ -30,29 +34,28 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="#" class="nav-item">
+                <a href="panelAdminAjustes.html" class="nav-item">
                     <i class="fa-solid fa-gear"></i>
-                    <span>Ajustes Globales</span>
+                    <span>Ajustes</span>
                 </a>
                 <a href="#" class="nav-item logout" id="logout">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar Sesion</span>
+                    <span>Cerrar Sesión</span>
                 </a>
+            </div>
             </div>
         </aside>
 
         <main class="main-panel">
             <header class="topbar">
                 <div class="breadcrumbs" aria-label="Ruta">
-                    <span>Gestion Global</span>
+                    <span>Gestión Global</span>
                     <i class="fa-solid fa-chevron-right"></i>
                     <strong>Administradores</strong>
                 </div>
 
                 <button class="user-menu" type="button" aria-label="Menu de usuario">
-                    <span class="avatar" aria-hidden="true">
-                        <i class="fa-solid fa-user"></i>
-                    </span>
+                    <i class="fa-solid fa-user"></i>
                     <span id="admin-name">Administrador</span>
                 </button>
             </header>
@@ -67,7 +70,7 @@
                     <section class="panel-card create-admin" aria-labelledby="new-admin-title">
                         <div class="panel-heading">
                             <h2 id="new-admin-title">Nuevo Administrador</h2>
-                            <p>Anade un nuevo administrador al sistema.</p>
+                            <p>Añade un nuevo administrador al sistema.</p>
                         </div>
 
                         <form class="admin-form" id="admin-form">
@@ -95,7 +98,7 @@
                     <section class="panel-card admin-list" aria-labelledby="admin-list-title">
                         <div class="panel-heading">
                             <h2 id="admin-list-title">Lista de Administradores</h2>
-                            <p>Directorio de usuarios con acceso de administracion global.</p>
+                            <p>Directorio de usuarios con acceso de administración global.</p>
                         </div>
 
                         <div class="table-wrap">

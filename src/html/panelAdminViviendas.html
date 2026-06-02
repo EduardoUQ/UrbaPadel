@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminViviendas.css">
-    <link rel="icon" href="data:,">
+    <link rel="stylesheet" href="../css/responsivePanelNavigation.css">
+    <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
     <title>Viviendas</title>
 </head>
 
@@ -14,9 +15,13 @@
     <div class="admin-shell">
         <aside class="sidebar">
             <a href="panelAdminUrbanizaciones.html" class="brand" aria-label="UrbaPadel">
-                <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                <picture>
+                    <source media="(min-width: 721px) and (max-width: 980px)" srcset="../img/UrbaSpaceFavicon.png">
+                    <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                </picture>
             </a>
 
+            <div class="sidebar-navigation">
             <nav class="sidebar-nav" aria-label="Navegación principal">
                 <a href="panelAdminUrbanizaciones.html" class="nav-item">
                     <i class="fa-solid fa-chart-column"></i>
@@ -34,7 +39,7 @@
             </nav>
 
             <div class="sidebar-footer">
-                <a href="#" class="nav-item">
+                <a href="panelAdminAjustes.html" class="nav-item">
                     <i class="fa-solid fa-gear"></i>
                     <span>Ajustes</span>
                 </a>
@@ -42,6 +47,7 @@
                     <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     <span>Cerrar Sesión</span>
                 </a>
+            </div>
             </div>
         </aside>
 

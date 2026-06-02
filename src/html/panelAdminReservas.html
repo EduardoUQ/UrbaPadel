@@ -6,10 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminEspacios.css">
-    <link rel="stylesheet" href="../css/panelAdminIncidencias.css">
+    <link rel="stylesheet" href="../css/panelAdminRerservas.css">
     <link rel="stylesheet" href="../css/responsivePanelNavigation.css">
     <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
-    <title>Incidencias</title>
+    <title>Reservas</title>
 </head>
 
 <body>
@@ -38,6 +38,16 @@
                     <i class="fa-solid fa-users"></i>
                     <span>Viviendas</span>
                 </a>
+
+                <a href="panelAdminReservas.html" class="nav-item active" id="nav-reservas" aria-current="page">
+                    <i class="fa-regular fa-calendar-check"></i>
+                    <span>Reservas</span>
+                </a>
+
+                <a href="panelAdminIncidencias.html" class="nav-item" id="nav-incidencias">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    <span>Incidencias</span>
+                </a>
             </nav>
 
             <div class="sidebar-footer">
@@ -56,7 +66,7 @@
         <main class="main-panel">
             <header class="topbar">
                 <div class="breadcrumbs" aria-label="Ruta">
-                    <span>Incidencias</span>
+                    <span>Reservas</span>
                 </div>
 
                 <button class="user-menu" type="button" aria-label="Menú de usuario">
@@ -68,44 +78,44 @@
             <section class="content">
                 <div class="content-header">
                     <div>
-                        <h1>Incidencias</h1>
-                        <p>Consulta y gestiona las incidencias comunicadas por las viviendas de <span
-                                id="urbanization-name">la comunidad</span>.</p>
+                        <h1>Reservas</h1>
+                        <p>Consulta las reservas activas, canceladas e históricas de <span id="urbanization-name">la
+                                comunidad</span>.</p>
                     </div>
                 </div>
 
-                <section class="list-card" aria-label="Listado de incidencias">
-                    <div class="incidencias-tabs">
-                        <button class="tab-btn active" type="button" data-filter="pendientes">Pendientes</button>
-                        <button class="tab-btn" type="button" data-filter="resueltas">Resueltas</button>
+                <section class="list-card" aria-label="Listado de reservas">
+                    <div class="reservas-tabs">
+                        <button class="tab-btn active" type="button" data-filter="activas">Activas</button>
+                        <button class="tab-btn" type="button" data-filter="historial">Historial</button>
                         <button class="tab-btn" type="button" data-filter="todas">Todas</button>
                     </div>
 
                     <div class="table-wrap">
-                        <table class="spaces-table incidencias-table">
+                        <table class="spaces-table reservas-table">
                             <thead>
                                 <tr>
                                     <th>Espacio</th>
                                     <th>Vivienda</th>
-                                    <th>Comentario</th>
                                     <th>Fecha</th>
+                                    <th>Horario</th>
                                     <th>Estado</th>
                                     <th>Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="incidencias-table-body"></tbody>
+                            <tbody id="reservas-table-body"></tbody>
                         </table>
                     </div>
 
                     <div class="list-footer">
-                        <p id="incidencias-count">Mostrando 0 incidencias</p>
+                        <p id="reservas-count">Mostrando 0 reservas</p>
                     </div>
                 </section>
             </section>
         </main>
     </div>
 
-    <script src="../js/panelAdminIncidencias.js"></script>
+    <script src="../js/panelAdminReservas.js"></script>
 </body>
 
 </html>

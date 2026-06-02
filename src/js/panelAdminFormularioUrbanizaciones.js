@@ -11,10 +11,56 @@ document.addEventListener("DOMContentLoaded", function () {
     const subtitle = document.querySelector(".form-heading p");
     const breadcrumb = document.querySelector(".breadcrumbs strong");
     const statusField = document.getElementById("status-field");
-
+    const adminName = document.getElementById("admin-name");
+    const logoutButton = document.getElementById("logout");
     const params = new URLSearchParams(window.location.search);
     const idUrbanizacion = params.get("idUrbanizacion") || sessionStorage.getItem("idUrbanizacionSeleccionada");
     const esEdicion = Boolean(params.get("modo") === "editar" && idUrbanizacion);
+    const LOGIN_URL = "login.html";
+
+    prepararLogout();
+    validarSesionAdmin();
+
+    function validarSesionAdmin() {
+
+        fetch("../php/sessionAdmin.php")
+            .then(response => response.json())
+            .then(data => {
+                if (data.status !== "success" || data.rol !== "admin") {
+                    window.location.href = LOGIN_URL;
+                    return;
+                }
+
+                if (adminName) {
+                    adminName.textContent = data.nombre || "Administrador";
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                window.location.href = LOGIN_URL;
+            });
+    }
+
+    function prepararLogout() {
+        if (!logoutButton) {
+            return;
+        }
+
+        logoutButton.addEventListener("click", function (event) {
+            event.preventDefault();
+
+            fetch("../php/logout.php")
+                .then(response => response.json())
+                .then(() => {
+                    window.location.href = LOGIN_URL;
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    window.location.href = LOGIN_URL;
+                });
+        });
+    }
+
 
     const campos = [
         {

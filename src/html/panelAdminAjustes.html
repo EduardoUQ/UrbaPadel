@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="../css/panelAdminAjustes.css">
+    <link rel="stylesheet" href="../css/responsivePanelNavigation.css">
+    <link rel="shortcut icon" href="../img/UrbaSpaceFavicon.png" type="image/x-icon">
+    <title>Ajustes Globales</title>
+</head>
+
+<body>
+    <div class="admin-shell">
+        <aside class="sidebar">
+            <a href="panelAdminUrbanizaciones.html" class="brand" id="home-link" aria-label="UrbaPadel">
+                <picture>
+                    <source media="(min-width: 721px) and (max-width: 980px)" srcset="../img/UrbaSpaceFavicon.png">
+                    <img src="../img/UrbaSpaceLogo.png" alt="Logo de UrbaSpace" class="logo">
+                </picture>
+            </a>
+
+            <div class="sidebar-navigation">
+            <nav class="sidebar-nav" id="settings-navigation" aria-label="Gestion global">
+                <a href="panelAdminUrbanizaciones.html" class="nav-item">
+                    <i class="fa-regular fa-building"></i>
+                    <span>Mis Urbanizaciones</span>
+                </a>
+                <a href="panelAdminAdministradores.html" class="nav-item" aria-current="page">
+                    <i class="fa-solid fa-user-group"></i>
+                    <span>Administradores</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="panelAdminAjustes.html" class="nav-item active" aria-current="page">
+                    <i class="fa-solid fa-gear"></i>
+                    <span>Ajustes</span>
+                </a>
+                <a href="#" class="nav-item logout" id="logout">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span>Cerrar Sesión</span>
+                </a>
+            </div>
+            </div>
+        </aside>
+
+        <main class="main-panel">
+            <header class="topbar">
+                <div class="breadcrumbs" aria-label="Ruta">
+                    <span id="panel-context">Gestión Global</span>
+                    <i class="fa-solid fa-chevron-right"></i>
+                    <strong>Ajustes de la cuenta</strong>
+                </div>
+
+                <button class="user-menu" type="button" aria-label="Menu de usuario">
+                    <i class="fa-solid fa-user"></i>
+                    <span id="account-name">Administrador</span>
+                </button>
+            </header>
+
+            <section class="content">
+                <div class="content-header">
+                    <h1>Ajustes de la cuenta</h1>
+                    <p>Gestiona tu cambio de contraseña</p>
+                </div>
+
+                <div class="admin-management">
+                    <section class="panel-card create-admin" aria-labelledby="new-password-title">
+                        <div class="panel-heading">
+                            <h2 id="new-password-title">Cambiar contraseña</h2>
+                            <p>Introduce tu contraseña actual y establece la nueva.</p>
+                        </div>
+
+                        <form class="admin-form" id="password-form">
+                            <label for="actualpassword-input">Contraseña actual</label>
+                            <div class="input-shell">
+                                <input type="password" id="actualpassword-input" name="actualpassword"
+                                    autocomplete="current-password">
+                                <button class="password-toggle" type="button" aria-label="Mostrar contraseña"
+                                    aria-pressed="false">
+                                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <p class="field-error" id="actualpassword-error"></p>
+
+                            <label for="newpassword-input">Nueva contraseña</label>
+                            <div class="input-shell">
+                                <input type="password" id="newpassword-input" name="newpassword"
+                                    autocomplete="new-password">
+                                <button class="password-toggle" type="button" aria-label="Mostrar contraseña"
+                                    aria-pressed="false">
+                                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <p class="field-error" id="newpassword-error"></p>
+
+                            <label for="repassword-input">Confirmar nueva contraseña</label>
+                            <div class="input-shell">
+                                <input type="password" id="repassword-input" name="repassword"
+                                    autocomplete="new-password">
+                                <button class="password-toggle" type="button" aria-label="Mostrar contraseña"
+                                    aria-pressed="false">
+                                    <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                            <p class="field-error" id="repassword-error"></p>
+
+                            <button class="btn btn-primary" type="submit" id="change-password-button">
+                                <i class="fa-solid fa-lock"></i>
+                                <span>Cambiar contraseña</span>
+                            </button>
+                        </form>
+                    </section>
+                </div>
+            </section>
+        </main>
+    </div>
+    <script src="../js/panelAdminAjustes.js"></script>
+</body>
+
+</html>
