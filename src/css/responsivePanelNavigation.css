@@ -51,8 +51,13 @@
     }
 
     .sidebar-nav,
-    .sidebar-footer {
+    .sidebar-footer,
+    .superuser-menu {
         display: contents;
+    }
+
+    .superuser-menu[hidden] {
+        display: none;
     }
 
     .sidebar-footer {
