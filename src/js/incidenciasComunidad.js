@@ -1,27 +1,27 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("incidencia-form");
-    const selectEspacio = document.getElementById("idEspacio");
-    const comentarioInput = document.getElementById("comentario");
-    const submitButton = document.getElementById("submit-incidencia");
     const tableBody = document.getElementById("incidencias-table-body");
     const incidenciasCount = document.getElementById("incidencias-count");
     const usuarioName = document.getElementById("usuario-name");
     const logoutButton = document.getElementById("logout");
-
-    const errorEspacio = document.getElementById("error-idEspacio");
-    const errorComentario = document.getElementById("error-comentario");
+    const urbanizacionTexto = document.getElementById("urbanizacion-texto");
+    const tabButtons = document.querySelectorAll(".tab-btn");
 
     const LOGIN_URL = "login.html";
+    const PANEL_USUARIO_URL = "panelUsuario.html";
 
-    if (!form || !tableBody) {
+    let filtroActual = "pendientes";
+    let incidencias = [];
+
+    if (!tableBody) {
         return;
     }
 
+    tableBody.innerHTML = "";
     prepararLogout();
-    prepararEventos();
-    validarSesionUsuario();
+    prepararTabs();
+    validarSesionSuperusuario();
 
-    function validarSesionUsuario() {
+    function validarSesionSuperusuario() {
         mostrarMensaje("Comprobando sesión...");
 
         fetch("../php/sessionUsuario.php")
@@ -32,12 +32,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                if (usuarioName) {
-                    usuarioName.textContent = data.nombre_usuario || "Usuario";
-                    mostrarMenuSuperusuario(data.superusuario);
+                if (!(data.superusuario === true || Number(data.superusuario) === 1)) {
+                    mostrarModalMensaje(
+                        "No tienes permisos de superusuario.",
+                        false,
+                        function () {
+                            window.location.href = PANEL_USUARIO_URL;
+                        }
+                    );
+                    return;
                 }
 
-                cargarDatos();
+                mostrarMenuSuperusuario(true);
+
+                if (usuarioName) {
+                    usuarioName.textContent = data.nombre_usuario || "Usuario";
+                }
+
+                if (urbanizacionTexto && data.urbanizacion) {
+                    urbanizacionTexto.textContent = "Consulta y resuelve las incidencias comunicadas en " + data.urbanizacion + ".";
+                }
+
+                cargarIncidencias();
             })
             .catch(error => {
                 console.error("Error:", error);
@@ -65,53 +81,28 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    function prepararEventos() {
-        selectEspacio.addEventListener("change", function () {
-            limpiarError(selectEspacio, errorEspacio);
-        });
+    function prepararTabs() {
+        tabButtons.forEach(button => {
+            button.addEventListener("click", function () {
+                tabButtons.forEach(btn => btn.classList.remove("active"));
+                button.classList.add("active");
 
-        comentarioInput.addEventListener("input", function () {
-            limpiarError(comentarioInput, errorComentario);
-        });
-
-        form.addEventListener("submit", function (event) {
-            event.preventDefault();
-
-            if (!validarFormulario()) {
-                return;
-            }
-
-            crearIncidencia();
-        });
-    }
-
-    function cargarDatos() {
-        cargarEspacios();
-        cargarIncidencias();
-    }
-
-    function cargarEspacios() {
-        fetch("../php/incidenciasUsuario.php?funcion=listarEspacios")
-            .then(response => response.text())
-            .then(parsearJson)
-            .then(data => {
-                if (data.status !== "success") {
-                    mostrarModalMensaje(data.message || "No se pudieron cargar los espacios.", false);
-                    return;
-                }
-
-                pintarEspacios(data.espacios || []);
-            })
-            .catch(error => {
-                console.error("Error:", error);
-                mostrarModalMensaje("Error al cargar los espacios.", false);
+                filtroActual = button.dataset.filter || "pendientes";
+                pintarIncidencias();
             });
+        });
     }
 
     function cargarIncidencias() {
         mostrarMensaje("Cargando incidencias...");
 
-        fetch("../php/incidenciasUsuario.php?funcion=listarIncidencias")
+        const formData = new FormData();
+        formData.append("funcion", "listarIncidencias");
+
+        fetch("../php/incidenciasComunidad.php", {
+            method: "POST",
+            body: formData
+        })
             .then(response => response.text())
             .then(parsearJson)
             .then(data => {
@@ -121,7 +112,8 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                pintarIncidencias(data.incidencias || []);
+                incidencias = data.incidencias || [];
+                pintarIncidencias();
             })
             .catch(error => {
                 console.error("Error:", error);
@@ -130,27 +122,31 @@ document.addEventListener("DOMContentLoaded", function () {
             });
     }
 
-    function pintarEspacios(espacios) {
-        selectEspacio.innerHTML = '<option value="">Selecciona un espacio</option>';
-
-        espacios.forEach(espacio => {
-            const option = document.createElement("option");
-            option.value = espacio.id;
-            option.textContent = espacio.nombre + " - " + espacio.tipo;
-            selectEspacio.appendChild(option);
-        });
-    }
-
-    function pintarIncidencias(incidencias) {
+    function pintarIncidencias() {
         tableBody.innerHTML = "";
-        actualizarContador(incidencias.length);
 
-        if (incidencias.length === 0) {
-            mostrarMensaje("Todavía no has enviado incidencias.");
+        const incidenciasFiltradas = incidencias.filter(incidencia => {
+            const resuelta = Boolean(incidencia.resuelto);
+
+            if (filtroActual === "todas") {
+                return true;
+            }
+
+            if (filtroActual === "resueltas") {
+                return resuelta;
+            }
+
+            return !resuelta;
+        });
+
+        actualizarContador(incidenciasFiltradas.length);
+
+        if (incidenciasFiltradas.length === 0) {
+            mostrarMensaje("No hay incidencias para mostrar.");
             return;
         }
 
-        incidencias.forEach(incidencia => {
+        incidenciasFiltradas.forEach(incidencia => {
             tableBody.appendChild(crearFilaIncidencia(incidencia));
         });
     }
@@ -169,48 +165,46 @@ document.addEventListener("DOMContentLoaded", function () {
                 </div>
             </td>
             <td>
+                <div class="incidencia-cell">
+                    <strong>${escaparHTML(incidencia.codigo_vivienda)}</strong>
+                    <span>${escaparHTML(incidencia.nombre_usuario)}</span>
+                </div>
+            </td>
+            <td>
                 <p class="incidencia-comment">${escaparHTML(incidencia.comentario)}</p>
             </td>
             <td>${escaparHTML(incidencia.fecha_creacion)}</td>
             <td>
                 <span class="status-badge ${claseEstado}">${textoEstado}</span>
             </td>
+            <td>
+                <div class="row-actions" aria-label="Acciones de incidencia">
+                    <button class="icon-btn success js-resolver-incidencia" type="button" ${resuelta ? "disabled" : ""} aria-label="Resolver incidencia">
+                        <i class="fa-solid fa-check"></i>
+                    </button>
+                </div>
+            </td>
         `;
+
+        const botonResolver = tr.querySelector(".js-resolver-incidencia");
+
+        if (botonResolver && !resuelta) {
+            botonResolver.addEventListener("click", function () {
+                mostrarModalConfirmacion("¿Marcar esta incidencia como resuelta?", function () {
+                    resolverIncidencia(incidencia.id);
+                });
+            });
+        }
 
         return tr;
     }
 
-    function validarFormulario() {
-        let valido = true;
-
-        if (!selectEspacio.value) {
-            mostrarError(selectEspacio, errorEspacio, "Selecciona un espacio");
-            valido = false;
-        }
-
-        if (comentarioInput.value.trim() === "") {
-            mostrarError(comentarioInput, errorComentario, "Escribe una incidencia");
-            valido = false;
-        } else if (comentarioInput.value.trim().length < 10) {
-            mostrarError(comentarioInput, errorComentario, "La incidencia debe tener al menos 10 caracteres");
-            valido = false;
-        }
-
-        return valido;
-    }
-
-    function crearIncidencia() {
+    function resolverIncidencia(idIncidencia) {
         const formData = new FormData();
-        formData.append("funcion", "crearIncidencia");
-        formData.append("idEspacio", selectEspacio.value);
-        formData.append("comentario", comentarioInput.value.trim());
+        formData.append("funcion", "resolverIncidencia");
+        formData.append("idIncidencia", idIncidencia);
 
-        if (submitButton) {
-            submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fa-solid fa-spinner"></i><span>Enviando...</span>';
-        }
-
-        fetch("../php/incidenciasUsuario.php", {
+        fetch("../php/incidenciasComunidad.php", {
             method: "POST",
             body: formData
         })
@@ -220,11 +214,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 const correcto = data.status === "success";
 
                 mostrarModalMensaje(
-                    correcto ? "Incidencia enviada correctamente" : (data.message || "No se pudo enviar la incidencia"),
+                    correcto ? "Incidencia resuelta correctamente" : (data.message || "No se pudo resolver la incidencia"),
                     correcto,
                     function () {
                         if (correcto) {
-                            form.reset();
                             cargarIncidencias();
                         }
                     }
@@ -233,29 +226,23 @@ document.addEventListener("DOMContentLoaded", function () {
             .catch(error => {
                 console.error("Error:", error);
                 mostrarModalMensaje("Error al conectar con el servidor.", false);
-            })
-            .finally(() => {
-                if (submitButton) {
-                    submitButton.disabled = false;
-                    submitButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i><span>Enviar incidencia</span>';
-                }
             });
     }
 
-    function mostrarError(input, error, mensaje) {
-        error.textContent = mensaje;
-        input.classList.add("input-error");
-    }
+    function mostrarMenuSuperusuario(esSuperusuario) {
+        const superuserMenu = document.getElementById("superuser-menu");
 
-    function limpiarError(input, error) {
-        error.textContent = "";
-        input.classList.remove("input-error");
+        if (!superuserMenu) {
+            return;
+        }
+
+        superuserMenu.hidden = !(esSuperusuario === true || Number(esSuperusuario) === 1);
     }
 
     function mostrarMensaje(texto) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="4" class="spaces-message">${escaparHTML(texto)}</td>
+                <td colspan="6" class="spaces-message">${escaparHTML(texto)}</td>
             </tr>
         `;
     }
@@ -283,6 +270,33 @@ document.addEventListener("DOMContentLoaded", function () {
         return elemento.innerHTML;
     }
 
+    function mostrarModalConfirmacion(mensaje, onAccept) {
+        const modal = crearModal();
+        const modalText = modal.querySelector(".modal-text");
+        const modalIcon = modal.querySelector(".modal-icon");
+        const cancelButton = modal.querySelector(".modal-cancel");
+        const acceptButton = modal.querySelector(".modal-accept");
+
+        modalText.textContent = mensaje;
+        modalIcon.className = "modal-icon modal-icon-warning";
+        modalIcon.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i>';
+        cancelButton.hidden = false;
+        acceptButton.textContent = "Aceptar";
+        modal.hidden = false;
+
+        cancelButton.onclick = function () {
+            modal.hidden = true;
+        };
+
+        acceptButton.onclick = function () {
+            modal.hidden = true;
+
+            if (typeof onAccept === "function") {
+                onAccept();
+            }
+        };
+    }
+
     function mostrarModalMensaje(mensaje, correcto, onClose) {
         const modal = crearModal();
         const modalText = modal.querySelector(".modal-text");
@@ -307,14 +321,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function crearModal() {
-        let modal = document.getElementById("incidencias-modal");
+        let modal = document.getElementById("comunidad-incidencias-modal");
 
         if (modal) {
             return modal;
         }
 
         modal = document.createElement("div");
-        modal.id = "incidencias-modal";
+        modal.id = "comunidad-incidencias-modal";
         modal.className = "modal-backdrop";
         modal.hidden = true;
         modal.innerHTML = `
@@ -330,15 +344,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.body.appendChild(modal);
         return modal;
-    }
-
-    function mostrarMenuSuperusuario(esSuperusuario) {
-        const superuserMenu = document.getElementById("superuser-menu");
-
-        if (!superuserMenu) {
-            return;
-        }
-
-        superuserMenu.hidden = !(esSuperusuario === true || Number(esSuperusuario) === 1);
     }
 });

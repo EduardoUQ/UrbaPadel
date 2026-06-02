@@ -151,3 +151,15 @@
         grid-template-columns: 1fr;
     }
 }
+
+.superuser-menu {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+}
+
+.superuser-menu[hidden] {
+    display: none;
+}

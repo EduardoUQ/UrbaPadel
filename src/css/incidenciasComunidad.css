@@ -1,4 +1,4 @@
-.reservas-tabs {
+.incidencias-tabs {
     display: flex;
     gap: 10px;
     border-bottom: 1px solid var(--line);
@@ -23,29 +23,86 @@
     color: #ffffff;
 }
 
-.reserva-cell strong {
+.incidencias-table {
+    min-width: 1040px;
+}
+
+.incidencias-table th:nth-child(1) {
+    width: 18%;
+}
+
+.incidencias-table th:nth-child(2) {
+    width: 15%;
+}
+
+.incidencias-table th:nth-child(3) {
+    width: 35%;
+}
+
+.incidencias-table th:nth-child(4) {
+    width: 13%;
+}
+
+.incidencias-table th:nth-child(5) {
+    width: 10%;
+}
+
+.incidencias-table th:nth-child(6) {
+    width: 9%;
+    text-align: center;
+}
+
+.incidencia-cell strong {
     display: block;
     color: #1d2530;
     font-weight: 800;
 }
 
-.reserva-cell span {
+.incidencia-cell span {
     display: block;
     color: var(--muted);
     font-size: 13px;
     margin-top: 4px;
 }
 
-.status-badge.cancelada {
-    background: #ef4444;
+.incidencia-comment {
+    max-width: 420px;
+    color: #23303e;
+    line-height: 1.45;
+    white-space: normal;
 }
 
-.status-badge.finalizada {
-    background: #64748b;
+.status-badge.pendiente {
+    background: #f59e0b;
 }
 
-.status-badge.activa {
+.status-badge.resuelta {
     background: var(--green);
+}
+
+.icon-btn.success {
+    color: var(--green);
+}
+
+.icon-btn.success:hover {
+    color: var(--green);
+}
+
+.icon-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.superuser-menu {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+}
+
+.superuser-menu[hidden] {
+    display: none;
 }
 
 .nav-badge {
@@ -68,20 +125,8 @@
 }
 
 @media (max-width: 720px) {
-    .reservas-tabs {
+    .incidencias-tabs {
         display: grid;
         grid-template-columns: 1fr;
     }
-}
-
-.superuser-menu {
-    display: grid;
-    gap: 8px;
-    margin-top: 18px;
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
-}
-
-.superuser-menu[hidden] {
-    display: none;
 }

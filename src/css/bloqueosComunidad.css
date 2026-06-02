@@ -1,9 +1,9 @@
-.incidencias-layout {
+.bloqueos-layout {
     display: grid;
     gap: 22px;
 }
 
-.incidencia-form-card {
+.bloqueo-form-card {
     display: grid;
     gap: 22px;
     border: 1px solid var(--line);
@@ -14,7 +14,7 @@
 }
 
 .card-heading h2,
-.incidencias-list-header h2 {
+.bloqueos-list-header h2 {
     color: #1d2530;
     font-size: 20px;
     line-height: 1.2;
@@ -22,9 +22,15 @@
 }
 
 .card-heading p,
-.incidencias-list-header p {
+.bloqueos-list-header p {
     color: var(--muted);
     font-size: 14px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: 1.4fr repeat(4, minmax(0, 1fr));
+    gap: 18px;
 }
 
 .field {
@@ -39,6 +45,7 @@
 }
 
 .field select,
+.field input,
 .field textarea {
     width: 100%;
     border: 1px solid var(--line);
@@ -49,19 +56,21 @@
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
 
-.field select {
+.field select,
+.field input {
     height: 43px;
     padding: 0 15px;
 }
 
 .field textarea {
-    min-height: 120px;
+    min-height: 100px;
     line-height: 1.6;
     padding: 14px 15px;
     resize: vertical;
 }
 
 .field select:focus,
+.field input:focus,
 .field textarea:focus {
     border-color: var(--teal);
     box-shadow: 0 0 0 3px rgba(10, 160, 154, 0.12);
@@ -83,57 +92,62 @@
     justify-content: flex-end;
 }
 
-.incidencias-list-header {
+.bloqueos-list-header {
     border-bottom: 1px solid var(--line);
     padding: 20px 23px;
 }
 
-.incidencias-table {
-    min-width: 820px;
+.bloqueos-table {
+    min-width: 1080px;
 }
 
-.incidencias-table th:nth-child(1) {
-    width: 25%;
-}
-
-.incidencias-table th:nth-child(2) {
-    width: 43%;
-}
-
-.incidencias-table th:nth-child(3) {
-    width: 17%;
-}
-
-.incidencias-table th:nth-child(4) {
-    width: 15%;
-}
-
-.incidencia-cell strong {
+.bloqueo-cell strong {
     display: block;
     color: #1d2530;
     font-weight: 800;
 }
 
-.incidencia-cell span {
+.bloqueo-cell span {
     display: block;
     color: var(--muted);
     font-size: 13px;
     margin-top: 4px;
 }
 
-.incidencia-comment {
-    max-width: 460px;
+.bloqueo-motivo {
+    max-width: 320px;
     color: #23303e;
     line-height: 1.45;
     white-space: normal;
 }
 
-.status-badge.pendiente {
-    background: #f59e0b;
+.status-badge.activo {
+    background: var(--danger);
 }
 
-.status-badge.resuelta {
-    background: var(--green);
+.status-badge.finalizado {
+    background: #64748b;
+}
+
+.status-badge.desactivado {
+    background: #94a3b8;
+}
+
+.icon-btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+.superuser-menu {
+    display: grid;
+    gap: 8px;
+    margin-top: 18px;
+    border-top: 1px solid var(--line);
+    padding-top: 16px;
+}
+
+.superuser-menu[hidden] {
+    display: none;
 }
 
 .nav-badge {
@@ -155,7 +169,17 @@
     display: none;
 }
 
+@media (max-width: 1150px) {
+    .form-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
 @media (max-width: 720px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
     .form-actions {
         align-items: stretch;
         flex-direction: column;
@@ -164,16 +188,4 @@
     .form-actions .btn {
         width: 100%;
     }
-}
-
-.superuser-menu {
-    display: grid;
-    gap: 8px;
-    margin-top: 18px;
-    border-top: 1px solid var(--line);
-    padding-top: 16px;
-}
-
-.superuser-menu[hidden] {
-    display: none;
 }

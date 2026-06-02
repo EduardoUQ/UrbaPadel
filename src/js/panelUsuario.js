@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (usuarioName) {
                     usuarioName.textContent = data.nombre_usuario || "Usuario";
+                    mostrarMenuSuperusuario(data.superusuario);
                 }
 
                 if (urbanizacionTexto && data.urbanizacion) {
@@ -246,5 +247,15 @@ document.addEventListener("DOMContentLoaded", function () {
         const elemento = document.createElement("span");
         elemento.textContent = valor || "";
         return elemento.innerHTML;
+    }
+
+    function mostrarMenuSuperusuario(esSuperusuario) {
+        const superuserMenu = document.getElementById("superuser-menu");
+
+        if (!superuserMenu) {
+            return;
+        }
+
+        superuserMenu.hidden = !(esSuperusuario === true || Number(esSuperusuario) === 1);
     }
 });

@@ -1,24 +1,28 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const selectEspacio = document.getElementById("idEspacio");
     const tableBody = document.getElementById("reservas-table-body");
     const reservasCount = document.getElementById("reservas-count");
     const usuarioName = document.getElementById("usuario-name");
     const logoutButton = document.getElementById("logout");
+    const urbanizacionTexto = document.getElementById("urbanizacion-texto");
     const tabButtons = document.querySelectorAll(".tab-btn");
 
     const LOGIN_URL = "login.html";
+    const PANEL_USUARIO_URL = "panelUsuario.html";
 
     let filtroActual = "activas";
     let reservas = [];
 
-    if (!tableBody) {
+    if (!tableBody || !selectEspacio) {
         return;
     }
 
     prepararLogout();
     prepararTabs();
-    validarSesionUsuario();
+    prepararSelectorEspacios();
+    validarSesionSuperusuario();
 
-    function validarSesionUsuario() {
+    function validarSesionSuperusuario() {
         mostrarMensaje("Comprobando sesión...");
 
         fetch("../php/sessionUsuario.php")
@@ -29,12 +33,28 @@ document.addEventListener("DOMContentLoaded", function () {
                     return;
                 }
 
-                if (usuarioName) {
-                    usuarioName.textContent = data.nombre_usuario || "Usuario";
-                    mostrarMenuSuperusuario(data.superusuario);
+                if (!(data.superusuario === true || Number(data.superusuario) === 1)) {
+                    mostrarModalMensaje(
+                        "No tienes permisos de superusuario.",
+                        false,
+                        function () {
+                            window.location.href = PANEL_USUARIO_URL;
+                        }
+                    );
+                    return;
                 }
 
-                cargarReservas();
+                mostrarMenuSuperusuario(true);
+
+                if (usuarioName) {
+                    usuarioName.textContent = data.nombre_usuario || "Usuario";
+                }
+
+                if (urbanizacionTexto && data.urbanizacion) {
+                    urbanizacionTexto.textContent = "Consulta las reservas realizadas en " + data.urbanizacion + ".";
+                }
+
+                cargarEspacios();
             })
             .catch(error => {
                 console.error("Error:", error);
@@ -74,10 +94,78 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
+    function prepararSelectorEspacios() {
+        selectEspacio.addEventListener("change", function () {
+            if (!selectEspacio.value) {
+                reservas = [];
+                mostrarMensaje("Selecciona un espacio para ver sus reservas.");
+                actualizarContador(0);
+                return;
+            }
+
+            cargarReservas();
+        });
+    }
+
+    function cargarEspacios() {
+        mostrarMensaje("Cargando espacios...");
+
+        const formData = new FormData();
+        formData.append("funcion", "listarEspacios");
+
+        fetch("../php/reservasComunidad.php", {
+            method: "POST",
+            body: formData
+        })
+            .then(response => response.text())
+            .then(parsearJson)
+            .then(data => {
+                if (data.status !== "success") {
+                    mostrarMensaje(data.message || "No se pudieron cargar los espacios.");
+                    actualizarContador(0);
+                    return;
+                }
+
+                pintarEspacios(data.espacios || []);
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                mostrarMensaje("Error al conectar con el servidor.");
+                actualizarContador(0);
+            });
+    }
+
+    function pintarEspacios(espacios) {
+        selectEspacio.innerHTML = '<option value="">Selecciona un espacio</option>';
+
+        espacios.forEach(espacio => {
+            const option = document.createElement("option");
+            option.value = espacio.id;
+            option.textContent = espacio.nombre + " - " + espacio.tipo;
+            selectEspacio.appendChild(option);
+        });
+
+        if (espacios.length === 0) {
+            mostrarMensaje("No hay espacios disponibles en tu urbanización.");
+            actualizarContador(0);
+            return;
+        }
+
+        selectEspacio.value = espacios[0].id;
+        cargarReservas();
+    }
+
     function cargarReservas() {
         mostrarMensaje("Cargando reservas...");
 
-        fetch("../php/misReservas.php")
+        const formData = new FormData();
+        formData.append("funcion", "listarReservas");
+        formData.append("idEspacio", selectEspacio.value);
+
+        fetch("../php/reservasComunidad.php", {
+            method: "POST",
+            body: formData
+        })
             .then(response => response.text())
             .then(parsearJson)
             .then(data => {
@@ -126,22 +214,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function crearFilaReserva(reserva) {
         const tr = document.createElement("tr");
-
         const claseEstado = obtenerClaseEstado(reserva.estado_visual);
         const textoEstado = obtenerTextoEstado(reserva.estado_visual);
 
         tr.innerHTML = `
             <td>
                 <div class="reserva-cell">
-                    <strong>${escaparHTML(reserva.espacio_nombre)}</strong>
-                    <span>${escaparHTML(reserva.espacio_tipo)}</span>
+                    <strong>${escaparHTML(reserva.codigo_vivienda)}</strong>
+                    <span>${escaparHTML(reserva.email_notificaciones || "")}</span>
+                </div>
+            </td>
+            <td>
+                <div class="reserva-cell">
+                    <strong>${escaparHTML(reserva.nombre_usuario)}</strong>
+                    <span>${escaparHTML(reserva.telefono_contacto || "")}</span>
                 </div>
             </td>
             <td>${escaparHTML(reserva.fecha_reserva)}</td>
             <td>
                 <div class="schedule-cell">
                     <strong>${escaparHTML(reserva.hora_inicio)} - ${escaparHTML(reserva.hora_fin)}</strong>
-                    <span>${escaparHTML(reserva.urbanizacion_nombre)}</span>
+                    <span>${escaparHTML(reserva.duracion_texto)}</span>
                 </div>
             </td>
             <td>
@@ -171,9 +264,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function cancelarReserva(idReserva) {
         const formData = new FormData();
+        formData.append("funcion", "cancelarReserva");
         formData.append("idReserva", idReserva);
+        formData.append("idEspacio", selectEspacio.value);
 
-        fetch("../php/cancelarReserva.php", {
+        fetch("../php/reservasComunidad.php", {
             method: "POST",
             body: formData
         })
@@ -196,6 +291,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 console.error("Error:", error);
                 mostrarModalMensaje("Error al conectar con el servidor.", false);
             });
+    }
+
+    function mostrarMenuSuperusuario(esSuperusuario) {
+        const superuserMenu = document.getElementById("superuser-menu");
+
+        if (!superuserMenu) {
+            return;
+        }
+
+        superuserMenu.hidden = !(esSuperusuario === true || Number(esSuperusuario) === 1);
     }
 
     function obtenerClaseEstado(estado) {
@@ -225,7 +330,7 @@ document.addEventListener("DOMContentLoaded", function () {
     function mostrarMensaje(texto) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="5" class="spaces-message">${escaparHTML(texto)}</td>
+                <td colspan="6" class="spaces-message">${escaparHTML(texto)}</td>
             </tr>
         `;
     }
@@ -242,8 +347,8 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             return JSON.parse(texto);
         } catch (error) {
-            console.error("Respuesta no valida:", texto);
-            throw new Error("Respuesta no valida del servidor");
+            console.error("Respuesta no válida:", texto);
+            throw new Error("Respuesta no válida del servidor");
         }
     }
 
@@ -304,14 +409,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function crearModal() {
-        let modal = document.getElementById("reservas-modal");
+        let modal = document.getElementById("comunidad-reservas-modal");
 
         if (modal) {
             return modal;
         }
 
         modal = document.createElement("div");
-        modal.id = "reservas-modal";
+        modal.id = "comunidad-reservas-modal";
         modal.className = "modal-backdrop";
         modal.hidden = true;
         modal.innerHTML = `
@@ -327,15 +432,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
         document.body.appendChild(modal);
         return modal;
-    }
-
-    function mostrarMenuSuperusuario(esSuperusuario) {
-        const superuserMenu = document.getElementById("superuser-menu");
-
-        if (!superuserMenu) {
-            return;
-        }
-
-        superuserMenu.hidden = !(esSuperusuario === true || Number(esSuperusuario) === 1);
     }
 });

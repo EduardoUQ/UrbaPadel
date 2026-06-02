@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                 if (usuarioName) {
                     usuarioName.textContent = data.nombre_usuario || "Usuario";
+                    mostrarMenuSuperusuario(data.superusuario);
                 }
 
                 pintarEspacioGuardado();
@@ -239,12 +240,30 @@ document.addEventListener("DOMContentLoaded", function () {
         const disponible = franja.estado === "DISPONIBLE" && !franjaPasada;
         const ocupada = franja.estado === "OCUPADA";
         const bloqueada = franja.estado === "BLOQUEADA";
+        const restringida = franja.estado === "RESTRINGIDA";
         const permiteListaEspera = espacioSeleccionado && (Number(espacioSeleccionado.permite_lista_espera) === 1 || espacioSeleccionado.permite_lista_espera === true);
         const posicionListaEspera = Number(franja.mi_posicion_lista_espera) || 0;
         const yaEstaEnListaEspera = posicionListaEspera > 0;
         const esMiReserva = franja.es_mi_reserva === true || Number(franja.es_mi_reserva) === 1;
-        const claseEstado = disponible ? "available" : (bloqueada ? "blocked" : "occupied");
-        const textoEstado = disponible ? "Disponible" : (franjaPasada ? "No disponible" : (bloqueada ? "Bloqueado" : "Ocupado"));
+
+        const claseEstado = disponible
+            ? "available"
+            : bloqueada
+                ? "blocked"
+                : restringida
+                    ? "restricted"
+                    : "occupied";
+
+        const textoEstado = disponible
+            ? "Disponible"
+            : franjaPasada
+                ? "No disponible"
+                : bloqueada
+                    ? "Bloqueado"
+                    : restringida
+                        ? "Restringido"
+                        : "Ocupado";
+
         const detalle = obtenerDetalleFranja(franja, franjaPasada);
 
         row.innerHTML = `
@@ -261,15 +280,17 @@ document.addEventListener("DOMContentLoaded", function () {
             </div>
 
             <div class="slot-actions">
-            ${disponible
+             ${disponible
                 ? `<button class="btn btn-primary js-reservar" type="button">Reservar</button>`
-                : ocupada && esMiReserva
-                    ? `<button class="btn btn-secondary" type="button" disabled>Tu reserva</button>`
-                    : ocupada && permiteListaEspera && !franjaPasada && yaEstaEnListaEspera
-                        ? `<button class="btn btn-secondary" type="button" disabled>Lista de espera: ${posicionListaEspera}</button>`
-                        : ocupada && permiteListaEspera && !franjaPasada
-                            ? `<button class="btn btn-secondary js-lista-espera" type="button">Lista de espera</button>`
-                            : `<button class="btn btn-secondary" type="button" disabled>No disponible</button>`
+                : restringida
+                    ? `<button class="btn btn-secondary" type="button" disabled>Uso restringido</button>`
+                    : ocupada && esMiReserva
+                        ? `<button class="btn btn-secondary" type="button" disabled>Tu reserva</button>`
+                        : ocupada && permiteListaEspera && !franjaPasada && yaEstaEnListaEspera
+                            ? `<button class="btn btn-secondary" type="button" disabled>Lista de espera: ${posicionListaEspera}</button>`
+                            : ocupada && permiteListaEspera && !franjaPasada
+                                ? `<button class="btn btn-secondary js-lista-espera" type="button">Lista de espera</button>`
+                                : `<button class="btn btn-secondary" type="button" disabled>No disponible</button>`
             }
             </div>
         `;
@@ -375,6 +396,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function obtenerDetalleFranja(franja, franjaPasada) {
+
+        if (franja.estado === "RESTRINGIDA") {
+            return franja.motivo
+                ? "Uso restringido para tu vivienda. Motivo: " + franja.motivo
+                : "Uso restringido para tu vivienda.";
+        }
+
         if (franjaPasada) {
             return "Esta franja ya ha pasado.";
         }
@@ -539,5 +567,15 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
         document.body.appendChild(modal);
         return modal;
+    }
+
+    function mostrarMenuSuperusuario(esSuperusuario) {
+        const superuserMenu = document.getElementById("superuser-menu");
+
+        if (!superuserMenu) {
+            return;
+        }
+
+        superuserMenu.hidden = !(esSuperusuario === true || Number(esSuperusuario) === 1);
     }
 });

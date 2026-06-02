@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminEspacios.css">
-    <link rel="stylesheet" href="../css/misReservas.css">
-    <title>Mis Reservas</title>
+    <link rel="stylesheet" href="../css/reservasComunidad.css">
+    <title>Reservas Comunidad</title>
 </head>
 
 <body>
@@ -25,7 +25,7 @@
                     <span>Mis Espacios</span>
                 </a>
 
-                <a href="misReservas.html" class="nav-item active" aria-current="page">
+                <a href="misReservas.html" class="nav-item">
                     <i class="fa-solid fa-calendar-days"></i>
                     <span>Mis Reservas</span>
                     <span class="nav-badge" id="reservas-badge" hidden>0</span>
@@ -39,7 +39,7 @@
                 <div class="superuser-menu" id="superuser-menu" hidden>
                     <p class="nav-title">Gestión Comunidad</p>
 
-                    <a href="reservasComunidad.html" class="nav-item">
+                    <a href="reservasComunidad.html" class="nav-item active" aria-current="page">
                         <i class="fa-regular fa-calendar-check"></i>
                         <span>Reservas Comunidad</span>
                     </a>
@@ -76,9 +76,9 @@
         <main class="main-panel">
             <header class="topbar">
                 <div class="breadcrumbs" aria-label="Ruta">
-                    <span>Panel Usuario</span>
+                    <span>Gestión Comunidad</span>
                     <i class="fa-solid fa-chevron-right"></i>
-                    <strong>Mis Reservas</strong>
+                    <strong>Reservas Comunidad</strong>
                 </div>
 
                 <button class="user-menu" type="button" aria-label="Menú de usuario">
@@ -90,34 +90,35 @@
             <section class="content">
                 <div class="content-header">
                     <div>
-                        <h1>Mis Reservas</h1>
-                        <p>Consulta tus reservas activas, canceladas e históricas.</p>
+                        <h1>Reservas Comunidad</h1>
+                        <p id="urbanizacion-texto">
+                            Consulta las reservas realizadas por las viviendas de tu urbanización.
+                        </p>
                     </div>
-
-                    <a class="btn btn-secondary" href="panelUsuario.html">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Volver a espacios</span>
-                    </a>
                 </div>
+
+                <section class="selector-card">
+                    <div class="field">
+                        <label for="idEspacio">Espacio</label>
+                        <select id="idEspacio">
+                            <option value="">Selecciona un espacio</option>
+                        </select>
+                    </div>
+                </section>
 
                 <section class="list-card" aria-label="Listado de reservas">
                     <div class="reservas-tabs">
-                        <button class="tab-btn active" type="button" data-filter="activas">
-                            Activas
-                        </button>
-                        <button class="tab-btn" type="button" data-filter="historial">
-                            Historial
-                        </button>
-                        <button class="tab-btn" type="button" data-filter="todas">
-                            Todas
-                        </button>
+                        <button class="tab-btn active" type="button" data-filter="activas">Activas</button>
+                        <button class="tab-btn" type="button" data-filter="historial">Historial</button>
+                        <button class="tab-btn" type="button" data-filter="todas">Todas</button>
                     </div>
 
                     <div class="table-wrap">
-                        <table class="spaces-table">
+                        <table class="spaces-table reservas-table">
                             <thead>
                                 <tr>
-                                    <th>Espacio</th>
+                                    <th>Vivienda</th>
+                                    <th>Usuario</th>
                                     <th>Fecha</th>
                                     <th>Horario</th>
                                     <th>Estado</th>
@@ -136,7 +137,7 @@
         </main>
     </div>
 
-    <script src="../js/misReservas.js"></script>
+    <script src="../js/reservasComunidad.js"></script>
     <script src="../js/notificacionesUsuario.js"></script>
 </body>
 

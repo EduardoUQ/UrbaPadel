@@ -34,6 +34,12 @@ if ($idVivienda <= 0 || $idEspacio <= 0 || !validarFechaHora($fechaInicio) || !v
     responder($conexion, 'error', 'Datos de reserva no validos');
 }
 
+$restriccion = obtenerRestriccionActiva($conexion, $idVivienda, $idEspacio, $fechaInicio, $fechaFin);
+
+if ($restriccion) {
+    responder($conexion, 'error', 'No puedes reservar este espacio porque tienes una restricción activa.');
+}
+
 try {
     $inicio = new DateTime($fechaInicio);
     $fin = new DateTime($fechaFin);
@@ -349,6 +355,42 @@ function crearReserva($conexion, $idEspacio, $idVivienda, $fechaInicio, $fechaFi
     }
 
     $stmt->close();
+}
+
+function obtenerRestriccionActiva($conexion, $idVivienda, $idEspacio, $fechaInicio, $fechaFin)
+{
+    $sql = "SELECT 
+                id,
+                motivo,
+                fecha_inicio,
+                fecha_fin
+            FROM restriccion_uso
+            WHERE id_vivienda = ?
+                AND id_espacio = ?
+                AND activa = 1
+                AND fecha_inicio < ?
+                AND fecha_fin > ?
+            LIMIT 1";
+
+    $stmt = $conexion->prepare($sql);
+
+    if (!$stmt) {
+        return null;
+    }
+
+    $stmt->bind_param('iiss', $idVivienda, $idEspacio, $fechaFin, $fechaInicio);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    if (!$resultado || $resultado->num_rows === 0) {
+        $stmt->close();
+        return null;
+    }
+
+    $restriccion = $resultado->fetch_assoc();
+    $stmt->close();
+
+    return $restriccion;
 }
 
 function responder($conexion, $status, $message)

@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="https://kit.fontawesome.com/a0c53b3773.js" crossorigin="anonymous"></script>
     <link rel="stylesheet" href="../css/panelAdminEspacios.css">
-    <link rel="stylesheet" href="../css/incidenciasUsuario.css">
-    <title>Incidencias</title>
+    <link rel="stylesheet" href="../css/bloqueosComunidad.css">
+    <title>Bloqueos Comunidad</title>
 </head>
 
 <body>
@@ -31,7 +31,7 @@
                     <span class="nav-badge" id="reservas-badge" hidden>0</span>
                 </a>
 
-                <a href="incidenciasUsuario.html" class="nav-item active" aria-current="page">
+                <a href="incidenciasUsuario.html" class="nav-item">
                     <i class="fa-solid fa-triangle-exclamation"></i>
                     <span>Incidencias</span>
                 </a>
@@ -44,7 +44,7 @@
                         <span>Reservas Comunidad</span>
                     </a>
 
-                    <a href="bloqueosComunidad.html" class="nav-item">
+                    <a href="bloqueosComunidad.html" class="nav-item active" aria-current="page">
                         <i class="fa-solid fa-ban"></i>
                         <span>Bloqueos</span>
                     </a>
@@ -76,9 +76,9 @@
         <main class="main-panel">
             <header class="topbar">
                 <div class="breadcrumbs" aria-label="Ruta">
-                    <span>Panel Usuario</span>
+                    <span>Gestión Comunidad</span>
                     <i class="fa-solid fa-chevron-right"></i>
-                    <strong>Incidencias</strong>
+                    <strong>Bloqueos</strong>
                 </div>
 
                 <button class="user-menu" type="button" aria-label="Menú de usuario">
@@ -90,70 +90,100 @@
             <section class="content">
                 <div class="content-header">
                     <div>
-                        <h1>Incidencias</h1>
-                        <p>Comunica problemas o comentarios sobre los espacios de tu urbanización.</p>
+                        <h1>Bloqueos de espacios</h1>
+                        <p id="urbanizacion-texto">
+                            Bloquea franjas de los espacios de tu urbanización por mantenimiento, averías o eventos.
+                        </p>
                     </div>
-
-                    <a class="btn btn-secondary" href="panelUsuario.html">
-                        <i class="fa-solid fa-arrow-left"></i>
-                        <span>Volver a espacios</span>
-                    </a>
                 </div>
 
-                <section class="incidencias-layout">
-                    <form class="incidencia-form-card" id="incidencia-form">
+                <section class="bloqueos-layout">
+                    <form class="bloqueo-form-card" id="bloqueo-form">
                         <div class="card-heading">
-                            <h2>Nueva incidencia</h2>
-                            <p>Selecciona un espacio y describe el problema encontrado.</p>
+                            <h2>Nuevo bloqueo</h2>
+                            <p>Selecciona un espacio y define el periodo que no estará disponible para reservas.</p>
+                        </div>
+
+                        <div class="form-grid">
+                            <div class="field">
+                                <label for="idEspacio">Espacio</label>
+                                <select id="idEspacio" name="idEspacio">
+                                    <option value="">Selecciona un espacio</option>
+                                </select>
+                                <p id="error-idEspacio"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="fechaInicio">Fecha inicio</label>
+                                <input type="date" id="fechaInicio" name="fechaInicio">
+                                <p id="error-fechaInicio"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="horaInicio">Hora inicio</label>
+                                <select id="horaInicio" name="horaInicio">
+                                    <option value="">Selecciona hora</option>
+                                </select>
+                                <p id="error-horaInicio"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="fechaFin">Fecha fin</label>
+                                <input type="date" id="fechaFin" name="fechaFin">
+                                <p id="error-fechaFin"></p>
+                            </div>
+
+                            <div class="field">
+                                <label for="horaFin">Hora fin</label>
+                                <select id="horaFin" name="horaFin">
+                                    <option value="">Selecciona hora</option>
+                                </select>
+                                <p id="error-horaFin"></p>
+                            </div>
                         </div>
 
                         <div class="field">
-                            <label for="idEspacio">Espacio</label>
-                            <select id="idEspacio" name="idEspacio">
-                                <option value="">Selecciona un espacio</option>
-                            </select>
-                            <p id="error-idEspacio"></p>
-                        </div>
-
-                        <div class="field">
-                            <label for="comentario">Comentario</label>
-                            <textarea id="comentario" name="comentario"
-                                placeholder="Describe la incidencia..."></textarea>
-                            <p id="error-comentario"></p>
+                            <label for="motivo">Motivo</label>
+                            <textarea id="motivo" name="motivo"
+                                placeholder="Ejemplo: mantenimiento de la pista, avería en la iluminación, evento comunitario..."></textarea>
+                            <p id="error-motivo"></p>
                         </div>
 
                         <div class="form-actions">
-                            <button class="btn btn-primary" type="submit" id="submit-incidencia">
-                                <i class="fa-solid fa-paper-plane"></i>
-                                <span>Enviar incidencia</span>
+                            <button class="btn btn-primary" type="submit" id="submit-bloqueo">
+                                <i class="fa-solid fa-ban"></i>
+                                <span>Crear bloqueo</span>
                             </button>
                         </div>
                     </form>
 
-                    <section class="list-card" aria-label="Listado de incidencias">
-                        <div class="incidencias-list-header">
+                    <section class="list-card" aria-label="Listado de bloqueos">
+                        <div class="bloqueos-list-header">
                             <div>
-                                <h2>Mis incidencias</h2>
-                                <p>Historial de incidencias enviadas.</p>
+                                <h2>Bloqueos</h2>
+                                <p>Consulta los bloqueos activos, finalizados o desactivados de la comunidad.</p>
                             </div>
                         </div>
 
                         <div class="table-wrap">
-                            <table class="spaces-table incidencias-table">
+                            <table class="spaces-table bloqueos-table">
                                 <thead>
                                     <tr>
                                         <th>Espacio</th>
-                                        <th>Comentario</th>
-                                        <th>Fecha</th>
+                                        <th>Fecha inicio</th>
+                                        <th>Fecha fin</th>
+                                        <th>Horario</th>
+                                        <th>Motivo</th>
                                         <th>Estado</th>
+                                        <th>Acciones</th>
                                     </tr>
                                 </thead>
-                                <tbody id="incidencias-table-body"></tbody>
+                                <tbody id="bloqueos-table-body"></tbody>
                             </table>
                         </div>
 
                         <div class="list-footer">
-                            <p id="incidencias-count">Mostrando 0 incidencias</p>
+                            <p id="bloqueos-count">Mostrando 0 bloqueos</p>
                         </div>
                     </section>
                 </section>
@@ -161,7 +191,7 @@
         </main>
     </div>
 
-    <script src="../js/incidenciasUsuario.js"></script>
+    <script src="../js/bloqueosComunidad.js"></script>
     <script src="../js/notificacionesUsuario.js"></script>
 </body>
 

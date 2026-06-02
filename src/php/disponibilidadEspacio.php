@@ -62,6 +62,7 @@ $franjas = generarFranjas($espacio, $fecha);
 $reservas = obtenerReservasDia($conexion, $idEspacio, $fecha);
 $bloqueos = obtenerBloqueosDia($conexion, $idEspacio, $fecha);
 $listasEsperaUsuario = obtenerListasEsperaUsuario($conexion, $idEspacio, $idVivienda, $fecha);
+$restriccionesUsuario = obtenerRestriccionesUsuarioDia($conexion, $idEspacio, $idVivienda, $fecha);
 
 foreach ($franjas as $indice => $franja) {
 
@@ -77,6 +78,18 @@ foreach ($franjas as $indice => $franja) {
         $franjas[$indice]['mi_posicion_lista_espera'] = (int)$listaEspera['posicion'];
     } else {
         $franjas[$indice]['mi_posicion_lista_espera'] = null;
+    }
+
+    $restriccion = buscarSolapamientoRestriccion(
+        $franja['fecha_inicio'],
+        $franja['fecha_fin'],
+        $restriccionesUsuario
+    );
+
+    if ($restriccion) {
+        $franjas[$indice]['estado'] = 'RESTRINGIDA';
+        $franjas[$indice]['motivo'] = $restriccion['motivo'];
+        continue;
     }
 
     $bloqueo = buscarSolapamiento($franja['fecha_inicio'], $franja['fecha_fin'], $bloqueos);
@@ -412,4 +425,59 @@ function obtenerIncidenciasPendientesEspacio($conexion, $idEspacio)
     $stmt->close();
 
     return $incidencias;
+}
+
+function obtenerRestriccionesUsuarioDia($conexion, $idEspacio, $idVivienda, $fecha)
+{
+    $inicioDia = $fecha . ' 00:00:00';
+    $finDia = $fecha . ' 23:59:59';
+
+    $sql = "SELECT 
+                id,
+                motivo,
+                fecha_inicio,
+                fecha_fin
+            FROM restriccion_uso
+            WHERE id_espacio = ?
+                AND id_vivienda = ?
+                AND activa = 1
+                AND fecha_inicio < ?
+                AND fecha_fin > ?
+            ORDER BY fecha_inicio ASC";
+
+    $stmt = $conexion->prepare($sql);
+
+    if (!$stmt) {
+        return [];
+    }
+
+    $stmt->bind_param('iiss', $idEspacio, $idVivienda, $finDia, $inicioDia);
+    $stmt->execute();
+    $resultado = $stmt->get_result();
+
+    $restricciones = [];
+
+    if ($resultado) {
+        while ($fila = $resultado->fetch_assoc()) {
+            $restricciones[] = $fila;
+        }
+    }
+
+    $stmt->close();
+
+    return $restricciones;
+}
+
+function buscarSolapamientoRestriccion($inicioFranja, $finFranja, $restricciones)
+{
+    foreach ($restricciones as $restriccion) {
+        if (
+            $restriccion['fecha_inicio'] < $finFranja &&
+            $restriccion['fecha_fin'] > $inicioFranja
+        ) {
+            return $restriccion;
+        }
+    }
+
+    return null;
 }
