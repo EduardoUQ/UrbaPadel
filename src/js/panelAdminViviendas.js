@@ -1,3 +1,15 @@
+import {
+  URLS_ADMIN,
+  API_ADMIN,
+  FUNCIONES_ADMIN,
+  FORM_FIELDS_ADMIN,
+  PAGINACION,
+  MENSAJES_ADMIN,
+  ROLES,
+  RESPUESTAS,
+  TIPOS_ALERTA
+} from "./config/constantes.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   console.log("JS de viviendas cargado correctamente");
 
@@ -21,9 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
   const pageInfo = document.getElementById("page-info");
   const toolbarHelp = document.getElementById("toolbar-help");
 
-  const LOGIN_URL = "login.html";
-  const URBANIZACIONES_URL = "panelAdminUrbanizaciones.html";
-
   let idUrbanizacion = obtenerIdUrbanizacionSeleccionada();
   let espacios = [];
   let viviendasPreview = [];
@@ -31,7 +40,7 @@ document.addEventListener("DOMContentLoaded", function () {
   let modoEdicion = true;
   let esListadoGuardado = false;
   let paginaActual = 1;
-  let registrosPorPagina = "all";
+  let registrosPorPagina = PAGINACION.TODOS;
 
   prepararLogout();
   prepararFiltrosYPaginacion();
@@ -39,27 +48,27 @@ document.addEventListener("DOMContentLoaded", function () {
   validarSesionAdmin();
 
   function validarSesionAdmin() {
-    mostrarMensaje("Comprobando sesion...");
+    mostrarMensaje(MENSAJES_ADMIN.COMPROBANDO_SESION);
 
-    fetch("../php/sessionAdmin.php")
+    fetch(API_ADMIN.SESSION_ADMIN)
       .then((response) => response.json())
       .then((data) => {
-        if (data.status !== "success" || data.rol !== "admin") {
-          window.location.href = LOGIN_URL;
+        if (data.status !== RESPUESTAS.SUCCESS || data.rol !== ROLES.ADMIN) {
+          window.location.href = URLS_ADMIN.LOGIN;
           return;
         }
 
         if (adminName) {
-          adminName.textContent = data.nombre || "Administrador";
+          adminName.textContent = data.nombre || MENSAJES_ADMIN.ADMIN_GENERICO;
         }
 
         if (!idUrbanizacion) {
           mostrarModalMensaje(
-            "Selecciona una urbanizacion antes de gestionar viviendas.",
+            MENSAJES_ADMIN.SELECCIONA_URBANIZACION_VIVIENDAS,
             false,
             function () {
-              window.location.href = URBANIZACIONES_URL;
-            },
+              window.location.href = URLS_ADMIN.PANEL_URBANIZACIONES;
+            }
           );
           return;
         }
@@ -68,26 +77,26 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error:", error);
-        window.location.href = LOGIN_URL;
+        window.location.href = URLS_ADMIN.LOGIN;
       });
   }
 
   function cargarDatosIniciales() {
-    mostrarMensaje("Cargando datos...");
+    mostrarMensaje(MENSAJES_ADMIN.CARGANDO_DATOS);
 
     const formData = new FormData();
-    formData.append("funcion", "datosIniciales");
-    formData.append("idUrbanizacion", idUrbanizacion);
+    formData.append(FORM_FIELDS_ADMIN.FUNCION, FUNCIONES_ADMIN.DATOS_INICIALES);
+    formData.append(FORM_FIELDS_ADMIN.ID_URBANIZACION, idUrbanizacion);
 
-    fetch("../php/viviendas.php", {
+    fetch(API_ADMIN.VIVIENDAS, {
       method: "POST",
-      body: formData,
+      body: formData
     })
       .then((response) => response.text())
       .then(parsearJSON)
       .then((data) => {
-        if (data.status !== "success") {
-          mostrarMensaje(data.message || "No se pudieron cargar los datos.");
+        if (data.status !== RESPUESTAS.SUCCESS) {
+          mostrarMensaje(data.message || MENSAJES_ADMIN.ERROR_DATOS, TIPOS_ALERTA.ERROR);
           return;
         }
 
@@ -101,24 +110,24 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error:", error);
-        mostrarMensaje("Error al conectar con el servidor.");
+        mostrarMensaje(MENSAJES_ADMIN.ERROR_SERVIDOR, TIPOS_ALERTA.ERROR);
       });
   }
 
   function cargarViviendasExistentes() {
     const formData = new FormData();
-    formData.append("funcion", "listarViviendas");
-    formData.append("idUrbanizacion", idUrbanizacion);
+    formData.append(FORM_FIELDS_ADMIN.FUNCION, FUNCIONES_ADMIN.LISTAR_VIVIENDAS);
+    formData.append(FORM_FIELDS_ADMIN.ID_URBANIZACION, idUrbanizacion);
 
-    fetch("../php/viviendas.php", {
+    fetch(API_ADMIN.VIVIENDAS, {
       method: "POST",
-      body: formData,
+      body: formData
     })
       .then((response) => response.text())
       .then(parsearJSON)
       .then((data) => {
-        if (data.status !== "success") {
-          mostrarMensaje(data.message || "No se pudieron cargar las viviendas.");
+        if (data.status !== RESPUESTAS.SUCCESS) {
+          mostrarMensaje(data.message || MENSAJES_ADMIN.ERROR_VIVIENDAS, TIPOS_ALERTA.ERROR);
           actualizarContador(0, 0);
           return;
         }
@@ -129,7 +138,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (viviendasPreview.length === 0) {
           esListadoGuardado = false;
           modoEdicion = true;
-          mostrarMensaje("Todavia no hay viviendas registradas. Sube un archivo CSV para previsualizarlas.");
+          mostrarMensaje(MENSAJES_ADMIN.SIN_VIVIENDAS);
           actualizarContador(0, 0);
           actualizarControlesListado();
           return;
@@ -142,7 +151,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error:", error);
-        mostrarMensaje("Error al conectar con el servidor.");
+        mostrarMensaje(MENSAJES_ADMIN.ERROR_SERVIDOR, TIPOS_ALERTA.ERROR);
       });
   }
 
@@ -256,7 +265,7 @@ document.addEventListener("DOMContentLoaded", function () {
       descripcion_extra: fila.descripcion_extra || "",
       superusuario: false,
       activa: true,
-      permisos: crearPermisosPorDefecto(),
+      permisos: crearPermisosPorDefecto()
     }));
 
     viviendasFiltradas = viviendasPreview.slice();
@@ -294,7 +303,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "Planta",
       "Puerta",
       "Descripción",
-      "SU",
+      "SU"
     ];
 
     const trHead = document.createElement("tr");
@@ -435,22 +444,22 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     const formData = new FormData();
-    formData.append("funcion", "guardarViviendas");
-    formData.append("idUrbanizacion", idUrbanizacion);
-    formData.append("viviendas", JSON.stringify(viviendasPreview));
+    formData.append(FORM_FIELDS_ADMIN.FUNCION, FUNCIONES_ADMIN.GUARDAR_VIVIENDAS);
+    formData.append(FORM_FIELDS_ADMIN.ID_URBANIZACION, idUrbanizacion);
+    formData.append(FORM_FIELDS_ADMIN.VIVIENDAS, JSON.stringify(viviendasPreview));
 
     saveHomesButton.disabled = true;
 
-    fetch("../php/viviendas.php", {
+    fetch(API_ADMIN.VIVIENDAS, {
       method: "POST",
-      body: formData,
+      body: formData
     })
       .then((response) => response.text())
       .then(parsearJSON)
       .then((data) => {
         saveHomesButton.disabled = false;
 
-        if (data.status !== "success") {
+        if (data.status !== RESPUESTAS.SUCCESS) {
           mostrarModalMensaje(data.message || "No se pudieron guardar las viviendas.", false);
           return;
         }
@@ -533,7 +542,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "filter-escalera",
       "filter-planta",
       "filter-puerta",
-      "filter-descripcion",
+      "filter-descripcion"
     ];
 
     ids.forEach((id) => {
@@ -556,7 +565,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return viviendasPreview;
     }
 
-    if (registrosPorPagina === "all") {
+    if (registrosPorPagina === PAGINACION.TODOS) {
       return viviendasFiltradas;
     }
 
@@ -568,12 +577,11 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function obtenerTotalPaginas() {
-    if (registrosPorPagina === "all") {
+    if (registrosPorPagina === PAGINACION.TODOS) {
       return 1;
     }
 
     const limite = Number(registrosPorPagina);
-
     return Math.max(1, Math.ceil(viviendasFiltradas.length / limite));
   }
 
@@ -585,9 +593,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (toolbarHelp) {
-      toolbarHelp.textContent = esListadoGuardado && hayViviendas
-        ? "Filtra, pagina o edita las viviendas registradas."
-        : "Sube un CSV, revisa los datos, modifica lo necesario y pulsa guardar.";
+      toolbarHelp.textContent =
+        esListadoGuardado && hayViviendas
+          ? "Filtra, pagina o edita las viviendas registradas."
+          : "Sube un CSV, revisa los datos, modifica lo necesario y pulsa guardar.";
     }
 
     if (saveHomesButton) {
@@ -603,7 +612,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function actualizarPaginacion() {
     const totalPaginas = obtenerTotalPaginas();
-    const usarPaginacion = esListadoGuardado && registrosPorPagina !== "all" && viviendasFiltradas.length > 0;
+    const usarPaginacion =
+      esListadoGuardado &&
+      registrosPorPagina !== PAGINACION.TODOS &&
+      viviendasFiltradas.length > 0;
 
     if (paginationControls) {
       paginationControls.hidden = !usarPaginacion;
@@ -625,7 +637,9 @@ document.addEventListener("DOMContentLoaded", function () {
   function mostrarFilaSinResultados(colspan) {
     tableBody.innerHTML = `
       <tr>
-        <td class="viviendas-message" colspan="${colspan}">No hay viviendas que cumplan los filtros.</td>
+        <td class="viviendas-message" colspan="${colspan}">
+          <urba-alert tipo="${TIPOS_ALERTA.INFO}" mensaje="${MENSAJES_ADMIN.SIN_RESULTADOS_VIVIENDAS}"></urba-alert>
+        </td>
       </tr>
     `;
   }
@@ -736,7 +750,7 @@ document.addEventListener("DOMContentLoaded", function () {
       "escalera",
       "planta",
       "puerta",
-      "descripcion_extra",
+      "descripcion_extra"
     ];
 
     const vistas = new Set();
@@ -835,23 +849,24 @@ document.addEventListener("DOMContentLoaded", function () {
     logoutButton.addEventListener("click", function (event) {
       event.preventDefault();
 
-      fetch("../php/logout.php")
+      fetch(API_ADMIN.LOGOUT)
         .then((response) => response.json())
         .then(() => {
           sessionStorage.clear();
-          window.location.href = LOGIN_URL;
+          window.location.href = URLS_ADMIN.LOGIN;
         })
         .catch((error) => {
           console.error("Error:", error);
           sessionStorage.clear();
-          window.location.href = LOGIN_URL;
+          window.location.href = URLS_ADMIN.LOGIN;
         });
     });
   }
 
   function obtenerIdUrbanizacionSeleccionada() {
     const params = new URLSearchParams(window.location.search);
-    const idUrl = Number(params.get("idUrbanizacion") || params.get("idurbanizacion")) || 0;
+    const idUrl =
+      Number(params.get(FORM_FIELDS_ADMIN.ID_URBANIZACION) || params.get("idurbanizacion")) || 0;
 
     if (idUrl > 0) {
       sessionStorage.setItem("idUrbanizacionSeleccionada", idUrl);
@@ -897,18 +912,21 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!viviendasCount) return;
 
     if (!esListadoGuardado) {
-      viviendasCount.textContent = mostradas === 1 ? "Mostrando 1 vivienda" : `Mostrando ${mostradas} viviendas`;
+      viviendasCount.textContent =
+        mostradas === 1 ? "Mostrando 1 vivienda" : `Mostrando ${mostradas} viviendas`;
       return;
     }
 
     viviendasCount.textContent = `Mostrando ${mostradas} de ${filtradas} viviendas filtradas (${viviendasPreview.length} total)`;
   }
 
-  function mostrarMensaje(texto) {
+  function mostrarMensaje(texto, tipo = TIPOS_ALERTA.INFO) {
     tableHead.innerHTML = "";
     tableBody.innerHTML = `
       <tr>
-        <td class="viviendas-message">${escaparHTML(texto)}</td>
+        <td class="viviendas-message">
+          <urba-alert tipo="${tipo}" mensaje="${escaparHTML(texto)}"></urba-alert>
+        </td>
       </tr>
     `;
   }
@@ -918,7 +936,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return JSON.parse(texto);
     } catch (error) {
       console.error("Respuesta no valida:", texto);
-      throw new Error("Respuesta no valida del servidor");
+      throw new Error(MENSAJES_ADMIN.RESPUESTA_NO_VALIDA);
     }
   }
 
@@ -936,8 +954,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const acceptButton = modal.querySelector(".modal-accept");
 
     modalText.textContent = mensaje;
-    modalIcon.className = correcto ? "modal-icon modal-icon-success" : "modal-icon modal-icon-error";
-    modalIcon.innerHTML = correcto ? '<i class="fa-solid fa-check"></i>' : '<i class="fa-solid fa-xmark"></i>';
+    modalIcon.className = correcto
+      ? "modal-icon modal-icon-success"
+      : "modal-icon modal-icon-error";
+    modalIcon.innerHTML = correcto
+      ? '<i class="fa-solid fa-check"></i>'
+      : '<i class="fa-solid fa-xmark"></i>';
     cancelButton.hidden = true;
     acceptButton.textContent = "Aceptar";
     modal.hidden = false;

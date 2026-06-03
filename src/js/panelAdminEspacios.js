@@ -1,3 +1,15 @@
+import {
+  URLS_ADMIN,
+  API_ADMIN,
+  FUNCIONES_ADMIN,
+  FORM_FIELDS_ADMIN,
+  PAGINACION,
+  MENSAJES_ADMIN,
+  ROLES,
+  RESPUESTAS,
+  TIPOS_ALERTA
+} from "./config/constantes.js";
+
 document.addEventListener("DOMContentLoaded", function () {
   const tableBody = document.getElementById("spaces-table-body");
   const spacesCount = document.getElementById("spaces-count");
@@ -9,15 +21,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const paginationControls = document.getElementById("spaces-pagination");
   const prevPageButton = document.getElementById("prev-page");
   const nextPageButton = document.getElementById("next-page");
-  const LOGIN_URL = "login.html";
-  const URBANIZACIONES_URL = "panelAdminUrbanizaciones.html";
-  const FORMULARIO_ESPACIO_URL = "panelAdminFormularioEspacios.html";
-  const ESPACIOS_POR_PAGINA = 5;
+  const navViviendas = document.getElementById("nav-viviendas");
+
   let idUrbanizacion = obtenerIdUrbanizacionSeleccionada();
   let espaciosDisponibles = [];
   let paginaActual = 1;
-  const navViviendas = document.getElementById("nav-viviendas");
-  const VIVIENDAS_URL = "panelAdminViviendas.html";
 
   if (!tableBody) {
     return;
@@ -59,44 +67,46 @@ document.addEventListener("DOMContentLoaded", function () {
     navViviendas.addEventListener("click", function (event) {
       if (!idUrbanizacion) {
         event.preventDefault();
+
         mostrarModalMensaje(
-          "Selecciona una urbanizacion antes de gestionar viviendas.",
+          MENSAJES_ADMIN.SELECCIONA_URBANIZACION_VIVIENDAS,
           false,
           function () {
-            window.location.href = URBANIZACIONES_URL;
-          },
+            window.location.href = URLS_ADMIN.PANEL_URBANIZACIONES;
+          }
         );
+
         return;
       }
 
-      navViviendas.href = `${VIVIENDAS_URL}?idUrbanizacion=${encodeURIComponent(idUrbanizacion)}`;
+      navViviendas.href = `${URLS_ADMIN.PANEL_VIVIENDAS}?idUrbanizacion=${encodeURIComponent(idUrbanizacion)}`;
     });
   }
 
-
   function validarSesionAdmin() {
-    mostrarMensaje("Comprobando sesion...");
+    mostrarMensaje(MENSAJES_ADMIN.COMPROBANDO_SESION);
 
-    fetch("../php/sessionAdmin.php")
+    fetch(API_ADMIN.SESSION_ADMIN)
       .then((response) => response.json())
       .then((data) => {
-        if (data.status !== "success" || data.rol !== "admin") {
-          window.location.href = LOGIN_URL;
+        if (data.status !== RESPUESTAS.SUCCESS || data.rol !== ROLES.ADMIN) {
+          window.location.href = URLS_ADMIN.LOGIN;
           return;
         }
 
         if (adminName) {
-          adminName.textContent = data.nombre || "Administrador";
+          adminName.textContent = data.nombre || MENSAJES_ADMIN.ADMIN_GENERICO;
         }
 
         if (!idUrbanizacion) {
           mostrarModalMensaje(
-            "Selecciona una urbanizacion antes de gestionar sus espacios.",
+            MENSAJES_ADMIN.SELECCIONA_URBANIZACION_ESPACIOS,
             false,
             function () {
-              window.location.href = URBANIZACIONES_URL;
-            },
+              window.location.href = URLS_ADMIN.PANEL_URBANIZACIONES;
+            }
           );
+
           return;
         }
 
@@ -104,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error:", error);
-        window.location.href = LOGIN_URL;
+        window.location.href = URLS_ADMIN.LOGIN;
       });
   }
 
@@ -116,14 +126,14 @@ document.addEventListener("DOMContentLoaded", function () {
     logoutButton.addEventListener("click", function (event) {
       event.preventDefault();
 
-      fetch("../php/logout.php")
+      fetch(API_ADMIN.LOGOUT)
         .then((response) => response.json())
         .then(() => {
-          window.location.href = LOGIN_URL;
+          window.location.href = URLS_ADMIN.LOGIN;
         })
         .catch((error) => {
           console.error("Error:", error);
-          window.location.href = LOGIN_URL;
+          window.location.href = URLS_ADMIN.LOGIN;
         });
     });
   }
@@ -136,43 +146,38 @@ document.addEventListener("DOMContentLoaded", function () {
     createSpaceLink.addEventListener("click", function (event) {
       if (!idUrbanizacion) {
         event.preventDefault();
+
         mostrarModalMensaje(
-          "Selecciona una urbanizacion antes de crear espacios.",
+          MENSAJES_ADMIN.SELECCIONA_URBANIZACION_CREAR_ESPACIOS,
           false,
           function () {
-            window.location.href = URBANIZACIONES_URL;
-          },
+            window.location.href = URLS_ADMIN.PANEL_URBANIZACIONES;
+          }
         );
+
         return;
       }
 
-      createSpaceLink.href = `${FORMULARIO_ESPACIO_URL}?idUrbanizacion=${encodeURIComponent(idUrbanizacion)}`;
+      createSpaceLink.href = `${URLS_ADMIN.FORMULARIO_ESPACIO}?idUrbanizacion=${encodeURIComponent(idUrbanizacion)}`;
     });
   }
 
   function cargarEspacios() {
-    mostrarMensaje("Cargando espacios...");
+    mostrarMensaje(MENSAJES_ADMIN.CARGANDO_ESPACIOS);
 
     const formData = new FormData();
-    formData.append("funcion", "listarEspacios");
-    formData.append("idUrbanizacion", idUrbanizacion);
+    formData.append(FORM_FIELDS_ADMIN.FUNCION, FUNCIONES_ADMIN.LISTAR_ESPACIOS);
+    formData.append(FORM_FIELDS_ADMIN.ID_URBANIZACION, idUrbanizacion);
 
-    fetch("../php/espacios.php", {
+    fetch(API_ADMIN.ESPACIOS, {
       method: "POST",
-      body: formData,
+      body: formData
     })
       .then((response) => response.text())
-      .then((texto) => {
-        try {
-          return JSON.parse(texto);
-        } catch (error) {
-          console.error("Respuesta no valida:", texto);
-          throw new Error("Respuesta no valida del servidor");
-        }
-      })
+      .then(parsearJSON)
       .then((data) => {
-        if (data.status !== "success") {
-          mostrarMensaje(data.message || "No se pudieron cargar los espacios.");
+        if (data.status !== RESPUESTAS.SUCCESS) {
+          mostrarMensaje(data.message || MENSAJES_ADMIN.ERROR_ESPACIOS, TIPOS_ALERTA.ERROR);
           actualizarContador(0);
           actualizarPaginacion();
           return;
@@ -187,7 +192,7 @@ document.addEventListener("DOMContentLoaded", function () {
       })
       .catch((error) => {
         console.error("Error:", error);
-        mostrarMensaje("Error al conectar con el servidor.");
+        mostrarMensaje(MENSAJES_ADMIN.ERROR_SERVIDOR, TIPOS_ALERTA.ERROR);
         actualizarContador(0);
       });
   }
@@ -203,9 +208,7 @@ document.addEventListener("DOMContentLoaded", function () {
     actualizarContador(espaciosDisponibles.length);
 
     if (espaciosDisponibles.length === 0) {
-      mostrarMensaje(
-        "Todavia no hay espacios registrados para esta urbanizacion.",
-      );
+      mostrarMensaje(MENSAJES_ADMIN.SIN_ESPACIOS);
       actualizarPaginacion();
       return;
     }
@@ -218,14 +221,14 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   function obtenerEspaciosPagina() {
-    const inicio = (paginaActual - 1) * ESPACIOS_POR_PAGINA;
-    return espaciosDisponibles.slice(inicio, inicio + ESPACIOS_POR_PAGINA);
+    const inicio = (paginaActual - 1) * PAGINACION.ESPACIOS_POR_PAGINA;
+    return espaciosDisponibles.slice(inicio, inicio + PAGINACION.ESPACIOS_POR_PAGINA);
   }
 
   function obtenerTotalPaginas() {
     return Math.max(
       1,
-      Math.ceil(espaciosDisponibles.length / ESPACIOS_POR_PAGINA),
+      Math.ceil(espaciosDisponibles.length / PAGINACION.ESPACIOS_POR_PAGINA)
     );
   }
 
@@ -237,7 +240,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     if (paginationControls) {
-      paginationControls.hidden = espaciosDisponibles.length <= ESPACIOS_POR_PAGINA;
+      paginationControls.hidden = espaciosDisponibles.length <= PAGINACION.ESPACIOS_POR_PAGINA;
     }
 
     if (prevPageButton) {
@@ -252,105 +255,94 @@ document.addEventListener("DOMContentLoaded", function () {
   function crearFilaEspacio(espacio) {
     const tr = document.createElement("tr");
     const activo = Boolean(espacio.activo);
+
     const horario =
       espacio.hora_apertura && espacio.hora_cierre
         ? `${formatearHora(espacio.hora_apertura)} - ${formatearHora(espacio.hora_cierre)}`
         : "Sin configurar";
 
     tr.innerHTML = `
-            <td>
-                <div class="space-cell">
-                    <div>
-                        <strong>${escaparHTML(espacio.nombre)}</strong>
-                        <span>${escaparHTML(espacio.descripcion || "Sin descripcion")}</span>
-                    </div>
-                </div>
-            </td>
-            <td>${escaparHTML(espacio.tipo)}</td>
-            <td>
-                <div class="schedule-cell">
-                    <strong>${escaparHTML(horario)}</strong>
-                    <span>${escaparHTML(espacio.unidad_reserva_texto || "Configuracion pendiente")}</span>
-                </div>
-            </td>
-            <td>
-                <span class="status-badge${activo ? "" : " inactive"}">${activo ? "Activa" : "Inactiva"}</span>
-            </td>
-            <td>
-                <div class="row-actions" aria-label="Acciones de espacio">
-                    <button class="icon-btn js-editar-espacio" type="button" aria-label="Editar espacio">
-                        <i class="fa-solid fa-pen"></i>
-                    </button>
-                    <button class="icon-btn delete js-eliminar-espacio" type="button" aria-label="Eliminar espacio">
-                        <i class="fa-regular fa-trash-can"></i>
-                    </button>
-                </div>
-            </td>
-        `;
+      <td>
+        <div class="space-cell">
+          <div>
+            <strong>${escaparHTML(espacio.nombre)}</strong>
+            <span>${escaparHTML(espacio.descripcion || "Sin descripcion")}</span>
+          </div>
+        </div>
+      </td>
+      <td>${escaparHTML(espacio.tipo)}</td>
+      <td>
+        <div class="schedule-cell">
+          <strong>${escaparHTML(horario)}</strong>
+          <span>${escaparHTML(espacio.unidad_reserva_texto || "Configuracion pendiente")}</span>
+        </div>
+      </td>
+      <td>
+        <span class="status-badge${activo ? "" : " inactive"}">${activo ? "Activa" : "Inactiva"}</span>
+      </td>
+      <td>
+        <div class="row-actions" aria-label="Acciones de espacio">
+          <button class="icon-btn js-editar-espacio" type="button" aria-label="Editar espacio">
+            <i class="fa-solid fa-pen"></i>
+          </button>
+          <button class="icon-btn delete js-eliminar-espacio" type="button" aria-label="Eliminar espacio">
+            <i class="fa-regular fa-trash-can"></i>
+          </button>
+        </div>
+      </td>
+    `;
 
-    tr.querySelector(".js-editar-espacio").addEventListener(
-      "click",
-      function () {
-        guardarEspacioSeleccionado(espacio);
-        window.location.href = `${FORMULARIO_ESPACIO_URL}?modo=editar&idUrbanizacion=${encodeURIComponent(idUrbanizacion)}&idEspacio=${encodeURIComponent(espacio.id)}`;
-      },
-    );
+    tr.querySelector(".js-editar-espacio").addEventListener("click", function () {
+      guardarEspacioSeleccionado(espacio);
+      window.location.href = `${URLS_ADMIN.FORMULARIO_ESPACIO}?modo=editar&idUrbanizacion=${encodeURIComponent(idUrbanizacion)}&idEspacio=${encodeURIComponent(espacio.id)}`;
+    });
 
-    tr.querySelector(".js-eliminar-espacio").addEventListener(
-      "click",
-      function () {
-        mostrarModalConfirmacion(
-          "Seguro que quieres eliminar este espacio?",
-          function () {
-            eliminarEspacio(espacio.id);
-          },
-        );
-      },
-    );
+    tr.querySelector(".js-eliminar-espacio").addEventListener("click", function () {
+      mostrarModalConfirmacion(
+        MENSAJES_ADMIN.CONFIRMAR_ELIMINAR_ESPACIO,
+        function () {
+          eliminarEspacio(espacio.id);
+        }
+      );
+    });
 
     return tr;
   }
 
   function eliminarEspacio(idEspacio) {
     const formData = new FormData();
-    formData.append("funcion", "eliminarEspacio");
-    formData.append("idUrbanizacion", idUrbanizacion);
-    formData.append("idEspacio", idEspacio);
+    formData.append(FORM_FIELDS_ADMIN.FUNCION, FUNCIONES_ADMIN.ELIMINAR_ESPACIO);
+    formData.append(FORM_FIELDS_ADMIN.ID_URBANIZACION, idUrbanizacion);
+    formData.append(FORM_FIELDS_ADMIN.ID_ESPACIO, idEspacio);
 
-    fetch("../php/espacios.php", {
+    fetch(API_ADMIN.ESPACIOS, {
       method: "POST",
-      body: formData,
+      body: formData
     })
       .then((response) => response.text())
-      .then((texto) => {
-        try {
-          return JSON.parse(texto);
-        } catch (error) {
-          console.error("Respuesta no valida:", texto);
-          throw new Error("Respuesta no valida del servidor");
-        }
-      })
+      .then(parsearJSON)
       .then((data) => {
-        const correcto = data.status === "success";
+        const correcto = data.status === RESPUESTAS.SUCCESS;
+
         mostrarModalMensaje(
-          correcto ? "Espacio eliminado" : data.message || "Hubo algun fallo",
+          correcto ? MENSAJES_ADMIN.ESPACIO_ELIMINADO : (data.message || MENSAJES_ADMIN.ERROR_GENERICO),
           correcto,
           function () {
             if (correcto) {
               cargarEspacios();
             }
-          },
+          }
         );
       })
       .catch((error) => {
         console.error("Error:", error);
-        mostrarModalMensaje("Hubo algun fallo", false);
+        mostrarModalMensaje(MENSAJES_ADMIN.ERROR_GENERICO, false);
       });
   }
 
   function obtenerIdUrbanizacionSeleccionada() {
     const params = new URLSearchParams(window.location.search);
-    const idUrl = Number(params.get("idUrbanizacion")) || 0;
+    const idUrl = Number(params.get(FORM_FIELDS_ADMIN.ID_URBANIZACION)) || 0;
 
     if (idUrl > 0) {
       sessionStorage.setItem("idUrbanizacionSeleccionada", idUrl);
@@ -362,6 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function pintarUrbanizacionGuardada() {
     const urbanizacion = obtenerUrbanizacionGuardada();
+
     if (urbanizacion && Number(urbanizacion.id) === Number(idUrbanizacion)) {
       pintarNombreUrbanizacion(urbanizacion.nombre);
     }
@@ -379,9 +372,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function obtenerUrbanizacionGuardada() {
     try {
-      return JSON.parse(
-        sessionStorage.getItem("urbanizacionSeleccionada") || "null",
-      );
+      return JSON.parse(sessionStorage.getItem("urbanizacionSeleccionada") || "null");
     } catch (error) {
       return null;
     }
@@ -389,10 +380,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function guardarUrbanizacion(urbanizacion) {
     sessionStorage.setItem("idUrbanizacionSeleccionada", urbanizacion.id);
-    sessionStorage.setItem(
-      "urbanizacionSeleccionada",
-      JSON.stringify(urbanizacion),
-    );
+    sessionStorage.setItem("urbanizacionSeleccionada", JSON.stringify(urbanizacion));
     idUrbanizacion = Number(urbanizacion.id) || idUrbanizacion;
   }
 
@@ -406,7 +394,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    if (total > ESPACIOS_POR_PAGINA) {
+    if (total > PAGINACION.ESPACIOS_POR_PAGINA) {
       const visibles = obtenerEspaciosPagina().length;
       spacesCount.textContent = `Mostrando ${visibles} de ${total} espacios`;
       return;
@@ -416,15 +404,27 @@ document.addEventListener("DOMContentLoaded", function () {
       total === 1 ? "Mostrando 1 espacio" : `Mostrando ${total} espacios`;
   }
 
-  function mostrarMensaje(texto) {
+  function mostrarMensaje(texto, tipo = TIPOS_ALERTA.INFO) {
     tableBody.innerHTML = `
-            <tr>
-                <td colspan="5" class="spaces-message">${escaparHTML(texto)}</td>
-            </tr>
-        `;
+      <tr>
+        <td colspan="5" class="spaces-message">
+          <urba-alert tipo="${tipo}" mensaje="${escaparHTML(texto)}"></urba-alert>
+        </td>
+      </tr>
+    `;
+
     espaciosDisponibles = [];
     paginaActual = 1;
     actualizarPaginacion();
+  }
+
+  function parsearJSON(texto) {
+    try {
+      return JSON.parse(texto);
+    } catch (error) {
+      console.error("Respuesta no valida:", texto);
+      throw new Error(MENSAJES_ADMIN.RESPUESTA_NO_VALIDA);
+    }
   }
 
   function formatearHora(hora) {
@@ -454,8 +454,10 @@ document.addEventListener("DOMContentLoaded", function () {
     cancelButton.onclick = function () {
       modal.hidden = true;
     };
+
     acceptButton.onclick = function () {
       modal.hidden = true;
+
       if (typeof onAccept === "function") {
         onAccept();
       }
@@ -482,6 +484,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     acceptButton.onclick = function () {
       modal.hidden = true;
+
       if (typeof onClose === "function") {
         onClose();
       }
@@ -500,15 +503,16 @@ document.addEventListener("DOMContentLoaded", function () {
     modal.className = "modal-backdrop";
     modal.hidden = true;
     modal.innerHTML = `
-            <div class="modal-box" role="dialog" aria-modal="true">
-                <span class="modal-icon" aria-hidden="true"></span>
-                <p class="modal-text"></p>
-                <div class="modal-actions">
-                    <button class="btn btn-secondary modal-cancel" type="button">Cancelar</button>
-                    <button class="btn btn-primary modal-accept" type="button">Aceptar</button>
-                </div>
-            </div>
-        `;
+      <div class="modal-box" role="dialog" aria-modal="true">
+        <span class="modal-icon" aria-hidden="true"></span>
+        <p class="modal-text"></p>
+        <div class="modal-actions">
+          <button class="btn btn-secondary modal-cancel" type="button">Cancelar</button>
+          <button class="btn btn-primary modal-accept" type="button">Aceptar</button>
+        </div>
+      </div>
+    `;
+
     document.body.appendChild(modal);
     return modal;
   }

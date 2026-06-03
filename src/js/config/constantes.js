@@ -111,3 +111,75 @@ export const MENSAJES_INCIDENCIAS = {
     ENVIANDO: '<i class="fa-solid fa-spinner"></i><span>Enviando...</span>',
     ENVIAR_INCIDENCIA: '<i class="fa-solid fa-paper-plane"></i><span>Enviar incidencia</span>'
 };
+
+export const URLS_ADMIN = {
+    LOGIN: "login.html",
+    PANEL_URBANIZACIONES: "panelAdminUrbanizaciones.html",
+    PANEL_ESPACIOS: "panelAdminEspacios.html",
+    FORMULARIO_ESPACIO: "panelAdminFormularioEspacios.html",
+    FORMULARIO_URBANIZACION: "panelAdminFormularioUrbanizaciones.html",
+    PANEL_VIVIENDAS: "panelAdminViviendas.html"
+};
+
+export const API_ADMIN = {
+    SESSION_ADMIN: "../php/sessionAdmin.php",
+    LOGOUT: "../php/logout.php",
+    VIVIENDAS: "../php/viviendas.php",
+    ESPACIOS: "../php/espacios.php",
+    LISTA_URBANIZACIONES: "../php/listaUrbanizaciones.php",
+    FORMULARIO_URBANIZACIONES: "../php/formularioUrbanizaciones.php"
+};
+
+export const FUNCIONES_ADMIN = {
+    DATOS_INICIALES: "datosIniciales",
+    LISTAR_VIVIENDAS: "listarViviendas",
+    GUARDAR_VIVIENDAS: "guardarViviendas",
+    LISTAR_ESPACIOS: "listarEspacios",
+    ELIMINAR_ESPACIO: "eliminarEspacio",
+    ELIMINAR_URBANIZACION: "eliminarUrbanizacion"
+};
+
+export const FORM_FIELDS_ADMIN = {
+    FUNCION: "funcion",
+    ID_URBANIZACION: "idUrbanizacion",
+    ID_ESPACIO: "idEspacio",
+    VIVIENDAS: "viviendas"
+};
+
+export const PAGINACION = {
+    ESPACIOS_POR_PAGINA: 5,
+    TODOS: "all"
+};
+
+export const MENSAJES_ADMIN = {
+    COMPROBANDO_SESION: "Comprobando sesión...",
+    ADMIN_GENERICO: "Administrador",
+
+    SELECCIONA_URBANIZACION_VIVIENDAS: "Selecciona una urbanización antes de gestionar viviendas.",
+    SELECCIONA_URBANIZACION_ESPACIOS: "Selecciona una urbanización antes de gestionar sus espacios.",
+    SELECCIONA_URBANIZACION_CREAR_ESPACIOS: "Selecciona una urbanización antes de crear espacios.",
+
+    CARGANDO_DATOS: "Cargando datos...",
+    CARGANDO_ESPACIOS: "Cargando espacios...",
+    CARGANDO_URBANIZACIONES: "Cargando urbanizaciones...",
+
+    ERROR_SERVIDOR: "Error al conectar con el servidor.",
+    ERROR_DATOS: "No se pudieron cargar los datos.",
+    ERROR_VIVIENDAS: "No se pudieron cargar las viviendas.",
+    ERROR_ESPACIOS: "No se pudieron cargar los espacios.",
+    ERROR_URBANIZACIONES: "No se pudieron cargar las urbanizaciones.",
+
+    SIN_VIVIENDAS: "Todavía no hay viviendas registradas. Sube un archivo CSV para previsualizarlas.",
+    SIN_ESPACIOS: "Todavía no hay espacios registrados para esta urbanización.",
+    SIN_URBANIZACIONES: "Todavía no hay urbanizaciones registradas.",
+    SIN_RESULTADOS_VIVIENDAS: "No hay viviendas que cumplan los filtros.",
+
+    RESPUESTA_NO_VALIDA: "Respuesta no válida del servidor",
+
+    ESPACIO_ELIMINADO: "Espacio eliminado",
+    URBANIZACION_BORRADA: "Urbanización borrada",
+    ERROR_GENERICO: "Hubo algún fallo",
+
+    CONFIRMAR_ELIMINAR_ESPACIO: "¿Seguro que quieres eliminar este espacio?",
+    CONFIRMAR_ELIMINAR_URBANIZACION: "¿Estás seguro de que quieres borrar esta urbanización?"
+};
