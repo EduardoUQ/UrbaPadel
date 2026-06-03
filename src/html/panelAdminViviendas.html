@@ -22,36 +22,38 @@
             </a>
 
             <div class="sidebar-navigation">
-            <nav class="sidebar-nav" aria-label="Navegación principal">
-                <a href="panelAdminUrbanizaciones.html" class="nav-item">
-                    <i class="fa-solid fa-chart-column"></i>
-                    <span>Panel General</span>
-                </a>
-                <a href="panelAdminEspacios.html" class="nav-item">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>Espacios</span>
-                </a>
-                <a href="#" class="nav-item active" aria-current="page">
-                    <i class="fa-solid fa-users"></i>
-                    <span>Viviendas</span>
-                </a>
+                <nav class="sidebar-nav" aria-label="Navegación principal">
+                    <a href="panelAdminUrbanizaciones.html" class="nav-item">
+                        <i class="fa-solid fa-chart-column"></i>
+                        <span>Panel General</span>
+                    </a>
+                    <a href="panelAdminEspacios.html" class="nav-item">
+                        <i class="fa-solid fa-location-dot"></i>
+                        <span>Espacios</span>
+                    </a>
+                    <a href="#" class="nav-item active" aria-current="page">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Viviendas</span>
+                    </a>
 
-            </nav>
+                </nav>
 
-            <div class="sidebar-footer">
-                <a href="panelAdminAjustes.html" class="nav-item">
-                    <i class="fa-solid fa-gear"></i>
-                    <span>Ajustes</span>
-                </a>
-                <a href="#" class="nav-item logout" id="logout">
-                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
-                    <span>Cerrar Sesión</span>
-                </a>
-            </div>
+                <div class="sidebar-footer">
+                    <a href="panelAdminAjustes.html" class="nav-item">
+                        <i class="fa-solid fa-gear"></i>
+                        <span>Ajustes</span>
+                    </a>
+                    <a href="#" class="nav-item logout" id="logout">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Cerrar Sesión</span>
+                    </a>
+                </div>
             </div>
         </aside>
 
         <main class="main-panel">
+            <urba-alert tipo="info" mensaje="Componente Lit cargado correctamente">
+            </urba-alert>
             <header class="topbar">
                 <div class="breadcrumbs">
                     <span id="breadcrumb-urbanization"></span>
@@ -161,6 +163,7 @@
         </main>
     </div>
 
+    <script type="module" src="../js/components/urba-alert.js"></script>
     <script src="../js/panelAdminViviendas.js"></script>
 </body>
 

@@ -1,3 +1,18 @@
+import {
+    API,
+    URLS,
+    ROLES,
+    RESPUESTAS,
+    ESTADOS_RESERVA,
+    FILTROS_RESERVA,
+    TIPOS_ALERTA,
+    MENSAJES,
+    TEXTOS_ESTADOS_RESERVA,
+    CLASES_ESTADOS_RESERVA,
+    FORM_FIELDS
+} from "./config/constantes.js";
+
+
 document.addEventListener("DOMContentLoaded", function () {
     const tableBody = document.getElementById("reservas-table-body");
     const reservasCount = document.getElementById("reservas-count");
@@ -5,9 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const logoutButton = document.getElementById("logout");
     const tabButtons = document.querySelectorAll(".tab-btn");
 
-    const LOGIN_URL = "login.html";
-
-    let filtroActual = "activas";
+    let filtroActual = FILTROS_RESERVA.ACTIVAS;
     let reservas = [];
 
     if (!tableBody) {
@@ -19,18 +32,18 @@ document.addEventListener("DOMContentLoaded", function () {
     validarSesionUsuario();
 
     function validarSesionUsuario() {
-        mostrarMensaje("Comprobando sesión...");
+        mostrarMensaje(MENSAJES.COMPROBANDO_SESION);
 
-        fetch("../php/sessionUsuario.php")
+        fetch(API.SESSION_USUARIO)
             .then(response => response.json())
             .then(data => {
-                if (data.status !== "success" || data.rol !== "usuario") {
-                    window.location.href = LOGIN_URL;
+                if (data.status !== RESPUESTAS.SUCCESS || data.rol !== ROLES.USUARIO) {
+                    window.location.href = URLS.LOGIN;
                     return;
                 }
 
                 if (usuarioName) {
-                    usuarioName.textContent = data.nombre_usuario || "Usuario";
+                    usuarioName.textContent = data.nombre_usuario || MENSAJES.USUARIO_GENERICO;
                     mostrarMenuSuperusuario(data.superusuario);
                 }
 
@@ -38,7 +51,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                window.location.href = LOGIN_URL;
+                window.location.href = URLS.LOGIN;
             });
     }
 
@@ -50,14 +63,14 @@ document.addEventListener("DOMContentLoaded", function () {
         logoutButton.addEventListener("click", function (event) {
             event.preventDefault();
 
-            fetch("../php/logout.php")
+            fetch(API.LOGOUT)
                 .then(response => response.json())
                 .then(() => {
-                    window.location.href = LOGIN_URL;
+                    window.location.href = URLS.LOGIN;
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    window.location.href = LOGIN_URL;
+                    window.location.href = URLS.LOGIN;
                 });
         });
     }
@@ -68,21 +81,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 tabButtons.forEach(btn => btn.classList.remove("active"));
                 button.classList.add("active");
 
-                filtroActual = button.dataset.filter || "activas";
+                filtroActual = button.dataset.filter || FILTROS_RESERVA.ACTIVAS;
                 pintarReservas();
             });
         });
     }
 
     function cargarReservas() {
-        mostrarMensaje("Cargando reservas...");
+        mostrarMensaje(MENSAJES.CARGANDO_RESERVAS);
 
-        fetch("../php/misReservas.php")
+        fetch(API.MIS_RESERVAS)
             .then(response => response.text())
             .then(parsearJson)
             .then(data => {
-                if (data.status !== "success") {
-                    mostrarMensaje(data.message || "No se pudieron cargar las reservas.");
+                if (data.status !== RESPUESTAS.SUCCESS) {
+                    mostrarMensaje(data.message || MENSAJES.ERROR_CARGAR_RESERVAS, TIPOS_ALERTA.ERROR);
                     actualizarContador(0);
                     return;
                 }
@@ -92,7 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                mostrarMensaje("Error al conectar con el servidor.");
+                mostrarMensaje(MENSAJES.ERROR_SERVIDOR, TIPOS_ALERTA.ERROR);
                 actualizarContador(0);
             });
     }
@@ -101,21 +114,21 @@ document.addEventListener("DOMContentLoaded", function () {
         tableBody.innerHTML = "";
 
         const reservasFiltradas = reservas.filter(reserva => {
-            if (filtroActual === "todas") {
+            if (filtroActual === FILTROS_RESERVA.TODAS) {
                 return true;
             }
 
-            if (filtroActual === "activas") {
-                return reserva.estado_visual === "ACTIVA";
+            if (filtroActual === FILTROS_RESERVA.ACTIVAS) {
+                return reserva.estado_visual === ESTADOS_RESERVA.ACTIVA;
             }
 
-            return reserva.estado_visual !== "ACTIVA";
+            return reserva.estado_visual !== ESTADOS_RESERVA.ACTIVA;
         });
 
         actualizarContador(reservasFiltradas.length);
 
         if (reservasFiltradas.length === 0) {
-            mostrarMensaje("No hay reservas para mostrar.");
+            mostrarMensaje(MENSAJES.NO_HAY_RESERVAS);
             return;
         }
 
@@ -160,7 +173,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (botonCancelar && reserva.puede_cancelar) {
             botonCancelar.addEventListener("click", function () {
-                mostrarModalConfirmacion("¿Seguro que quieres cancelar esta reserva?", function () {
+                mostrarModalConfirmacion(MENSAJES.CONFIRMAR_CANCELACION, function () {
                     cancelarReserva(reserva.id);
                 });
             });
@@ -171,19 +184,19 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function cancelarReserva(idReserva) {
         const formData = new FormData();
-        formData.append("idReserva", idReserva);
+        formData.append(FORM_FIELDS.ID_RESERVA, idReserva);
 
-        fetch("../php/cancelarReserva.php", {
+        fetch(API.CANCELAR_RESERVA, {
             method: "POST",
             body: formData
         })
             .then(response => response.text())
             .then(parsearJson)
             .then(data => {
-                const correcto = data.status === "success";
+                const correcto = data.status === RESPUESTAS.SUCCESS;
 
                 mostrarModalMensaje(
-                    correcto ? "Reserva cancelada correctamente" : (data.message || "No se pudo cancelar la reserva"),
+                    correcto ? MENSAJES.RESERVA_CANCELADA : (data.message || MENSAJES.ERROR_CANCELAR_RESERVA),
                     correcto,
                     function () {
                         if (correcto) {
@@ -194,38 +207,24 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                mostrarModalMensaje("Error al conectar con el servidor.", false);
+                mostrarModalMensaje(MENSAJES.ERROR_SERVIDOR, false);
             });
     }
 
     function obtenerClaseEstado(estado) {
-        if (estado === "ACTIVA") {
-            return "activa";
-        }
-
-        if (estado === "CANCELADA") {
-            return "cancelada";
-        }
-
-        return "finalizada";
+        return CLASES_ESTADOS_RESERVA[estado] || CLASES_ESTADOS_RESERVA[ESTADOS_RESERVA.FINALIZADA];
     }
 
     function obtenerTextoEstado(estado) {
-        if (estado === "ACTIVA") {
-            return "Activa";
-        }
-
-        if (estado === "CANCELADA") {
-            return "Cancelada";
-        }
-
-        return "Finalizada";
+        return TEXTOS_ESTADOS_RESERVA[estado] || TEXTOS_ESTADOS_RESERVA[ESTADOS_RESERVA.FINALIZADA];
     }
 
-    function mostrarMensaje(texto) {
+    function mostrarMensaje(texto, tipo = TIPOS_ALERTA.INFO) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="5" class="spaces-message">${escaparHTML(texto)}</td>
+                <td colspan="5" class="spaces-message">
+                    <urba-alert tipo="${tipo}" mensaje="${escaparHTML(texto)}"></urba-alert>
+                </td>
             </tr>
         `;
     }
@@ -242,8 +241,8 @@ document.addEventListener("DOMContentLoaded", function () {
         try {
             return JSON.parse(texto);
         } catch (error) {
-            console.error("Respuesta no valida:", texto);
-            throw new Error("Respuesta no valida del servidor");
+            console.error("Respuesta no válida:", texto);
+            throw new Error(MENSAJES.RESPUESTA_NO_VALIDA);
         }
     }
 

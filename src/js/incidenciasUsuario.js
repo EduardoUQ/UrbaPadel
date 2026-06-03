@@ -1,3 +1,18 @@
+import {
+    API,
+    URLS,
+    ROLES,
+    RESPUESTAS,
+    TIPOS_ALERTA,
+    MENSAJES,
+    API_INCIDENCIAS,
+    FUNCIONES_INCIDENCIA,
+    ESTADOS_INCIDENCIA,
+    TEXTOS_ESTADOS_INCIDENCIA,
+    FORM_FIELDS_INCIDENCIA,
+    MENSAJES_INCIDENCIAS
+} from "./config/constantes.js";
+
 document.addEventListener("DOMContentLoaded", function () {
     const form = document.getElementById("incidencia-form");
     const selectEspacio = document.getElementById("idEspacio");
@@ -11,8 +26,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const errorEspacio = document.getElementById("error-idEspacio");
     const errorComentario = document.getElementById("error-comentario");
 
-    const LOGIN_URL = "login.html";
-
     if (!form || !tableBody) {
         return;
     }
@@ -22,18 +35,18 @@ document.addEventListener("DOMContentLoaded", function () {
     validarSesionUsuario();
 
     function validarSesionUsuario() {
-        mostrarMensaje("Comprobando sesión...");
+        mostrarMensaje(MENSAJES_INCIDENCIAS.COMPROBANDO_SESION);
 
-        fetch("../php/sessionUsuario.php")
+        fetch(API.SESSION_USUARIO)
             .then(response => response.json())
             .then(data => {
-                if (data.status !== "success" || data.rol !== "usuario") {
-                    window.location.href = LOGIN_URL;
+                if (data.status !== RESPUESTAS.SUCCESS || data.rol !== ROLES.USUARIO) {
+                    window.location.href = URLS.LOGIN;
                     return;
                 }
 
                 if (usuarioName) {
-                    usuarioName.textContent = data.nombre_usuario || "Usuario";
+                    usuarioName.textContent = data.nombre_usuario || MENSAJES.USUARIO_GENERICO;
                     mostrarMenuSuperusuario(data.superusuario);
                 }
 
@@ -41,7 +54,7 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                window.location.href = LOGIN_URL;
+                window.location.href = URLS.LOGIN;
             });
     }
 
@@ -53,14 +66,14 @@ document.addEventListener("DOMContentLoaded", function () {
         logoutButton.addEventListener("click", function (event) {
             event.preventDefault();
 
-            fetch("../php/logout.php")
+            fetch(API.LOGOUT)
                 .then(response => response.json())
                 .then(() => {
-                    window.location.href = LOGIN_URL;
+                    window.location.href = URLS.LOGIN;
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    window.location.href = LOGIN_URL;
+                    window.location.href = URLS.LOGIN;
                 });
         });
     }
@@ -91,12 +104,12 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function cargarEspacios() {
-        fetch("../php/incidenciasUsuario.php?funcion=listarEspacios")
+        fetch(API_INCIDENCIAS.LISTAR_ESPACIOS)
             .then(response => response.text())
             .then(parsearJson)
             .then(data => {
-                if (data.status !== "success") {
-                    mostrarModalMensaje(data.message || "No se pudieron cargar los espacios.", false);
+                if (data.status !== RESPUESTAS.SUCCESS) {
+                    mostrarModalMensaje(data.message || MENSAJES_INCIDENCIAS.ERROR_CARGAR_ESPACIOS, false);
                     return;
                 }
 
@@ -104,19 +117,19 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                mostrarModalMensaje("Error al cargar los espacios.", false);
+                mostrarModalMensaje(MENSAJES_INCIDENCIAS.ERROR_CARGAR_ESPACIOS_SERVIDOR, false);
             });
     }
 
     function cargarIncidencias() {
-        mostrarMensaje("Cargando incidencias...");
+        mostrarMensaje(MENSAJES_INCIDENCIAS.CARGANDO_INCIDENCIAS);
 
-        fetch("../php/incidenciasUsuario.php?funcion=listarIncidencias")
+        fetch(API_INCIDENCIAS.LISTAR_INCIDENCIAS)
             .then(response => response.text())
             .then(parsearJson)
             .then(data => {
-                if (data.status !== "success") {
-                    mostrarMensaje(data.message || "No se pudieron cargar las incidencias.");
+                if (data.status !== RESPUESTAS.SUCCESS) {
+                    mostrarMensaje(data.message || MENSAJES_INCIDENCIAS.ERROR_CARGAR_INCIDENCIAS, TIPOS_ALERTA.ERROR);
                     actualizarContador(0);
                     return;
                 }
@@ -125,13 +138,13 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                mostrarMensaje("Error al conectar con el servidor.");
+                mostrarMensaje(MENSAJES_INCIDENCIAS.ERROR_SERVIDOR, TIPOS_ALERTA.ERROR);
                 actualizarContador(0);
             });
     }
 
     function pintarEspacios(espacios) {
-        selectEspacio.innerHTML = '<option value="">Selecciona un espacio</option>';
+        selectEspacio.innerHTML = `<option value="">${MENSAJES_INCIDENCIAS.PLACEHOLDER_ESPACIO}</option>`;
 
         espacios.forEach(espacio => {
             const option = document.createElement("option");
@@ -146,7 +159,7 @@ document.addEventListener("DOMContentLoaded", function () {
         actualizarContador(incidencias.length);
 
         if (incidencias.length === 0) {
-            mostrarMensaje("Todavía no has enviado incidencias.");
+            mostrarMensaje(MENSAJES_INCIDENCIAS.NO_HAY_INCIDENCIAS);
             return;
         }
 
@@ -158,8 +171,8 @@ document.addEventListener("DOMContentLoaded", function () {
     function crearFilaIncidencia(incidencia) {
         const tr = document.createElement("tr");
         const resuelta = Boolean(incidencia.resuelto);
-        const claseEstado = resuelta ? "resuelta" : "pendiente";
-        const textoEstado = resuelta ? "Resuelta" : "Pendiente";
+        const claseEstado = resuelta ? ESTADOS_INCIDENCIA.RESUELTA : ESTADOS_INCIDENCIA.PENDIENTE;
+        const textoEstado = resuelta ? TEXTOS_ESTADOS_INCIDENCIA.RESUELTA : TEXTOS_ESTADOS_INCIDENCIA.PENDIENTE;
 
         tr.innerHTML = `
             <td>
@@ -184,15 +197,15 @@ document.addEventListener("DOMContentLoaded", function () {
         let valido = true;
 
         if (!selectEspacio.value) {
-            mostrarError(selectEspacio, errorEspacio, "Selecciona un espacio");
+            mostrarError(selectEspacio, errorEspacio, MENSAJES_INCIDENCIAS.SELECCIONA_ESPACIO);
             valido = false;
         }
 
         if (comentarioInput.value.trim() === "") {
-            mostrarError(comentarioInput, errorComentario, "Escribe una incidencia");
+            mostrarError(comentarioInput, errorComentario, MENSAJES_INCIDENCIAS.ESCRIBE_INCIDENCIA);
             valido = false;
         } else if (comentarioInput.value.trim().length < 10) {
-            mostrarError(comentarioInput, errorComentario, "La incidencia debe tener al menos 10 caracteres");
+            mostrarError(comentarioInput, errorComentario, MENSAJES_INCIDENCIAS.INCIDENCIA_MINIMA);
             valido = false;
         }
 
@@ -201,26 +214,28 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function crearIncidencia() {
         const formData = new FormData();
-        formData.append("funcion", "crearIncidencia");
-        formData.append("idEspacio", selectEspacio.value);
-        formData.append("comentario", comentarioInput.value.trim());
+        formData.append(FORM_FIELDS_INCIDENCIA.FUNCION, FUNCIONES_INCIDENCIA.CREAR_INCIDENCIA);
+        formData.append(FORM_FIELDS_INCIDENCIA.ID_ESPACIO, selectEspacio.value);
+        formData.append(FORM_FIELDS_INCIDENCIA.COMENTARIO, comentarioInput.value.trim());
 
         if (submitButton) {
             submitButton.disabled = true;
-            submitButton.innerHTML = '<i class="fa-solid fa-spinner"></i><span>Enviando...</span>';
+            submitButton.innerHTML = MENSAJES_INCIDENCIAS.ENVIANDO;
         }
 
-        fetch("../php/incidenciasUsuario.php", {
+        fetch(API_INCIDENCIAS.CREAR_INCIDENCIA, {
             method: "POST",
             body: formData
         })
             .then(response => response.text())
             .then(parsearJson)
             .then(data => {
-                const correcto = data.status === "success";
+                const correcto = data.status === RESPUESTAS.SUCCESS;
 
                 mostrarModalMensaje(
-                    correcto ? "Incidencia enviada correctamente" : (data.message || "No se pudo enviar la incidencia"),
+                    correcto
+                        ? MENSAJES_INCIDENCIAS.INCIDENCIA_ENVIADA
+                        : (data.message || MENSAJES_INCIDENCIAS.ERROR_ENVIAR_INCIDENCIA),
                     correcto,
                     function () {
                         if (correcto) {
@@ -232,12 +247,12 @@ document.addEventListener("DOMContentLoaded", function () {
             })
             .catch(error => {
                 console.error("Error:", error);
-                mostrarModalMensaje("Error al conectar con el servidor.", false);
+                mostrarModalMensaje(MENSAJES_INCIDENCIAS.ERROR_SERVIDOR, false);
             })
             .finally(() => {
                 if (submitButton) {
                     submitButton.disabled = false;
-                    submitButton.innerHTML = '<i class="fa-solid fa-paper-plane"></i><span>Enviar incidencia</span>';
+                    submitButton.innerHTML = MENSAJES_INCIDENCIAS.ENVIAR_INCIDENCIA;
                 }
             });
     }
@@ -252,10 +267,12 @@ document.addEventListener("DOMContentLoaded", function () {
         input.classList.remove("input-error");
     }
 
-    function mostrarMensaje(texto) {
+    function mostrarMensaje(texto, tipo = TIPOS_ALERTA.INFO) {
         tableBody.innerHTML = `
             <tr>
-                <td colspan="4" class="spaces-message">${escaparHTML(texto)}</td>
+                <td colspan="4" class="spaces-message">
+                    <urba-alert tipo="${tipo}" mensaje="${escaparHTML(texto)}"></urba-alert>
+                </td>
             </tr>
         `;
     }
@@ -273,7 +290,7 @@ document.addEventListener("DOMContentLoaded", function () {
             return JSON.parse(texto);
         } catch (error) {
             console.error("Respuesta no válida:", texto);
-            throw new Error("Respuesta no válida del servidor");
+            throw new Error(MENSAJES_INCIDENCIAS.RESPUESTA_NO_VALIDA);
         }
     }
 
