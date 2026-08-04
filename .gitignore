@@ -1,1 +1,2 @@
 vendor/*
+src/php/config/constantes.local.php

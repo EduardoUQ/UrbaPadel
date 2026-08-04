@@ -1,32 +1,26 @@
 <?php
 require_once __DIR__ . '/../config/constantes.php';
 
-$conexion = new mysqli(DB_HOST, DB_USER, DB_PASS);
+mysqli_report(MYSQLI_REPORT_OFF);
+
+$conexion = new mysqli(DB_HOST, DB_USER, DB_PASS, DB_NAME);
 
 if ($conexion->connect_error) {
+    $esLocal = in_array(DB_HOST, ['localhost', '127.0.0.1'], true)
+        && DB_USER === 'root'
+        && DB_PASS === '';
+
+    if ($esLocal) {
+        require_once __DIR__ . '/BBDD.php';
+        exit;
+    }
+
     echo json_encode([
         'status' => 'error',
-        'message' => 'Error de conexión con la base de datos'
+        'message' => 'Error de conexion con la base de datos. Revisa DB_HOST, DB_USER, DB_PASS y DB_NAME.'
     ]);
     exit;
 }
 
-$sql = "SHOW DATABASES LIKE '" . DB_NAME . "'";
-$result = $conexion->query($sql);
-
-if (!$result) {
-    echo json_encode([
-        'status' => 'error',
-        'message' => 'Error al comprobar la base de datos'
-    ]);
-    exit;
-}
-
-if ($result->num_rows === 0) {
-    require_once "BBDD.php";
-    exit;
-}
-
-$conexion->select_db(DB_NAME);
 $conexion->set_charset(DB_CHARSET);
 ?>
